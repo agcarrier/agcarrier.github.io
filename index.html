@@ -37,6 +37,9 @@
 <script type="text/babel">
 const { useState, useEffect, useRef } = React;
 
+const GRAD = 'linear-gradient(135deg, #1d6bf3, #e61e49)';
+const GT = { background: GRAD, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' };
+
 function FadeIn({ children, delay = 0 }) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -59,7 +62,14 @@ function FadeIn({ children, delay = 0 }) {
   );
 }
 
-function NeuralNetBg({ nodeCount = 52, color = 'var(--accent)' }) {
+function lerpColor(t) {
+  const r = Math.round(29 + t * (230 - 29));
+  const g = Math.round(107 + t * (30 - 107));
+  const b = Math.round(243 + t * (73 - 243));
+  return [r, g, b];
+}
+
+function NeuralNetBg({ nodeCount = 80 }) {
   const canvasRef = useRef(null);
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -77,7 +87,8 @@ function NeuralNetBg({ nodeCount = 52, color = 'var(--accent)' }) {
       y: Math.random() * canvas.height,
       vx: (Math.random() - 0.5) * 0.3,
       vy: (Math.random() - 0.5) * 0.3,
-      r: Math.random() * 1.5 + 0.8,
+      r: Math.random() * 1.8 + 1,
+      t: Math.random(),
     }));
     const draw = () => {
       const w = canvas.width, h = canvas.height;
@@ -91,10 +102,11 @@ function NeuralNetBg({ nodeCount = 52, color = 'var(--accent)' }) {
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 180) {
+          if (dist < 200) {
+            const [r, g, b] = lerpColor((nodes[i].t + nodes[j].t) / 2);
             ctx.beginPath();
-            ctx.strokeStyle = '#1d6bf3';
-            ctx.globalAlpha = (1 - dist / 180) * 0.14;
+            ctx.strokeStyle = `rgb(${r},${g},${b})`;
+            ctx.globalAlpha = (1 - dist / 200) * 0.28;
             ctx.lineWidth = 1;
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
@@ -103,9 +115,10 @@ function NeuralNetBg({ nodeCount = 52, color = 'var(--accent)' }) {
         }
       }
       nodes.forEach(n => {
+        const [r, g, b] = lerpColor(n.t);
         ctx.beginPath();
-        ctx.fillStyle = '#1d6bf3';
-        ctx.globalAlpha = 0.4;
+        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        ctx.globalAlpha = 0.65;
         ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
         ctx.fill();
       });
@@ -136,7 +149,7 @@ function PillBtn({ children, dark = false, ghost = false, accent = false, outlin
   let style = { ...base };
   if (dark)     style = { ...style, background: '#191c1f', color: '#fff', borderColor: '#191c1f' };
   if (ghost)    style = { ...style, background: 'rgba(244,244,244,0.1)', color: '#f4f4f4', borderColor: '#f4f4f4' };
-  if (accent)   style = { ...style, background: 'var(--accent)', color: '#fff', borderColor: 'var(--accent)' };
+  if (accent)   style = { ...style, background: GRAD, color: '#fff', borderColor: 'transparent' };
   if (outlined) style = { ...style, background: 'transparent', color: '#fff', borderColor: 'rgba(255,255,255,0.5)' };
   const [hov, setHov] = useState(false);
   const el = href ? 'a' : 'button';
@@ -173,7 +186,7 @@ const SKILLS = {
     { name: 'Gemini', icon: <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#4285f4"/><text x="20" y="26" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="700" fontFamily="sans-serif">Gemini</text></svg> },
   ],
   'Learning': [
-    { name: 'Prompt Engineering', icon: <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#1d6bf3"/><text x="8" y="22" fill="#fff" fontSize="14" fontWeight="700" fontFamily="monospace">{'{'}</text><text x="24" y="22" fill="#fff" fontSize="14" fontWeight="700" fontFamily="monospace">{'}'}</text></svg> },
+    { name: 'Prompt Engineering', icon: <svg viewBox="0 0 40 40" fill="none"><defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#1d6bf3"/><stop offset="100%" stopColor="#e61e49"/></linearGradient></defs><rect width="40" height="40" rx="8" fill="url(#pg)"/><text x="8" y="22" fill="#fff" fontSize="14" fontWeight="700" fontFamily="monospace">{'{'}</text><text x="24" y="22" fill="#fff" fontSize="14" fontWeight="700" fontFamily="monospace">{'}'}</text></svg> },
     { name: 'Image Generation', icon: <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#7c3aed"/><circle cx="14" cy="16" r="4" fill="#fff" opacity="0.8"/><path d="M6 32 L16 20 L24 28 L30 22 L36 32Z" fill="#fff" opacity="0.9"/></svg> },
     { name: 'Python', icon: <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#3776ab"/><text x="20" y="26" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="700" fontFamily="sans-serif">Python</text></svg> },
   ],
@@ -185,7 +198,7 @@ function SkillsSection() {
   return (
     <section style={{ position: 'relative', zIndex: 1, padding: '80px 48px', borderTop: `1px solid ${border}`, background: 'rgba(22,24,25,0.92)' }}>
       <FadeIn>
-        <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '20px' }}>Skills &amp; Stack</p>
+        <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '20px', ...GT }}>Skills &amp; Stack</p>
         <h2 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em', marginBottom: '52px' }}>Tools of the trade.</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
           {Object.entries(SKILLS).map(([category, skills]) => (
@@ -195,7 +208,7 @@ function SkillsSection() {
                 {skills.map(skill => (
                   <div key={skill.name}
                     style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px 10px 10px', borderRadius: '12px', border: `1px solid ${border}`, background: cardBg, cursor: 'default', transition: 'border-color 0.18s, background 0.18s' }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(29,107,243,0.45)'; e.currentTarget.style.background = 'rgba(29,107,243,0.07)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(139,70,200,0.5)'; e.currentTarget.style.background = 'rgba(139,70,200,0.07)'; }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor = border; e.currentTarget.style.background = cardBg; }}>
                     <div style={{ width: '32px', height: '32px', flexShrink: 0 }}>{skill.icon}</div>
                     <span style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', whiteSpace: 'nowrap' }}>{skill.name}</span>
@@ -234,15 +247,15 @@ function App() {
       {/* HERO */}
       <section style={{ position: 'relative', zIndex: 1, padding: '100px 48px 80px', maxWidth: '900px' }}>
         <FadeIn delay={0}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--accent-dim)', border: '1px solid rgba(29,107,243,0.3)', borderRadius: '9999px', padding: '6px 16px', marginBottom: '40px' }}>
-            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }}></span>
-            <span style={{ fontSize: '13px', color: 'var(--accent)', fontWeight: 500, letterSpacing: '0.04em' }}>IT Specialist · Learning AI</span>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(135deg, rgba(29,107,243,0.1), rgba(230,30,73,0.1))', border: '1px solid rgba(29,107,243,0.3)', borderRadius: '9999px', padding: '6px 16px', marginBottom: '40px' }}>
+            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: GRAD, display: 'inline-block' }}></span>
+            <span style={{ fontSize: '13px', fontWeight: 500, letterSpacing: '0.04em', ...GT }}>IT Specialist · Learning AI</span>
           </div>
         </FadeIn>
         <FadeIn delay={80}>
           <h1 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(56px, 8vw, 96px)', fontWeight: 700, lineHeight: 1.0, letterSpacing: '-0.03em', marginBottom: '28px', textWrap: 'balance' }}>
             Building AI Tools<br />
-            <span style={{ color: 'var(--accent)' }}>that simplify</span><br />
+            <span style={{ ...GT }}>that simplify</span><br />
             everyday life.
           </h1>
         </FadeIn>
@@ -264,7 +277,7 @@ function App() {
         <FadeIn>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center', maxWidth: '1000px' }}>
             <div>
-              <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '20px' }}>About me</p>
+              <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '20px', ...GT }}>About me</p>
               <h2 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(36px, 4vw, 52px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em', marginBottom: '24px' }}>From networks<br />to neural nets.</h2>
               <p style={{ fontSize: '16px', lineHeight: 1.7, color: 'var(--muted)', letterSpacing: '0.01em' }}>
                 I'm 38, based in the world of IT infrastructure and network administration. After years keeping systems running, I became fascinated by what AI could unlock — and started learning how to build with it.
@@ -277,7 +290,7 @@ function App() {
                 { label: 'Goal', value: 'Build practical AI tools that solve real problems' },
               ].map(item => (
                 <div key={item.label} style={{ padding: '20px 24px', background: 'var(--darker)', borderRadius: '12px', border: '1px solid var(--border)' }}>
-                  <p style={{ fontSize: '12px', color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>{item.label}</p>
+                  <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px', ...GT }}>{item.label}</p>
                   <p style={{ fontSize: '15px', color: '#e8e8e8', lineHeight: 1.5 }}>{item.value}</p>
                 </div>
               ))}
@@ -289,7 +302,7 @@ function App() {
       {/* PROJECTS */}
       <section id="projects" style={{ position: 'relative', zIndex: 1, padding: '80px 48px', borderTop: '1px solid var(--border)' }}>
         <FadeIn>
-          <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '20px' }}>Projects</p>
+          <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '20px', ...GT }}>Projects</p>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '48px', flexWrap: 'wrap', gap: '16px' }}>
             <h2 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em' }}>AI Tools in progress.</h2>
             <PillBtn ghost small>More coming soon</PillBtn>
@@ -298,8 +311,8 @@ function App() {
             {[1,2,3].map(i => (
               <div key={i} style={{ background: 'rgba(22,24,25,0.9)', borderRadius: '20px', border: '1px solid var(--border)', padding: '36px 32px', minHeight: '220px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--accent-dim)', border: '1px solid rgba(29,107,243,0.2)', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ color: 'var(--accent)', fontSize: '18px', fontWeight: 700 }}>AI</span>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'linear-gradient(135deg, rgba(29,107,243,0.12), rgba(230,30,73,0.12))', border: '1px solid rgba(139,70,200,0.25)', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ fontSize: '18px', fontWeight: 700, ...GT }}>AI</span>
                   </div>
                   <h3 style={{ fontFamily: 'var(--display-font)', fontSize: '20px', fontWeight: 600, marginBottom: '10px', letterSpacing: '-0.01em' }}>Project {i}</h3>
                   <p style={{ fontSize: '14px', color: 'var(--muted)', lineHeight: 1.6 }}>Details coming soon. An AI tool designed to simplify a real-world workflow.</p>
@@ -324,16 +337,16 @@ function App() {
       {/* BLOG */}
       <section id="blog" style={{ position: 'relative', zIndex: 1, padding: '80px 48px', background: 'rgba(22,24,25,0.92)', borderTop: '1px solid var(--border)' }}>
         <FadeIn>
-          <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '20px' }}>Blog &amp; Writing</p>
+          <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '20px', ...GT }}>Blog &amp; Writing</p>
           <h2 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em', marginBottom: '48px' }}>Thoughts on AI.</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
             {['Learning in public: my AI journey', 'What IT taught me about systems thinking'].map((title, i) => (
               <div key={i} style={{ padding: '32px', borderRadius: '16px', border: '1px solid var(--border)', cursor: 'pointer', transition: 'border-color 0.18s' }}
-                   onMouseEnter={e => e.currentTarget.style.borderColor='rgba(29,107,243,0.4)'}
+                   onMouseEnter={e => e.currentTarget.style.borderColor='rgba(139,70,200,0.5)'}
                    onMouseLeave={e => e.currentTarget.style.borderColor='var(--border)'}>
                 <p style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '12px', fontWeight: 500 }}>Coming soon</p>
                 <h3 style={{ fontFamily: 'var(--display-font)', fontSize: '20px', fontWeight: 600, lineHeight: 1.3, letterSpacing: '-0.01em', marginBottom: '12px' }}>{title}</h3>
-                <span style={{ color: 'var(--accent)', fontSize: '14px', fontWeight: 500 }}>Read →</span>
+                <span style={{ fontSize: '14px', fontWeight: 500, ...GT }}>Read →</span>
               </div>
             ))}
           </div>
@@ -345,7 +358,7 @@ function App() {
         <FadeIn>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
             <div>
-              <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '20px' }}>Contact</p>
+              <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '20px', ...GT }}>Contact</p>
               <h2 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(36px, 4vw, 52px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em', marginBottom: '24px' }}>Let's build<br />something.</h2>
               <p style={{ fontSize: '16px', lineHeight: 1.7, color: 'var(--muted)', marginBottom: '36px' }}>Whether you want to collaborate, share ideas, or just say hello — I'd love to hear from you.</p>
               <PillBtn accent href="mailto:carrier.andrew@pm.me">Send me an email</PillBtn>
@@ -359,9 +372,9 @@ function App() {
               ].map(s => (
                 <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px', background: 'rgba(22,24,25,0.9)', borderRadius: '12px', border: '1px solid var(--border)', cursor: 'pointer', transition: 'border-color 0.18s' }}
                      onClick={() => window.open(s.href, '_blank')}
-                     onMouseEnter={e => e.currentTarget.style.borderColor='rgba(29,107,243,0.4)'}
+                     onMouseEnter={e => e.currentTarget.style.borderColor='rgba(139,70,200,0.5)'}
                      onMouseLeave={e => e.currentTarget.style.borderColor='var(--border)'}>
-                  <span style={{ color: 'var(--accent)' }}><SocialIcon type={s.icon} /></span>
+                  <span style={{ color: '#1d6bf3' }}><SocialIcon type={s.icon} /></span>
                   <div>
                     <p style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 500 }}>{s.label}</p>
                     <p style={{ fontSize: '14px', color: '#e8e8e8' }}>{s.handle}</p>
