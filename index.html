@@ -14,7 +14,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-size: 16px; }
     body { background: #111315; font-family: 'Inter', sans-serif; color: #fff; overflow-x: hidden; }
-    #root { width: 100%; }
+    #root { width: 100%; overflow-x: hidden; }
 
     :root {
       --dark: #191c1f;
@@ -28,6 +28,16 @@
       --border: rgba(255,255,255,0.08);
       --display-font: 'Space Grotesk', sans-serif;
       --body-font: 'Inter', sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .site-nav  { padding: 16px 20px !important; }
+      .nav-links { display: none !important; }
+      .hero-sec  { padding: 56px 20px 40px !important; }
+      .hero-sec h1 { font-size: clamp(36px, 9vw, 56px) !important; }
+      .sec       { padding-left: 20px !important; padding-right: 20px !important; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr !important; gap: 24px !important; }
+      .site-footer { padding: 24px 20px !important; flex-direction: column !important; gap: 8px !important; text-align: center !important; }
     }
   </style>
 </head>
@@ -196,7 +206,7 @@ function SkillsSection() {
   const border = 'var(--border)';
   const cardBg = 'rgba(255,255,255,0.03)';
   return (
-    <section style={{ position: 'relative', zIndex: 1, padding: '80px 48px', borderTop: `1px solid ${border}`, background: 'rgba(22,24,25,0.92)' }}>
+    <section className="sec" style={{ position: 'relative', zIndex: 1, padding: '80px 48px', borderTop: `1px solid ${border}`, background: 'rgba(22,24,25,0.92)' }}>
       <FadeIn>
         <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '20px', ...GT }}>Skills &amp; Stack</p>
         <h2 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em', marginBottom: '52px' }}>Tools of the trade.</h2>
@@ -229,13 +239,13 @@ function App() {
 
       {/* NEURAL NET BACKGROUND */}
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none', zIndex: 0 }}>
-        <NeuralNetBg nodeCount={52} />
+        <NeuralNetBg />
       </div>
 
       {/* NAV */}
-      <nav style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px 48px', borderBottom: '1px solid var(--border)' }}>
+      <nav className="site-nav" style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px 48px', borderBottom: '1px solid var(--border)' }}>
         <span style={{ fontFamily: 'var(--display-font)', fontWeight: 700, fontSize: '20px', letterSpacing: '-0.02em' }}>Andrew Carrier</span>
-        <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+        <div className="nav-links" style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
           {['About', 'Projects', 'Skills', 'Blog', 'Contact'].map(l => (
             <a key={l} href={`#${l.toLowerCase()}`} style={{ color: 'var(--muted)', fontSize: '15px', fontFamily: 'var(--display-font)', fontWeight: 500, textDecoration: 'none', transition: 'color 0.15s' }}
                onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='var(--muted)'}>{l}</a>
@@ -245,7 +255,7 @@ function App() {
       </nav>
 
       {/* HERO */}
-      <section style={{ position: 'relative', zIndex: 1, padding: '100px 48px 80px', maxWidth: '900px' }}>
+      <section className="hero-sec" style={{ position: 'relative', zIndex: 1, padding: '100px 48px 80px', maxWidth: '900px' }}>
         <FadeIn delay={0}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(135deg, rgba(29,107,243,0.1), rgba(230,30,73,0.1))', border: '1px solid rgba(29,107,243,0.3)', borderRadius: '9999px', padding: '6px 16px', marginBottom: '40px' }}>
             <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: GRAD, display: 'inline-block' }}></span>
@@ -273,9 +283,9 @@ function App() {
       </section>
 
       {/* ABOUT */}
-      <section id="about" style={{ position: 'relative', zIndex: 1, padding: '80px 48px', background: 'rgba(22,24,25,0.92)', borderTop: '1px solid var(--border)' }}>
+      <section id="about" className="sec" style={{ position: 'relative', zIndex: 1, padding: '80px 48px', background: 'rgba(22,24,25,0.92)', borderTop: '1px solid var(--border)' }}>
         <FadeIn>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center', maxWidth: '1000px' }}>
+          <div className="grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center', maxWidth: '1000px' }}>
             <div>
               <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '20px', ...GT }}>About me</p>
               <h2 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(36px, 4vw, 52px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em', marginBottom: '24px' }}>From networks<br />to neural nets.</h2>
@@ -300,14 +310,14 @@ function App() {
       </section>
 
       {/* PROJECTS */}
-      <section id="projects" style={{ position: 'relative', zIndex: 1, padding: '80px 48px', borderTop: '1px solid var(--border)' }}>
+      <section id="projects" className="sec" style={{ position: 'relative', zIndex: 1, padding: '80px 48px', borderTop: '1px solid var(--border)' }}>
         <FadeIn>
           <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '20px', ...GT }}>Projects</p>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '48px', flexWrap: 'wrap', gap: '16px' }}>
             <h2 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em' }}>AI Tools in progress.</h2>
             <PillBtn ghost small>More coming soon</PillBtn>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+          <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
             {[1,2,3].map(i => (
               <div key={i} style={{ background: 'rgba(22,24,25,0.9)', borderRadius: '20px', border: '1px solid var(--border)', padding: '36px 32px', minHeight: '220px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
@@ -335,11 +345,11 @@ function App() {
       </section>
 
       {/* BLOG */}
-      <section id="blog" style={{ position: 'relative', zIndex: 1, padding: '80px 48px', background: 'rgba(22,24,25,0.92)', borderTop: '1px solid var(--border)' }}>
+      <section id="blog" className="sec" style={{ position: 'relative', zIndex: 1, padding: '80px 48px', background: 'rgba(22,24,25,0.92)', borderTop: '1px solid var(--border)' }}>
         <FadeIn>
           <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '20px', ...GT }}>Blog &amp; Writing</p>
           <h2 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em', marginBottom: '48px' }}>Thoughts on AI.</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+          <div className="grid-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
             {['Learning in public: my AI journey', 'What IT taught me about systems thinking'].map((title, i) => (
               <div key={i} style={{ padding: '32px', borderRadius: '16px', border: '1px solid var(--border)', cursor: 'pointer', transition: 'border-color 0.18s' }}
                    onMouseEnter={e => e.currentTarget.style.borderColor='rgba(139,70,200,0.5)'}
@@ -354,9 +364,9 @@ function App() {
       </section>
 
       {/* CONTACT */}
-      <section id="contact" style={{ position: 'relative', zIndex: 1, padding: '80px 48px', borderTop: '1px solid var(--border)' }}>
+      <section id="contact" className="sec" style={{ position: 'relative', zIndex: 1, padding: '80px 48px', borderTop: '1px solid var(--border)' }}>
         <FadeIn>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
+          <div className="grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
             <div>
               <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '20px', ...GT }}>Contact</p>
               <h2 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(36px, 4vw, 52px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em', marginBottom: '24px' }}>Let's build<br />something.</h2>
@@ -387,7 +397,7 @@ function App() {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ position: 'relative', zIndex: 1, padding: '32px 48px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <footer className="site-footer" style={{ position: 'relative', zIndex: 1, padding: '32px 48px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{ fontFamily: 'var(--display-font)', fontWeight: 600, fontSize: '16px' }}>Andrew Carrier</span>
         <span style={{ fontSize: '13px', color: 'var(--muted)' }}>© 2026 · Building the future with AI</span>
       </footer>
