@@ -5,6 +5,6 @@
       <stop offset="100%" stop-color="#e61e49"/>
     </linearGradient>
   </defs>
-  <rect width="32" height="32" rx="8" fill="#111315"/>
-  <text x="16" y="22" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="14" letter-spacing="-0.5" fill="url(#g)">AC</text>
+  <rect width="32" height="32" rx="8" fill="url(#g)"/>
+  <text x="16" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="700" font-size="13" fill="white">AC</text>
 </svg>
