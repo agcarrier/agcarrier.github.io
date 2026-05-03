@@ -160,8 +160,8 @@ function PillBtn({ children, dark = false, ghost = false, accent = false, outlin
   };
   let style = { ...base };
   if (dark)     style = { ...style, background: '#191c1f', color: '#fff', borderColor: '#191c1f' };
-  if (ghost)    style = { ...style, background: 'rgba(244,244,244,0.1)', color: '#f4f4f4', borderColor: '#f4f4f4' };
-  if (accent)   style = { ...style, background: GRAD, color: '#fff', borderColor: 'transparent' };
+  if (ghost)    style = { ...style, background: 'rgba(244,244,244,0.1)', color: '#f4f4f4', border: 'none' };
+  if (accent)   style = { ...style, background: GRAD, color: '#fff', border: 'none' };
   if (outlined) style = { ...style, background: 'transparent', color: '#fff', borderColor: 'rgba(255,255,255,0.5)' };
   const [hov, setHov] = useState(false);
   const el = href ? 'a' : 'button';
