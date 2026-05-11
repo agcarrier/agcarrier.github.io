@@ -272,7 +272,7 @@ function App() {
       <nav className="site-nav" style={{ position: 'sticky', top: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px 48px', borderBottom: '1px solid var(--border)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', background: 'rgba(17,19,21,0.75)' }}>
         <span style={{ fontFamily: 'var(--display-font)', fontWeight: 700, fontSize: '20px', letterSpacing: '-0.02em' }}>Andrew Carrier</span>
         <div className="nav-links" style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
-          {['About', 'Projects', 'Skills', 'Blog', 'Contact'].map(l => (
+          {['About', 'Services', 'Projects', 'Skills', 'Blog', 'Contact'].map(l => (
             <a key={l} href={`#${l.toLowerCase()}`} style={{ color: 'var(--muted)', fontSize: '15px', fontFamily: 'var(--display-font)', fontWeight: 500, textDecoration: 'none', transition: 'color 0.15s' }}
                onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='var(--muted)'}>{l}</a>
           ))}
@@ -335,13 +335,13 @@ function App() {
         </FadeIn>
       </section>
 
-      {/* PROJECTS */}
-      <section id="projects" className="sec" style={{ position: 'relative', zIndex: 1, padding: '80px 48px', borderTop: '1px solid var(--border)' }}>
+      {/* SERVICES */}
+      <section id="services" className="sec" style={{ position: 'relative', zIndex: 1, padding: '80px 48px', borderTop: '1px solid var(--border)' }}>
         <FadeIn>
-          <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '20px', ...GT }}>Projects</p>
+          <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '20px', ...GT }}>Services</p>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '48px', flexWrap: 'wrap', gap: '16px' }}>
-            <h2 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em' }}>Work I'm doing.</h2>
-            <PillBtn ghost small>More coming soon</PillBtn>
+            <h2 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em' }}>What I offer.</h2>
+            <PillBtn ghost small href="#contact">Get in touch</PillBtn>
           </div>
           <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
             {/* AI Consulting — Card 1 */}
@@ -392,6 +392,30 @@ function App() {
                 </div>
               </div>
             </div>
+          </div>
+        </FadeIn>
+      </section>
+
+      {/* PROJECTS */}
+      <section id="projects" className="sec" style={{ position: 'relative', zIndex: 1, padding: '80px 48px', borderTop: '1px solid var(--border)', background: 'rgba(22,24,25,0.92)' }}>
+        <FadeIn>
+          <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '20px', ...GT }}>Projects</p>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '48px', flexWrap: 'wrap', gap: '16px' }}>
+            <h2 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em' }}>Work I'm building.</h2>
+            <PillBtn ghost small>More coming soon</PillBtn>
+          </div>
+          <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+            {[
+              'linear-gradient(90deg, #1d6bf3, rgba(139,70,200,0.8))',
+              'linear-gradient(90deg, rgba(139,70,200,0.8), #1d6bf3)',
+              'linear-gradient(90deg, rgba(230,30,73,0.8), rgba(139,70,200,0.8))',
+            ].map((grad, i) => (
+              <div key={i} style={{ background: 'rgba(22,24,25,0.9)', borderRadius: '20px', border: '1px solid var(--border)', padding: '36px 32px', minHeight: '280px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: grad }}></div>
+                <span style={{ fontSize: '36px', marginBottom: '20px' }}>🚧</span>
+                <h3 style={{ fontFamily: 'var(--display-font)', fontSize: '18px', fontWeight: 600, color: 'var(--muted)', textAlign: 'center', letterSpacing: '-0.01em' }}>Coming Soon</h3>
+              </div>
+            ))}
           </div>
         </FadeIn>
       </section>
