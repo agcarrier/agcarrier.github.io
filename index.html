@@ -40,6 +40,7 @@
       .sec       { padding-left: 20px !important; padding-right: 20px !important; }
       .grid-2, .grid-3 { grid-template-columns: 1fr !important; gap: 24px !important; }
       .site-footer { padding: 24px 20px !important; flex-direction: column !important; gap: 8px !important; text-align: center !important; }
+      .services-grid > * { grid-column: 1 / -1 !important; }
     }
   </style>
 </head>
@@ -343,9 +344,9 @@ function App() {
             <h2 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em' }}>What I offer.</h2>
             <PillBtn ghost small href="#contact">Get in touch</PillBtn>
           </div>
-          <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+          <div className="services-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '20px' }}>
             {/* AI Consulting — Card 1 */}
-            <div style={{ background: 'rgba(22,24,25,0.9)', borderRadius: '20px', border: '1px solid rgba(29,107,243,0.35)', padding: '36px 32px', minHeight: '280px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ background: 'rgba(22,24,25,0.9)', borderRadius: '20px', border: '1px solid rgba(29,107,243,0.35)', padding: '36px 32px', minHeight: '280px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', overflow: 'hidden', gridColumn: 'span 2' }}>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(90deg, #1d6bf3, rgba(139,70,200,0.8))' }}></div>
               <div>
                 <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'linear-gradient(135deg, rgba(29,107,243,0.2), rgba(139,70,200,0.2))', border: '1px solid rgba(29,107,243,0.4)', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -361,7 +362,7 @@ function App() {
               </div>
             </div>
             {/* GEO — Card 2 */}
-            <div style={{ background: 'rgba(22,24,25,0.9)', borderRadius: '20px', border: '1px solid rgba(139,70,200,0.35)', padding: '36px 32px', minHeight: '280px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ background: 'rgba(22,24,25,0.9)', borderRadius: '20px', border: '1px solid rgba(139,70,200,0.35)', padding: '36px 32px', minHeight: '280px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', overflow: 'hidden', gridColumn: 'span 2' }}>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(90deg, rgba(139,70,200,0.8), #1d6bf3)' }}></div>
               <div>
                 <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'linear-gradient(135deg, rgba(139,70,200,0.2), rgba(29,107,243,0.2))', border: '1px solid rgba(139,70,200,0.4)', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -377,7 +378,7 @@ function App() {
               </div>
             </div>
             {/* AI Receptionist — Card 3 */}
-            <div style={{ background: 'rgba(22,24,25,0.9)', borderRadius: '20px', border: '1px solid rgba(230,30,73,0.35)', padding: '36px 32px', minHeight: '280px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ background: 'rgba(22,24,25,0.9)', borderRadius: '20px', border: '1px solid rgba(230,30,73,0.35)', padding: '36px 32px', minHeight: '280px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', overflow: 'hidden', gridColumn: 'span 2' }}>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(90deg, rgba(230,30,73,0.8), rgba(139,70,200,0.8))' }}></div>
               <div>
                 <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'linear-gradient(135deg, rgba(230,30,73,0.2), rgba(139,70,200,0.2))', border: '1px solid rgba(230,30,73,0.4)', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -393,7 +394,7 @@ function App() {
               </div>
             </div>
             {/* Web Design — Card 4 */}
-            <div style={{ background: 'rgba(22,24,25,0.9)', borderRadius: '20px', border: '1px solid rgba(29,107,243,0.35)', padding: '36px 32px', minHeight: '280px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ background: 'rgba(22,24,25,0.9)', borderRadius: '20px', border: '1px solid rgba(29,107,243,0.35)', padding: '36px 32px', minHeight: '280px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', overflow: 'hidden', gridColumn: '2 / span 2' }}>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(90deg, #1d6bf3, #e61e49)' }}></div>
               <div>
                 <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'linear-gradient(135deg, rgba(29,107,243,0.2), rgba(230,30,73,0.2))', border: '1px solid rgba(29,107,243,0.4)', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -409,7 +410,7 @@ function App() {
               </div>
             </div>
             {/* Network Administration — Card 5 */}
-            <div style={{ background: 'rgba(22,24,25,0.9)', borderRadius: '20px', border: '1px solid rgba(139,70,200,0.35)', padding: '36px 32px', minHeight: '280px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ background: 'rgba(22,24,25,0.9)', borderRadius: '20px', border: '1px solid rgba(139,70,200,0.35)', padding: '36px 32px', minHeight: '280px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', overflow: 'hidden', gridColumn: '4 / span 2' }}>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'linear-gradient(90deg, rgba(139,70,200,0.8), rgba(230,30,73,0.8))' }}></div>
               <div>
                 <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'linear-gradient(135deg, rgba(139,70,200,0.2), rgba(230,30,73,0.2))', border: '1px solid rgba(139,70,200,0.4)', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
