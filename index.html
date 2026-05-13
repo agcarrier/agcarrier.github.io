@@ -200,57 +200,6 @@ function SocialIcon({ type }) {
   return icons[type] || null;
 }
 
-const SKILLS = {
-  'IT & Networking': [
-    { name: 'Active Directory', icon: <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#0078d4"/><text x="20" y="26" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="700" fontFamily="sans-serif">AD</text></svg> },
-    { name: 'Cisco Networking', icon: <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#1ba0d7"/><text x="20" y="26" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="700" fontFamily="sans-serif">CISCO</text></svg> },
-    { name: 'Windows Server', icon: <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#0078d4"/><rect x="8" y="8" width="11" height="11" fill="#fff"/><rect x="21" y="8" width="11" height="11" fill="#fff"/><rect x="8" y="21" width="11" height="11" fill="#fff"/><rect x="21" y="21" width="11" height="11" fill="#fff"/></svg> },
-    { name: 'Cisco VPN', icon: <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#1ba0d7"/><circle cx="20" cy="17" r="7" stroke="#fff" strokeWidth="2" fill="none"/><path d="M13 28 Q20 22 27 28" stroke="#fff" strokeWidth="2" fill="none" strokeLinecap="round"/><line x1="20" y1="17" x2="20" y2="13" stroke="#fff" strokeWidth="2"/></svg> },
-  ],
-  'AI Tools': [
-    { name: 'Claude', icon: <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#c9a96e"/><text x="20" y="26" textAnchor="middle" fill="#fff" fontSize="10" fontWeight="700" fontFamily="sans-serif">claude</text></svg> },
-    { name: 'Claude Code', icon: <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#8b6914"/><text x="20" y="22" textAnchor="middle" fill="#fff" fontSize="8" fontWeight="700" fontFamily="sans-serif">CLAUDE</text><text x="20" y="31" textAnchor="middle" fill="#fff" fontSize="8" fontWeight="700" fontFamily="sans-serif">CODE</text></svg> },
-    { name: 'ChatGPT', icon: <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#10a37f"/><text x="20" y="26" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="700" fontFamily="sans-serif">GPT</text></svg> },
-    { name: 'Codex', icon: <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#412991"/><text x="20" y="26" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="700" fontFamily="sans-serif">CODEX</text></svg> },
-    { name: 'Gemini', icon: <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#4285f4"/><text x="20" y="26" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="700" fontFamily="sans-serif">Gemini</text></svg> },
-  ],
-  'Learning': [
-    { name: 'Prompt Engineering', icon: <svg viewBox="0 0 40 40" fill="none"><defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#1d6bf3"/><stop offset="100%" stopColor="#e61e49"/></linearGradient></defs><rect width="40" height="40" rx="8" fill="url(#pg)"/><text x="8" y="22" fill="#fff" fontSize="14" fontWeight="700" fontFamily="monospace">{'{'}</text><text x="24" y="22" fill="#fff" fontSize="14" fontWeight="700" fontFamily="monospace">{'}'}</text></svg> },
-    { name: 'Image Generation', icon: <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#7c3aed"/><circle cx="14" cy="16" r="4" fill="#fff" opacity="0.8"/><path d="M6 32 L16 20 L24 28 L30 22 L36 32Z" fill="#fff" opacity="0.9"/></svg> },
-    { name: 'Python', icon: <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#3776ab"/><text x="20" y="26" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="700" fontFamily="sans-serif">Python</text></svg> },
-  ],
-};
-
-function SkillsSection() {
-  const border = 'var(--border)';
-  const cardBg = 'rgba(255,255,255,0.03)';
-  return (
-    <section className="sec" style={{ position: 'relative', zIndex: 1, padding: '80px 48px', borderTop: `1px solid ${border}`, background: 'rgba(22,24,25,0.92)' }}>
-      <FadeIn>
-        <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '20px', ...GT }}>Skills &amp; Stack</p>
-        <h2 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em', marginBottom: '52px' }}>Tools of the trade.</h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-          {Object.entries(SKILLS).map(([category, skills]) => (
-            <div key={category}>
-              <p style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: '16px' }}>{category}</p>
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                {skills.map(skill => (
-                  <div key={skill.name}
-                    style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px 10px 10px', borderRadius: '12px', border: `1px solid ${border}`, background: cardBg, cursor: 'default', transition: 'border-color 0.18s, background 0.18s' }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(139,70,200,0.5)'; e.currentTarget.style.background = 'rgba(139,70,200,0.07)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = border; e.currentTarget.style.background = cardBg; }}>
-                    <div style={{ width: '32px', height: '32px', flexShrink: 0 }}>{skill.icon}</div>
-                    <span style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', whiteSpace: 'nowrap' }}>{skill.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </FadeIn>
-    </section>
-  );
-}
 
 function ScrollProgressBar() {
   const [progress, setProgress] = useState(0);
@@ -289,7 +238,7 @@ function App() {
       <nav className="site-nav" style={{ position: 'sticky', top: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px 48px', borderBottom: '1px solid var(--border)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', background: 'rgba(17,19,21,0.75)' }}>
         <span style={{ fontFamily: 'var(--display-font)', fontWeight: 700, fontSize: '20px', letterSpacing: '-0.02em' }}>Andrew Carrier</span>
         <div className="nav-links" style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
-          {['About', 'Services', 'Projects', 'Skills', 'Contact'].map(l => (
+          {['About', 'Services', 'Projects', 'Contact'].map(l => (
             <a key={l} href={`#${l.toLowerCase()}`} style={{ color: 'var(--muted)', fontSize: '15px', fontFamily: 'var(--display-font)', fontWeight: 500, textDecoration: 'none', transition: 'color 0.15s' }}
                onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='var(--muted)'}>{l}</a>
           ))}
@@ -514,12 +463,6 @@ function App() {
           </div>
         </FadeIn>
       </section>
-
-      {/* SKILLS */}
-      <section id="skills">
-        <SkillsSection />
-      </section>
-
 
       {/* CONTACT */}
       <section id="contact" className="sec" style={{ position: 'relative', zIndex: 1, padding: '80px 48px', borderTop: '1px solid var(--border)' }}>
