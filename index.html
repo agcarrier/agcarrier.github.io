@@ -201,6 +201,40 @@ function SocialIcon({ type }) {
 }
 
 
+const SKILLS = [
+  { name: 'Claude',      url: 'https://claude.ai',           logo: './logos/claude.png',   invert: false },
+  { name: 'Claude Code', url: 'https://claude.ai/code',      logo: './logos/claude.png',   invert: false },
+  { name: 'ChatGPT',     url: 'https://chatgpt.com',         logo: './logos/chatgpt.webp', invert: true  },
+  { name: 'Codex',       url: 'https://openai.com/codex',    logo: './logos/openai.png',   invert: true  },
+  { name: 'Gemini',      url: 'https://gemini.google.com',   logo: './logos/gemini.png',   invert: false },
+  { name: 'GitHub',      url: 'https://github.com',          logo: './logos/github.png',   invert: false },
+  { name: 'Vercel',      url: 'https://vercel.com',          logo: './logos/vercel.png',   invert: false },
+];
+
+function SkillsSection() {
+  const border = 'var(--border)';
+  const cardBg = 'rgba(255,255,255,0.03)';
+  return (
+    <section className="sec" style={{ position: 'relative', zIndex: 1, padding: '80px 48px', borderTop: `1px solid ${border}`, background: 'rgba(22,24,25,0.92)' }}>
+      <FadeIn>
+        <p style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '20px', ...GT }}>Skills &amp; Stack</p>
+        <h2 style={{ fontFamily: 'var(--display-font)', fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.025em', marginBottom: '52px' }}>Tools of the trade.</h2>
+        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+          {SKILLS.map(skill => (
+            <a key={skill.name} href={skill.url} target="_blank" rel="noopener noreferrer"
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', padding: '24px 28px', borderRadius: '16px', border: `1px solid ${border}`, background: cardBg, textDecoration: 'none', transition: 'border-color 0.18s, background 0.18s' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(29,107,243,0.5)'; e.currentTarget.style.background = 'rgba(29,107,243,0.07)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = border; e.currentTarget.style.background = cardBg; }}>
+              <img src={skill.logo} alt={skill.name} style={{ width: '52px', height: '52px', borderRadius: '12px', objectFit: 'cover', filter: skill.invert ? 'invert(1)' : 'none' }} />
+              <span style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>{skill.name}</span>
+            </a>
+          ))}
+        </div>
+      </FadeIn>
+    </section>
+  );
+}
+
 function ScrollProgressBar() {
   const [progress, setProgress] = useState(0);
   useEffect(() => {
@@ -238,7 +272,7 @@ function App() {
       <nav className="site-nav" style={{ position: 'sticky', top: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px 48px', borderBottom: '1px solid var(--border)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', background: 'rgba(17,19,21,0.75)' }}>
         <span style={{ fontFamily: 'var(--display-font)', fontWeight: 700, fontSize: '20px', letterSpacing: '-0.02em' }}>Andrew Carrier</span>
         <div className="nav-links" style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
-          {['About', 'Services', 'Projects', 'Contact'].map(l => (
+          {['About', 'Services', 'Projects', 'Skills', 'Contact'].map(l => (
             <a key={l} href={`#${l.toLowerCase()}`} style={{ color: 'var(--muted)', fontSize: '15px', fontFamily: 'var(--display-font)', fontWeight: 500, textDecoration: 'none', transition: 'color 0.15s' }}
                onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='var(--muted)'}>{l}</a>
           ))}
@@ -462,6 +496,11 @@ function App() {
             ))}
           </div>
         </FadeIn>
+      </section>
+
+      {/* SKILLS */}
+      <section id="skills">
+        <SkillsSection />
       </section>
 
       {/* CONTACT */}
