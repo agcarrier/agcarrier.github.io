@@ -589,7 +589,7 @@ function Nav() {
           ))}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div className="cp-nav-cta"><Btn arrow href="#contact">Get in touch</Btn></div>
+          <div className="cp-nav-cta"><Btn arrow href="#contact">Send a Pigeon</Btn></div>
           <button className="cp-hamburger" onClick={() => setOpen(o => !o)} aria-label="Toggle menu"
             style={{ display: 'none', background: 'none', border: 0, cursor: 'pointer', padding: 6, color: 'var(--paper)', lineHeight: 0 }}>
             {open
@@ -605,7 +605,7 @@ function Nav() {
             style={{ font: '500 13px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)', textDecoration: 'none', padding: '18px 0', borderBottom: '1px solid var(--ink-3)' }}
           >{l}</a>
         ))}
-        <div style={{ marginTop: 24 }}><Btn primary arrow href="#contact" onClick={() => setOpen(false)}>Get in touch</Btn></div>
+        <div style={{ marginTop: 24 }}><Btn primary arrow href="#contact" onClick={() => setOpen(false)}>Send a Pigeon</Btn></div>
       </div>
     </>
   );
