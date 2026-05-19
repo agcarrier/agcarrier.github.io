@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://andrewcarrier.dev/sitemap.xml
+Sitemap: https://carrierpigeonai.dev/sitemap.xml
