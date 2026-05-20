@@ -441,7 +441,6 @@ function Founder() {
                     { label: 'GitHub',      href: 'https://github.com/agcarrier' },
                     { label: 'X / Twitter', href: 'https://x.com/agcarrierpigeon' },
                     { label: 'Instagram',   href: 'https://www.instagram.com/acarrierpigeon/' },
-                    { label: 'Email',       href: 'mailto:carrier.andrew@pm.me' },
                   ].map(s => (
                     <a key={s.label} href={s.href} target={s.href.startsWith('mailto') ? undefined : '_blank'} rel="noopener noreferrer"
                       style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', transition: 'color .15s ease' }}
@@ -690,8 +689,8 @@ function App() {
         <Hero />
         <Services />
         <Work />
-        <Founder />
         <Stack />
+        <Founder />
         <Contact />
       </main>
       <Footer />
