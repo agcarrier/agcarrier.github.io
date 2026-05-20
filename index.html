@@ -477,7 +477,7 @@ function Stack() {
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <FadeIn><SectionHead num="04" name="Stack" theme="Tools of the trade." count={`${STACK.length} / Daily`} /></FadeIn>
         <FadeIn>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }} className="cp-stack-grid">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }} className="cp-stack-grid">
             {STACK.map((s, i) => (
               <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer"
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', gap: 32, padding: '32px 22px', minHeight: 160, borderRight: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', textDecoration: 'none', background: 'transparent', transition: 'background .2s ease', position: 'relative' }}
@@ -486,7 +486,7 @@ function Stack() {
               >
                 <span className="cp-stack-arr" style={{ position: 'absolute', top: 14, right: 16, font: '500 12px var(--font-mono)', color: 'var(--muted)', transition: 'transform .2s ease, color .2s ease' }}>↗</span>
                 <span style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--muted)' }}>{String(i + 1).padStart(2, '0')} · {s.vendor}</span>
-                <span style={{ font: '600 18px var(--font-sans)', letterSpacing: '-0.02em', color: 'var(--paper)' }}>{s.name}</span>
+                <span style={{ font: '600 15px var(--font-sans)', letterSpacing: '-0.02em', color: 'var(--paper)' }}>{s.name}</span>
               </a>
             ))}
           </div>
