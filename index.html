@@ -288,7 +288,7 @@ function Hero() {
       </FadeIn>
       <FadeIn delay={160}>
         <p style={{ font: '400 18px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 40px' }}>
-          Carrier Pigeon AI builds practical AI tools, websites, and agents for small and mid-size businesses. Calm tech, no hype — built by an IT professional who's been keeping systems running for years.
+          Carrier Pigeon AI builds practical AI tools, websites, and agents for small and mid-size businesses. What used to take weeks, we ship in an afternoon — calm tech, no hype, built by an IT professional who's been keeping systems running for years.
         </p>
       </FadeIn>
       <FadeIn delay={240}>
@@ -297,6 +297,28 @@ function Hero() {
         </div>
       </FadeIn>
     </section>
+  );
+}
+
+// ── Speed Callout ─────────────────────────────────────────────────
+function SpeedCallout() {
+  return (
+    <div style={{ position: 'relative', zIndex: 2, borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', background: 'var(--ink-2)' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '56px 48px', display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '48px 64px', alignItems: 'center' }}>
+        <div>
+          <div style={{ font: '600 clamp(64px, 10vw, 120px)/1.0 var(--font-sans)', letterSpacing: '-0.05em', color: 'var(--signal)', whiteSpace: 'nowrap' }}>One afternoon.</div>
+          <div style={{ font: '500 12px var(--font-mono)', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--muted)', marginTop: 10 }}>That's all it takes</div>
+        </div>
+        <div style={{ borderLeft: '1px solid var(--ink-3)', paddingLeft: 48 }}>
+          <p style={{ font: '400 20px/1.6 var(--font-sans)', color: 'var(--paper)', margin: '0 0 12px', maxWidth: '44ch' }}>
+            A website that used to take <span style={{ textDecoration: 'line-through', opacity: 0.4 }}>6–8 weeks</span> now ships in an afternoon.
+          </p>
+          <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0, maxWidth: '44ch' }}>
+            AI doesn't just speed things up — it changes what's possible on a small business budget. More capability, faster delivery, without the agency price tag.
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -695,6 +717,7 @@ function App() {
       <Nav />
       <main>
         <Hero />
+        <SpeedCallout />
         <Services />
         <Work />
         <Stack />
