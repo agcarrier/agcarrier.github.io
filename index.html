@@ -324,12 +324,10 @@ function SpeedCallout() {
 
 // ── Services ──────────────────────────────────────────────────────
 const SERVICES = [
-  { id: '001', name: 'AI Web Design',           desc: 'Clean, fast, modern websites built in days — not weeks. AI accelerates every step so you get more for less.',                                                                                       tags: ['Design', 'Development', 'AI-Assisted'] },
-  { id: '002', name: 'AI Adoption',             desc: 'I help small and mid-size businesses move from "we should try AI" to actually using it. Practical implementation, workflow integration, team onboarding.',                                              tags: ['Strategy', 'Workflow', 'Implementation'] },
-  { id: '003', name: 'Custom AI Agents',        desc: 'AI agents that work on your behalf — qualifying leads, processing requests, answering questions, or handling multi-step workflows automatically.',                                                         tags: ['Agentic', 'Automation', 'Custom Build'] },
-  { id: '004', name: 'AI Receptionist',         desc: 'Never miss a lead. Voice AI agents that answer calls, handle FAQs, book appointments, and route inquiries — even after hours.',                                                                         tags: ['Voice', 'Booking', '24/7'] },
-  { id: '005', name: 'AI Search Optimization',  desc: "OpenAI, Anthropic, and Google's AI Overviews are changing how people find services. I optimize your content so AI recommends your business.",                                                            tags: ['GEO', 'AI Search', 'Content'] },
-  { id: '006', name: 'AI Knowledge Base',       desc: "Your team already has the answers — they're just buried in docs. I build private AI systems trained on your content, so staff or customers get answers instantly.",                                      tags: ['RAG', 'Private AI', 'Knowledge'] },
+  { id: '001', name: 'Web Design',             desc: 'Your competitors are still waiting on agencies. AI lets us design, write, and launch a professional website in a single afternoon — at a fraction of the traditional cost. Fast, modern, and built to convert.',             tags: ['Fast Delivery', 'Modern Design', 'AI-Built'] },
+  { id: '002', name: 'AI Agents & Receptionist', desc: 'AI agents work around the clock so you don\'t have to. They answer calls, qualify leads, book appointments, and handle FAQs automatically — at 3am or during your busiest hour. Never lose a customer to voicemail again.', tags: ['Voice AI', '24/7', 'Lead Capture'] },
+  { id: '003', name: 'Business Automation',    desc: 'Most small businesses are still doing manually what AI can handle in seconds. I map your workflows, find the bottlenecks, and deploy AI tools that free your team to focus on what actually grows the business.',             tags: ['Workflow', 'Implementation', 'Strategy'] },
+  { id: '004', name: 'Knowledge Base',         desc: 'Your business already has the answers — they\'re just buried in emails, docs, and your team\'s heads. I build private AI systems trained on your content so staff and customers get instant, accurate answers around the clock.', tags: ['Private AI', 'Instant Answers', 'RAG'] },
 ];
 
 function ServiceCard({ id, name, desc, tags }) {
@@ -355,7 +353,7 @@ function Services() {
   return (
     <section id="services" data-screen-label="02 Services" style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <FadeIn><SectionHead num="02" name="Services" theme="Six offerings. One studio. AI that ships." count={`${SERVICES.length} / Offered`} /></FadeIn>
+        <FadeIn><SectionHead num="02" name="Services" theme="Four ways AI changes what's possible." count={`${SERVICES.length} / Offered`} /></FadeIn>
         <FadeIn>
           <div style={{ borderTop: '1px solid var(--ink-3)' }}>
             {SERVICES.map(s => <ServiceCard key={s.id} {...s} />)}
