@@ -386,20 +386,23 @@ function PainPoints() {
 
 // ── Services ──────────────────────────────────────────────────────
 const SERVICES = [
-  { id: '001', name: 'Web Design',             desc: 'A local agency might quote you $2,000–$4,000 and a 6-week timeline. We use AI to undercut both without cutting corners. Fast, modern, built to convert — and optimized for search from day one.',             tags: ['Fast Delivery', 'Modern Design', 'AI-Built', 'SEO'] },
+  { id: '001', name: 'Web Design',             desc: 'A local agency might quote you $2,000–$4,000 and a 6-week timeline. We use AI to undercut both without cutting corners. Fast, modern, built to convert — and optimized for search from day one.',             tags: ['Fast Delivery', 'Modern Design', 'AI-Built', 'SEO'], href: '#/services/web-design' },
   { id: '002', name: 'AI Agents & Receptionist', desc: 'AI agents work around the clock so you don\'t have to. They answer calls, qualify leads, book appointments, and handle FAQs automatically — at 3am or during your busiest hour. Never lose a customer to voicemail again.', tags: ['Voice AI', '24/7', 'Lead Capture'] },
   { id: '003', name: 'Business Automation',    desc: 'Most small businesses are still doing manually what AI can handle in seconds. I map your workflows, find the bottlenecks, and deploy AI tools that free your team to focus on what actually grows the business.',             tags: ['Workflow', 'Implementation', 'Strategy'] },
   { id: '004', name: 'Knowledge Base',         desc: 'Your business already has the answers — they\'re just buried in emails, docs, and your team\'s heads. I build private AI systems trained on your content so staff and customers get instant, accurate answers around the clock.', tags: ['Private AI', 'Instant Answers', 'RAG'] },
 ];
 
-function ServiceCard({ id, name, desc, tags }) {
+function ServiceCard({ id, name, desc, tags, href }) {
   const [hov, setHov] = useState(false);
-  return (
+  const inner = (
     <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
-      style={{ display: 'grid', gridTemplateColumns: '52px 1fr', gap: 18, paddingTop: 28, paddingBottom: 28, paddingRight: 4, paddingLeft: hov ? 16 : 4, borderBottom: '1px solid var(--ink-3)', background: hov ? 'var(--ink-2)' : 'transparent', transition: 'background .2s ease, padding-left .2s ease', cursor: 'default' }}>
-      <span style={{ font: '500 12px var(--font-mono)', letterSpacing: '0.1em', color: hov ? 'var(--signal)' : 'var(--muted)', paddingTop: 6, transition: 'color .2s ease' }}>{id}</span>
+      style={{ display: 'grid', gridTemplateColumns: '52px 1fr', gap: 18, paddingTop: 28, paddingBottom: 28, paddingRight: 4, paddingLeft: hov ? 16 : 4, borderBottom: '1px solid var(--ink-3)', background: hov ? 'var(--ink-2)' : 'transparent', transition: 'background .2s ease, padding-left .2s ease', cursor: href ? 'pointer' : 'default' }}>
+      <span style={{ font: '500 12px var(--font-mono)', letterSpacing: '0.1em', color: hov && href ? 'var(--signal)' : hov ? 'var(--signal)' : 'var(--muted)', paddingTop: 6, transition: 'color .2s ease' }}>{id}</span>
       <div>
-        <h3 style={{ font: '600 22px var(--font-sans)', letterSpacing: '-0.015em', margin: '0 0 8px', color: 'var(--paper)' }}>{name}</h3>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 8 }}>
+          <h3 style={{ font: '600 22px var(--font-sans)', letterSpacing: '-0.015em', margin: 0, color: 'var(--paper)' }}>{name}</h3>
+          {href && <span style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--signal)', opacity: hov ? 1 : 0, transition: 'opacity .2s ease' }}>Learn more →</span>}
+        </div>
         <p style={{ font: '400 14px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0, maxWidth: '60ch' }}>{desc}</p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 18, marginTop: 14 }}>
           {tags.map(t => (
@@ -409,6 +412,7 @@ function ServiceCard({ id, name, desc, tags }) {
       </div>
     </div>
   );
+  return href ? <a href={href} style={{ textDecoration: 'none', display: 'block' }}>{inner}</a> : inner;
 }
 
 function Services() {
@@ -731,7 +735,7 @@ function Nav() {
   return (
     <>
       <nav className="cp-nav" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 48px', borderBottom: scrolled ? '1px solid var(--ink-3)' : '1px solid transparent', background: scrolled ? 'rgba(12,12,13,0.78)' : 'rgba(12,12,13,0.42)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', transition: 'background .2s ease, border-color .2s ease' }}>
-        <a href="#" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }} aria-label="Carrier Pigeon AI home">
+        <a href="#/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }} aria-label="Carrier Pigeon AI home">
           <PixelBird size={22} />
           <span style={{ font: '600 12px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)' }}>Carrier Pigeon AI</span>
         </a>
@@ -767,6 +771,240 @@ function Nav() {
   );
 }
 
+// ── Web Design Page ───────────────────────────────────────────────
+const WD_STEPS = [
+  { num: '01', title: 'Discovery',  desc: 'A 30-minute call to understand your business, goals, and what you need. No jargon, no sales pitch — just a real conversation.' },
+  { num: '02', title: 'Design',     desc: 'AI-accelerated design means you see a first draft the same day — built around your brand, your colors, your vibe.' },
+  { num: '03', title: 'Review',     desc: 'You give feedback, we refine until it\'s exactly right. Most clients wrap this up in one round.' },
+  { num: '04', title: 'Launch',     desc: 'Live on your domain, optimized for search from day one. We handle the technical details so you don\'t have to.' },
+];
+
+const WD_INCLUDES = [
+  'Custom design tailored to your brand',
+  'Mobile-friendly — looks great on any device',
+  'SEO basics built in so Google can find you',
+  'Contact form connected to your business email',
+  'Fast load times',
+  'Google Analytics setup',
+  '30 days of support after launch',
+];
+
+const WD_INDUSTRIES = [
+  'Restaurants & Food', 'Contractors & Trades', 'Salons & Spas',
+  'Medical & Dental', 'Real Estate', 'Retail Shops',
+  'Professional Services', 'Nonprofits',
+];
+
+const WD_TIERS = [
+  { name: 'Starter',  price: '$799',    desc: 'Everything you need to exist and look professional online.',  features: ['1–3 pages', 'Mobile-friendly', 'Contact form', 'Basic SEO', 'Domain connection'],                                                                   featured: false },
+  { name: 'Standard', price: '$1,499',  desc: 'The full package. Most clients choose this.',                  features: ['Up to 6 pages', 'Full SEO optimization', 'Google Analytics', 'Content assistance', '30 days support', 'Everything in Starter'],                  featured: true  },
+  { name: 'Premium',  price: '$2,499+', desc: 'For bigger projects that need more.',                          features: ['Unlimited pages', 'E-commerce ready', 'Content writing included', 'Priority support', 'Custom integrations', 'Everything in Standard'], featured: false },
+];
+
+const WD_FAQS = [
+  { q: 'How long does it take?',              a: 'Most sites launch within a day or two of the discovery call. Complex projects with e-commerce or many pages may take a bit longer — but never weeks.' },
+  { q: 'Do I need to provide content?',       a: 'Nope. We can write copy with you or draft it entirely based on your discovery call. You just review and approve.' },
+  { q: 'What if I already have a domain?',    a: 'No problem at all. We\'ll connect your existing domain to the new site. If you don\'t have one yet, we\'ll help you get one.' },
+  { q: 'Can you make updates after launch?',  a: 'Yes — that\'s what the 30-day support window is for. After that, ongoing maintenance packages are available starting at $99/month.' },
+  { q: 'Do you build online stores?',         a: 'Yes, e-commerce is available on the Premium tier. Contact us with details about your store and we\'ll give you an accurate quote.' },
+  { q: 'Will my site show up on Google?',     a: 'Every site we build includes SEO basics — proper page titles, meta descriptions, fast load times, and mobile optimization. We also submit your sitemap to Google and Bing on launch day.' },
+];
+
+function FAQItem({ q, a }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ borderBottom: '1px solid var(--ink-3)' }}>
+      <button onClick={() => setOpen(o => !o)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, padding: '22px 0', background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
+        <span style={{ font: '500 16px var(--font-sans)', color: 'var(--paper)', letterSpacing: '-0.01em' }}>{q}</span>
+        <span style={{ font: '500 20px var(--font-mono)', color: 'var(--signal)', flexShrink: 0, transform: open ? 'rotate(45deg)' : 'rotate(0)', transition: 'transform .2s ease', display: 'block' }}>+</span>
+      </button>
+      {open && <p style={{ font: '400 15px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 22px', maxWidth: '70ch' }}>{a}</p>}
+    </div>
+  );
+}
+
+function WebDesignPage() {
+  const [form, setForm] = React.useState({ name: '', company: '', message: '' });
+  const [status, setStatus] = React.useState('idle');
+  function handleChange(e) { setForm(f => ({ ...f, [e.target.name]: e.target.value })); }
+  function handleFocus(e) { e.target.style.borderColor = 'var(--signal)'; }
+  function handleBlur(e)  { e.target.style.borderColor = 'var(--ink-3)'; }
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setStatus('sending');
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, { method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, service: 'Web Design' }) });
+      setStatus(res.ok ? 'success' : 'error');
+    } catch { setStatus('error'); }
+  }
+  return (
+    <div style={{ background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--font-sans)', minHeight: '100vh', position: 'relative', overflowX: 'hidden' }}>
+      <ScrollProgressBar />
+      <CourierGraph />
+      <Nav />
+      <main>
+        {/* Hero */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '160px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
+          <FadeIn>
+            <a href="#/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', marginBottom: 32, transition: 'color .15s ease' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--paper)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}>← Back to home</a>
+          </FadeIn>
+          <FadeIn delay={40}><div style={{ marginBottom: 24 }}><Eyebrow>Service 01 · <span style={{ color: 'var(--signal)' }}>Web Design</span></Eyebrow></div></FadeIn>
+          <FadeIn delay={80}>
+            <h1 style={{ font: '600 clamp(48px, 7vw, 96px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', margin: '0 0 24px', maxWidth: '16ch', textWrap: 'balance', color: 'var(--paper)' }}>
+              A website that works as <span style={{ background: 'var(--signal)', color: 'var(--ink)', padding: '0 6px', margin: '0 -2px' }}>hard</span> as you do.
+            </h1>
+          </FadeIn>
+          <FadeIn delay={160}>
+            <p style={{ font: '400 18px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 40px' }}>
+              Professional, modern, and built to bring in business — launched faster than you'd expect and priced for small businesses, not agencies.
+            </p>
+          </FadeIn>
+          <FadeIn delay={220}><Btn primary arrow href="#wd-contact">Start your project</Btn></FadeIn>
+        </section>
+
+        {/* Problem */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
+            <FadeIn><h2 style={{ font: '600 clamp(32px, 4vw, 48px)/1.05 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0, textWrap: 'balance' }}>Most small business websites are costing them customers.</h2></FadeIn>
+            <FadeIn delay={100}>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>In Acadiana, most small businesses either have an outdated website or none at all. Agencies want $2,000–$4,000 and weeks of back-and-forth. Meanwhile your competitors are showing up online and you're not.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>AI changes that equation entirely. We design, write, and build your site in a fraction of the time — without cutting corners on quality.</p>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Process */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="01" name="Process" theme="Simple. Fast. No surprises." /></FadeIn>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }}>
+              {WD_STEPS.map((s, i) => (
+                <FadeIn key={s.num} delay={i * 80}>
+                  <div style={{ padding: '36px 28px', borderRight: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', minHeight: 220 }}>
+                    <div style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.2em', color: 'var(--signal)', marginBottom: 20 }}>{s.num}</div>
+                    <h3 style={{ font: '600 20px var(--font-sans)', letterSpacing: '-0.015em', color: 'var(--paper)', margin: '0 0 12px' }}>{s.title}</h3>
+                    <p style={{ font: '400 14px/1.65 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>{s.desc}</p>
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Included + Who it's for */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64 }}>
+            <FadeIn>
+              <SectionHead num="02" name="What's Included" theme="" />
+              <div>
+                {WD_INCLUDES.map((item, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '14px 0', borderBottom: '1px solid var(--ink-3)' }}>
+                    <span style={{ color: 'var(--signal)', font: '600 14px var(--font-mono)', flexShrink: 0, marginTop: 2 }}>✓</span>
+                    <span style={{ font: '400 15px var(--font-sans)', color: 'var(--paper)' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </FadeIn>
+            <FadeIn delay={120}>
+              <SectionHead num="03" name="Who It's For" theme="" />
+              <p style={{ font: '400 15px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 24px' }}>If you run a local business and need a professional online presence, this is for you. We especially serve:</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 36 }}>
+                {WD_INDUSTRIES.map(ind => (
+                  <span key={ind} style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--paper)', border: '1px solid var(--ink-3)', padding: '8px 14px' }}>{ind}</span>
+                ))}
+              </div>
+              <div style={{ padding: '24px', background: 'var(--ink-2)', borderLeft: '2px solid var(--signal)' }}>
+                <p style={{ font: '400 13px var(--font-sans)', color: 'var(--muted)', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 11 }}>Ongoing support available</p>
+                <p style={{ font: '600 16px var(--font-sans)', color: 'var(--paper)', margin: 0 }}>Keep your site fast, secure, and up to date — starting at <span style={{ color: 'var(--signal)' }}>$99/month</span>.</p>
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Pricing */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="04" name="Pricing" theme="Transparent. No surprises." /></FadeIn>
+            <FadeIn delay={80}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+                {WD_TIERS.map(t => (
+                  <div key={t.name} style={{ padding: '40px 32px', background: t.featured ? 'var(--ink-2)' : 'transparent', border: `1px solid ${t.featured ? 'var(--signal)' : 'var(--ink-3)'}`, position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                    {t.featured && <span style={{ position: 'absolute', top: -1, left: 32, font: '500 10px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', background: 'var(--signal)', color: 'var(--ink)', padding: '4px 10px' }}>Most popular</span>}
+                    <div style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 12 }}>{t.name}</div>
+                    <div style={{ font: '600 clamp(36px, 4vw, 48px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', color: t.featured ? 'var(--signal)' : 'var(--paper)', marginBottom: 12 }}>{t.price}</div>
+                    <p style={{ font: '400 14px/1.6 var(--font-sans)', color: 'var(--muted)', margin: '0 0 28px' }}>{t.desc}</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 'auto', marginBottom: 32 }}>
+                      {t.features.map(f => (
+                        <div key={f} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                          <span style={{ color: 'var(--signal)', font: '600 12px var(--font-mono)', flexShrink: 0, marginTop: 2 }}>✓</span>
+                          <span style={{ font: '400 13px var(--font-sans)', color: 'var(--paper)', opacity: 0.8 }}>{f}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Btn primary={t.featured} arrow href="#wd-contact">{t.featured ? 'Get started' : 'Choose plan'}</Btn>
+                  </div>
+                ))}
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 800, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="05" name="FAQ" theme="Common questions, straight answers." /></FadeIn>
+            <FadeIn delay={80}>
+              <div style={{ borderTop: '1px solid var(--ink-3)' }}>
+                {WD_FAQS.map((f, i) => <FAQItem key={i} {...f} />)}
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Contact */}
+        <section id="wd-contact" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 800, margin: '0 auto' }}>
+            <FadeIn>
+              <div style={{ textAlign: 'center', marginBottom: 56 }}>
+                <h2 style={{ font: '600 clamp(36px, 5vw, 64px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', margin: '0 0 16px', color: 'var(--paper)', textWrap: 'balance' }}>
+                  Ready to stop losing customers to a <span style={{ background: 'var(--signal)', color: 'var(--ink)', padding: '0 6px', margin: '0 -2px' }}>bad first impression</span>?
+                </h2>
+                <p style={{ font: '400 17px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>Tell us about your business and we'll take it from there.</p>
+              </div>
+            </FadeIn>
+            <FadeIn delay={80}>
+              {status === 'success' ? (
+                <div style={{ padding: '48px 0', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+                  <PixelBird size={72} fg="#f1f1ef" accent="#9bff5b" />
+                  <p style={{ font: '600 20px/1.3 var(--font-sans)', color: 'var(--paper)', margin: 0 }}>Pigeon sent.</p>
+                  <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>I'll be in touch quickly — typically within a few hours.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                    <FormField label="Name *"><input name="name" required value={form.name} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your name" style={inputStyle} /></FormField>
+                    <FormField label="Business Name"><input name="company" value={form.company} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your business" style={inputStyle} /></FormField>
+                  </div>
+                  <FormField label="Tell us about your project *">
+                    <textarea name="message" required value={form.message} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="What kind of site do you need? Any details help..." rows={5} style={{ ...inputStyle, resize: 'vertical', minHeight: 120 }} />
+                  </FormField>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+                    <span style={{ font: '400 13px var(--font-sans)', color: 'var(--muted)' }}>Or email → <a href="mailto:andrew@carrierpigeonai.dev" style={{ color: 'var(--muted)' }}>andrew@carrierpigeonai.dev</a></span>
+                    <Btn primary arrow onClick={handleSubmit}>{status === 'sending' ? 'Sending…' : 'Send a Pigeon'}</Btn>
+                  </div>
+                  {status === 'error' && <span style={{ font: '400 13px var(--font-sans)', color: '#e55' }}>Something went wrong — try emailing andrew@carrierpigeonai.dev directly.</span>}
+                </form>
+              )}
+            </FadeIn>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
 // ── App ───────────────────────────────────────────────────────────
 function App() {
   return (
@@ -789,7 +1027,24 @@ function App() {
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+// ── Router ────────────────────────────────────────────────────────
+function useHash() {
+  const [hash, setHash] = useState(window.location.hash);
+  useEffect(() => {
+    const onHash = () => setHash(window.location.hash);
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+  return hash;
+}
+
+function Root() {
+  const hash = useHash();
+  if (hash === '#/services/web-design') return <WebDesignPage />;
+  return <App />;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Root />);
 </script>
 </body>
 </html>
