@@ -287,8 +287,11 @@ function Hero() {
         </h1>
       </FadeIn>
       <FadeIn delay={160}>
-        <p style={{ font: '400 18px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 40px' }}>
+        <p style={{ font: '400 18px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 16px' }}>
           Carrier Pigeon AI builds practical AI tools, websites, and agents for small and mid-size businesses. AI changes what small businesses can afford and how fast they can move — calm tech, no hype, built by an IT professional who's been keeping systems running for years.
+        </p>
+        <p style={{ font: '400 16px/1.6 var(--font-sans)', color: 'var(--signal)', maxWidth: '52ch', margin: '0 0 40px', fontStyle: 'italic' }}>
+          We start with your problem — not the technology.
         </p>
       </FadeIn>
       <FadeIn delay={240}>
@@ -319,6 +322,44 @@ function SpeedCallout() {
         </div>
       </div>
     </div>
+  );
+}
+
+// ── Pain Points ───────────────────────────────────────────────────
+const PAIN_POINTS = [
+  { icon: '📞', text: 'I keep missing calls and losing leads after hours.' },
+  { icon: '🌐', text: 'My website looks outdated — or I don\'t have one at all.' },
+  { icon: '🔁', text: 'My staff answers the same questions a hundred times a week.' },
+  { icon: '⏱️', text: 'I\'m drowning in tasks that should just handle themselves.' },
+  { icon: '💸', text: 'I can\'t afford to hire, but I\'m running out of hours.' },
+  { icon: '🤷', text: 'I know AI could help my business — I just don\'t know where to start.' },
+];
+
+function PainPoints() {
+  return (
+    <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', borderTop: '1px solid var(--ink-3)' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <FadeIn>
+          <div style={{ marginBottom: 48, textAlign: 'center' }}>
+            <h2 style={{ font: '600 clamp(36px, 5vw, 56px)/1.05 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: '0 0 16px', textWrap: 'balance' }}>Sound familiar?</h2>
+            <p style={{ font: '400 18px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0, maxWidth: '52ch', marginLeft: 'auto', marginRight: 'auto' }}>We start with your problem — AI is just how we solve it faster.</p>
+          </div>
+        </FadeIn>
+        <FadeIn delay={80}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2 }}>
+            {PAIN_POINTS.map((p, i) => (
+              <div key={i} style={{ padding: '32px 28px', background: 'var(--ink-2)', border: '1px solid var(--ink-3)', display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+                <span style={{ fontSize: 24, lineHeight: 1, flexShrink: 0, marginTop: 2 }}>{p.icon}</span>
+                <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--paper)', opacity: 0.8, margin: 0, fontStyle: 'italic' }}>{p.text}</p>
+              </div>
+            ))}
+          </div>
+        </FadeIn>
+        <FadeIn delay={160}>
+          <p style={{ font: '500 15px var(--font-sans)', color: 'var(--signal)', textAlign: 'center', margin: '40px 0 0' }}>If any of these hit close to home, you're in the right place.</p>
+        </FadeIn>
+      </div>
+    </section>
   );
 }
 
@@ -353,7 +394,7 @@ function Services() {
   return (
     <section id="services" data-screen-label="02 Services" style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <FadeIn><SectionHead num="02" name="Services" theme="Four ways AI changes what's possible." count={`${SERVICES.length} / Offered`} /></FadeIn>
+        <FadeIn><SectionHead num="02" name="Services" theme="Your problems, solved." count={`${SERVICES.length} / Offered`} /></FadeIn>
         <FadeIn>
           <div style={{ borderTop: '1px solid var(--ink-3)' }}>
             {SERVICES.map(s => <ServiceCard key={s.id} {...s} />)}
@@ -714,6 +755,7 @@ function App() {
       <main>
         <Hero />
         <SpeedCallout />
+        <PainPoints />
         <Services />
         <Work />
         <Stack />
