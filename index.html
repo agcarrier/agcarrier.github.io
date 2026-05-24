@@ -327,18 +327,18 @@ function SpeedCallout() {
 
 // ── Pain Points ───────────────────────────────────────────────────
 const PAIN_POINTS = [
-  { icon: '📞', text: 'I keep missing calls and losing leads after hours.',           service: 'AI Agents & Receptionist' },
-  { icon: '🌐', text: 'My website looks outdated — or I don\'t have one at all.',    service: 'Web Design' },
-  { icon: '🔁', text: 'My staff answers the same questions a hundred times a week.', service: 'Knowledge Base' },
-  { icon: '⏱️', text: 'I\'m drowning in tasks that should just handle themselves.',  service: 'Business Automation' },
-  { icon: '💸', text: 'I can\'t afford to hire, but I\'m running out of hours.',     service: 'AI Agents & Receptionist' },
-  { icon: '🤷', text: 'I know AI could help my business — I just don\'t know where to start.', service: 'Business Automation' },
+  { icon: '📞', text: 'I keep missing calls and losing leads after hours.',                    service: 'AI Agents & Receptionist', href: '#services' },
+  { icon: '🌐', text: 'My website looks outdated — or I don\'t have one at all.',             service: 'Web Design',               href: '#/services/web-design' },
+  { icon: '🔁', text: 'My staff answers the same questions a hundred times a week.',          service: 'Knowledge Base',           href: '#services' },
+  { icon: '⏱️', text: 'I\'m drowning in tasks that should just handle themselves.',           service: 'Business Automation',      href: '#services' },
+  { icon: '💸', text: 'I can\'t afford to hire, but I\'m running out of hours.',              service: 'AI Agents & Receptionist', href: '#services' },
+  { icon: '🤷', text: 'I know AI could help my business — I just don\'t know where to start.', service: 'Business Automation',    href: '#services' },
 ];
 
-function PainPointCard({ icon, text, service }) {
+function PainPointCard({ icon, text, service, href }) {
   const [hov, setHov] = useState(false);
   return (
-    <a href="#services" style={{ textDecoration: 'none', display: 'block' }}
+    <a href={href} style={{ textDecoration: 'none', display: 'block' }}
       onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}>
       <div style={{
         padding: '32px 28px', height: '100%', background: hov ? 'var(--ink-3)' : 'var(--ink-2)',
