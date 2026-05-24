@@ -735,9 +735,9 @@ function Nav() {
   return (
     <>
       <nav className="cp-nav" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 48px', borderBottom: scrolled ? '1px solid var(--ink-3)' : '1px solid transparent', background: scrolled ? 'rgba(12,12,13,0.78)' : 'rgba(12,12,13,0.42)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', transition: 'background .2s ease, border-color .2s ease' }}>
-        <a href="#/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }} aria-label="Carrier Pigeon AI home">
-          <PixelBird size={22} />
-          <span style={{ font: '600 12px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)' }}>Carrier Pigeon AI</span>
+        <a href="#/" onClick={() => { window.scrollTo(0,0); }} style={{ display: 'flex', alignItems: 'center', gap: 14, textDecoration: 'none' }} aria-label="Carrier Pigeon AI home">
+          <PixelBird size={28} />
+          <span style={{ font: '600 14px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)' }}>Carrier Pigeon AI</span>
         </a>
         <div className="cp-nav-links" style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
           {links.map(l => (
