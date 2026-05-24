@@ -327,11 +327,11 @@ function SpeedCallout() {
 
 // ── Pain Points ───────────────────────────────────────────────────
 const PAIN_POINTS = [
-  { icon: '📞', text: 'I keep missing calls and losing leads after hours.',                    service: 'AI Agents & Receptionist', href: '#services' },
+  { icon: '📞', text: 'I keep missing calls and losing leads after hours.',                    service: 'AI Agents & Receptionist', href: '#/services/ai-agents' },
   { icon: '🌐', text: 'My website looks outdated — or I don\'t have one at all.',             service: 'Web Design',               href: '#/services/web-design' },
   { icon: '🔁', text: 'My staff answers the same questions a hundred times a week.',          service: 'Knowledge Base',           href: '#services' },
   { icon: '⏱️', text: 'I\'m drowning in tasks that should just handle themselves.',           service: 'Business Automation',      href: '#services' },
-  { icon: '💸', text: 'I can\'t afford to hire, but I\'m running out of hours.',              service: 'AI Agents & Receptionist', href: '#services' },
+  { icon: '💸', text: 'I can\'t afford to hire, but I\'m running out of hours.',              service: 'AI Agents & Receptionist', href: '#/services/ai-agents' },
   { icon: '🤷', text: 'I know AI could help my business — I just don\'t know where to start.', service: 'Business Automation',    href: '#services' },
 ];
 
@@ -387,7 +387,7 @@ function PainPoints() {
 // ── Services ──────────────────────────────────────────────────────
 const SERVICES = [
   { id: '001', name: 'Web Design',             desc: 'A local agency might quote you $2,000–$4,000 and a 6-week timeline. We use AI to undercut both without cutting corners. Fast, modern, built to convert — and optimized for search from day one.',             tags: ['Fast Delivery', 'Modern Design', 'AI-Built', 'SEO'], href: '#/services/web-design' },
-  { id: '002', name: 'AI Agents & Receptionist', desc: 'AI agents work around the clock so you don\'t have to. They answer calls, qualify leads, book appointments, and handle FAQs automatically — at 3am or during your busiest hour. Never lose a customer to voicemail again.', tags: ['Voice AI', '24/7', 'Lead Capture'] },
+  { id: '002', name: 'AI Agents & Receptionist', desc: 'AI agents work around the clock so you don\'t have to. They answer calls, qualify leads, book appointments, and handle FAQs automatically — at 3am or during your busiest hour. Never lose a customer to voicemail again.', tags: ['Voice AI', '24/7', 'Lead Capture'], href: '#/services/ai-agents' },
   { id: '003', name: 'Business Automation',    desc: 'Most small businesses are still doing manually what AI can handle in seconds. I map your workflows, find the bottlenecks, and deploy AI tools that free your team to focus on what actually grows the business.',             tags: ['Workflow', 'Implementation', 'Strategy'] },
   { id: '004', name: 'Knowledge Base',         desc: 'Your business already has the answers — they\'re just buried in emails, docs, and your team\'s heads. I build private AI systems trained on your content so staff and customers get instant, accurate answers around the clock.', tags: ['Private AI', 'Instant Answers', 'RAG'] },
 ];
@@ -1027,6 +1027,231 @@ function App() {
   );
 }
 
+// ── AI Agents & Receptionist Page ────────────────────────────────
+const AA_STEPS = [
+  { num: '01', title: 'Discovery',  desc: 'We learn your business — your common calls, FAQs, booking process, and how you like to communicate. No two agents are the same.' },
+  { num: '02', title: 'Build',      desc: 'We configure your agent with your business info, custom scripts, and connect it to your calendar or booking system.' },
+  { num: '03', title: 'Test',       desc: 'We run through real-world scenarios until it sounds exactly right. You approve before anything goes live.' },
+  { num: '04', title: 'Deploy',     desc: 'Your agent goes live and starts working around the clock — answering, qualifying, and booking while you focus on the job.' },
+];
+
+const AA_INCLUDES = [
+  '24/7 call and message answering',
+  'Lead qualification and capture',
+  'Appointment booking synced to your calendar',
+  'Custom FAQ handling trained on your business',
+  'Call and message summaries sent to your email',
+  'Smart escalation for complex or sensitive issues',
+  'Monthly performance summary',
+];
+
+const AA_INDUSTRIES = [
+  'Contractors & Trades', 'Medical & Dental', 'Salons & Spas',
+  'Real Estate', 'Restaurants & Food', 'Law Offices',
+  'Home Services', 'Retail Shops',
+];
+
+const AA_TIERS = [
+  { name: 'Basic',    price: '$149', period: '/mo', setup: '$199 setup', desc: 'A smart text and chat agent that captures leads and answers questions around the clock.',         features: ['Chat & text agent', 'FAQ handling', 'Lead capture', 'Email summaries', '$199 one-time setup'],                                              featured: false },
+  { name: 'Standard', price: '$249', period: '/mo', setup: '$249 setup', desc: 'Voice and chat combined. Books appointments, qualifies leads — even at 2am.',                     features: ['Voice + chat agent', 'Appointment booking', 'Lead qualification', 'Calendar sync', 'Email summaries', '$249 one-time setup'],                featured: true  },
+  { name: 'Pro',      price: '$399', period: '/mo', setup: '$299 setup', desc: 'Fully custom agent built around your exact workflows, with CRM and advanced integrations.',       features: ['Fully custom build', 'CRM integration', 'Advanced workflows', 'Priority support', 'Quarterly tuning', '$299 one-time setup'],                featured: false },
+];
+
+const AA_FAQS = [
+  { q: 'Does it really sound like a real person?',          a: 'Modern AI voice agents are remarkably natural — most callers can\'t tell the difference. We tune the voice, tone, and pacing to match your brand before going live.' },
+  { q: 'What happens when it doesn\'t know the answer?',    a: 'The agent is trained to gracefully escalate — it takes a message, captures contact info, and notifies you immediately so you can follow up.' },
+  { q: 'Can it book appointments on my calendar?',          a: 'Yes. We connect it to your existing calendar (Google, Outlook, Calendly, etc.) so it can check availability and book in real time.' },
+  { q: 'How long does setup take?',                         a: 'Most agents are live within 3–5 business days of the discovery call. More complex integrations may take a bit longer.' },
+  { q: 'What do I need to provide to get started?',         a: 'Just your time for a discovery call. We\'ll gather everything we need — your FAQs, business hours, booking process, and how you want calls handled.' },
+  { q: 'Can I make changes after it\'s live?',              a: 'Absolutely. Your monthly plan includes ongoing updates. Business changes, new FAQs, seasonal hours — just let us know and we\'ll update the agent.' },
+];
+
+function AgentsPage() {
+  const [form, setForm] = React.useState({ name: '', company: '', message: '' });
+  const [status, setStatus] = React.useState('idle');
+  function handleChange(e) { setForm(f => ({ ...f, [e.target.name]: e.target.value })); }
+  function handleFocus(e) { e.target.style.borderColor = 'var(--signal)'; }
+  function handleBlur(e)  { e.target.style.borderColor = 'var(--ink-3)'; }
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setStatus('sending');
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, { method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, service: 'AI Agents & Receptionist' }) });
+      setStatus(res.ok ? 'success' : 'error');
+    } catch { setStatus('error'); }
+  }
+  return (
+    <div style={{ background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--font-sans)', minHeight: '100vh', position: 'relative', overflowX: 'hidden' }}>
+      <ScrollProgressBar />
+      <CourierGraph />
+      <Nav />
+      <main>
+        {/* Hero */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '160px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
+          <FadeIn>
+            <a href="#/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', marginBottom: 32, transition: 'color .15s ease' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--paper)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}>← Back to home</a>
+          </FadeIn>
+          <FadeIn delay={40}><div style={{ marginBottom: 24 }}><Eyebrow>Service 02 · <span style={{ color: 'var(--signal)' }}>AI Agents & Receptionist</span></Eyebrow></div></FadeIn>
+          <FadeIn delay={80}>
+            <h1 style={{ font: '600 clamp(48px, 7vw, 96px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', margin: '0 0 24px', maxWidth: '16ch', textWrap: 'balance', color: 'var(--paper)' }}>
+              Never miss a <span style={{ background: 'var(--signal)', color: 'var(--ink)', padding: '0 6px', margin: '0 -2px' }}>lead</span> again.
+            </h1>
+          </FadeIn>
+          <FadeIn delay={160}>
+            <p style={{ font: '400 18px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 40px' }}>
+              AI agents that answer calls, qualify leads, and book appointments around the clock — so you never lose a customer to voicemail again.
+            </p>
+          </FadeIn>
+          <FadeIn delay={220}><Btn primary arrow href="#aa-contact">Get started</Btn></FadeIn>
+        </section>
+
+        {/* Problem */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
+            <FadeIn><h2 style={{ font: '600 clamp(32px, 4vw, 48px)/1.05 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0, textWrap: 'balance' }}>Every missed call is a missed customer.</h2></FadeIn>
+            <FadeIn delay={100}>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>Most small businesses miss calls every single day — during jobs, after hours, on weekends. Each one is a potential customer who just called your competitor instead.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>Hiring a receptionist costs $1,200–$1,500/month and only covers business hours. An AI agent costs a fraction of that and never clocks out.</p>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Process */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="01" name="Process" theme="Up and running in days, not weeks." /></FadeIn>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }}>
+              {AA_STEPS.map((s, i) => (
+                <FadeIn key={s.num} delay={i * 80}>
+                  <div style={{ padding: '36px 28px', borderRight: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', minHeight: 220 }}>
+                    <div style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.2em', color: 'var(--signal)', marginBottom: 20 }}>{s.num}</div>
+                    <h3 style={{ font: '600 20px var(--font-sans)', letterSpacing: '-0.015em', color: 'var(--paper)', margin: '0 0 12px' }}>{s.title}</h3>
+                    <p style={{ font: '400 14px/1.65 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>{s.desc}</p>
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Included + Who it's for */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64 }}>
+            <FadeIn>
+              <SectionHead num="02" name="What's Included" theme="" />
+              <div>
+                {AA_INCLUDES.map((item, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '14px 0', borderBottom: '1px solid var(--ink-3)' }}>
+                    <span style={{ color: 'var(--signal)', font: '600 14px var(--font-mono)', flexShrink: 0, marginTop: 2 }}>✓</span>
+                    <span style={{ font: '400 15px var(--font-sans)', color: 'var(--paper)' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </FadeIn>
+            <FadeIn delay={120}>
+              <SectionHead num="03" name="Who It's For" theme="" />
+              <p style={{ font: '400 15px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 24px' }}>Any business that relies on calls, appointments, or lead inquiries — and can't afford to miss them:</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 36 }}>
+                {AA_INDUSTRIES.map(ind => (
+                  <span key={ind} style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--paper)', border: '1px solid var(--ink-3)', padding: '8px 14px' }}>{ind}</span>
+                ))}
+              </div>
+              <div style={{ padding: '24px', background: 'var(--ink-2)', borderLeft: '2px solid var(--signal)' }}>
+                <p style={{ font: '400 13px var(--font-sans)', color: 'var(--muted)', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 11 }}>Compare the cost</p>
+                <p style={{ font: '600 16px var(--font-sans)', color: 'var(--paper)', margin: 0 }}>A part-time receptionist in Lafayette runs <span style={{ textDecoration: 'line-through', opacity: 0.5 }}>$1,200–$1,500/mo</span>. Our agents start at <span style={{ color: 'var(--signal)' }}>$149/mo</span> — and never take a day off.</p>
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Pricing */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="04" name="Pricing" theme="Monthly plans. Cancel anytime." /></FadeIn>
+            <FadeIn delay={80}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+                {AA_TIERS.map(t => (
+                  <div key={t.name} style={{ padding: '40px 32px', background: t.featured ? 'var(--ink-2)' : 'transparent', border: `1px solid ${t.featured ? 'var(--signal)' : 'var(--ink-3)'}`, position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                    {t.featured && <span style={{ position: 'absolute', top: -1, left: 32, font: '500 10px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', background: 'var(--signal)', color: 'var(--ink)', padding: '4px 10px' }}>Most popular</span>}
+                    <div style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 12 }}>{t.name}</div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
+                      <span style={{ font: '600 clamp(36px, 4vw, 48px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', color: t.featured ? 'var(--signal)' : 'var(--paper)' }}>{t.price}</span>
+                      <span style={{ font: '400 16px var(--font-sans)', color: 'var(--muted)' }}>{t.period}</span>
+                    </div>
+                    <div style={{ font: '500 11px var(--font-mono)', color: 'var(--muted)', letterSpacing: '0.1em', marginBottom: 16 }}>{t.setup}</div>
+                    <p style={{ font: '400 14px/1.6 var(--font-sans)', color: 'var(--muted)', margin: '0 0 28px' }}>{t.desc}</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 'auto', marginBottom: 32 }}>
+                      {t.features.map(f => (
+                        <div key={f} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                          <span style={{ color: 'var(--signal)', font: '600 12px var(--font-mono)', flexShrink: 0, marginTop: 2 }}>✓</span>
+                          <span style={{ font: '400 13px var(--font-sans)', color: 'var(--paper)', opacity: 0.8 }}>{f}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Btn primary={t.featured} arrow href="#aa-contact">{t.featured ? 'Get started' : 'Choose plan'}</Btn>
+                  </div>
+                ))}
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 800, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="05" name="FAQ" theme="Common questions, straight answers." /></FadeIn>
+            <FadeIn delay={80}>
+              <div style={{ borderTop: '1px solid var(--ink-3)' }}>
+                {AA_FAQS.map((f, i) => <FAQItem key={i} {...f} />)}
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Contact */}
+        <section id="aa-contact" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 800, margin: '0 auto' }}>
+            <FadeIn>
+              <div style={{ textAlign: 'center', marginBottom: 56 }}>
+                <h2 style={{ font: '600 clamp(36px, 5vw, 64px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', margin: '0 0 16px', color: 'var(--paper)', textWrap: 'balance' }}>
+                  Ready to put your phones on <span style={{ background: 'var(--signal)', color: 'var(--ink)', padding: '0 6px', margin: '0 -2px' }}>autopilot</span>?
+                </h2>
+                <p style={{ font: '400 17px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>Tell us about your business and we'll build an agent around it.</p>
+              </div>
+            </FadeIn>
+            <FadeIn delay={80}>
+              {status === 'success' ? (
+                <div style={{ padding: '48px 0', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+                  <PixelBird size={72} fg="#f1f1ef" accent="#9bff5b" />
+                  <p style={{ font: '600 20px/1.3 var(--font-sans)', color: 'var(--paper)', margin: 0 }}>Pigeon sent.</p>
+                  <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>I'll be in touch quickly — typically within a few hours.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                    <FormField label="Name *"><input name="name" required value={form.name} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your name" style={inputStyle} /></FormField>
+                    <FormField label="Business Name"><input name="company" value={form.company} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your business" style={inputStyle} /></FormField>
+                  </div>
+                  <FormField label="Tell us about your business *">
+                    <textarea name="message" required value={form.message} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="What kind of calls or inquiries do you get most? How do you currently handle them?" rows={5} style={{ ...inputStyle, resize: 'vertical', minHeight: 120 }} />
+                  </FormField>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+                    <span style={{ font: '400 13px var(--font-sans)', color: 'var(--muted)' }}>Or email → <a href="mailto:andrew@carrierpigeonai.dev" style={{ color: 'var(--muted)' }}>andrew@carrierpigeonai.dev</a></span>
+                    <Btn primary arrow onClick={handleSubmit}>{status === 'sending' ? 'Sending…' : 'Send a Pigeon'}</Btn>
+                  </div>
+                  {status === 'error' && <span style={{ font: '400 13px var(--font-sans)', color: '#e55' }}>Something went wrong — try emailing andrew@carrierpigeonai.dev directly.</span>}
+                </form>
+              )}
+            </FadeIn>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
 // ── Router ────────────────────────────────────────────────────────
 function useHash() {
   const [hash, setHash] = useState(window.location.hash);
@@ -1041,6 +1266,7 @@ function useHash() {
 function Root() {
   const hash = useHash();
   if (hash === '#/services/web-design') return <WebDesignPage />;
+  if (hash === '#/services/ai-agents')  return <AgentsPage />;
   return <App />;
 }
 
