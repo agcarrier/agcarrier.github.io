@@ -785,20 +785,21 @@ function Nav() {
 
 // ── Web Design Page ───────────────────────────────────────────────
 const WD_STEPS = [
-  { num: '01', title: 'Discovery',  desc: 'A 30-minute call to understand your business, goals, and what you need. No jargon, no sales pitch — just a real conversation.' },
-  { num: '02', title: 'Design',     desc: 'AI-accelerated design means you see a first draft the same day — built around your brand, your colors, your vibe.' },
-  { num: '03', title: 'Review',     desc: 'You give feedback, we refine until it\'s exactly right. Most clients wrap this up in one round.' },
-  { num: '04', title: 'Launch',     desc: 'Live on your domain, optimized for search from day one. We handle the technical details so you don\'t have to.' },
+  { num: '01', title: 'Discovery',  desc: 'A 30-minute call to understand your business, goals, and what makes you different. We ask the right questions — who your customers are, what you want the site to accomplish, and what your competitors are doing. No jargon, no sales pitch.' },
+  { num: '02', title: 'Design',     desc: 'AI-accelerated design means you see real pages the same day — hero, about, services, contact — built around your brand, your colors, your vibe. Not wireframes. Not mockups. Actual pages you can react to.' },
+  { num: '03', title: 'Review',     desc: 'You give feedback, we refine until it\'s exactly right. We don\'t disappear after the first draft — we\'re available to jump on a call, walk through changes together, and iterate until you\'re genuinely proud of it.' },
+  { num: '04', title: 'Launch',     desc: 'Live on your domain with SEO baked in from day one. We point your domain, submit your sitemap to Google, set up Search Console, and make sure everything is working before we call it done.' },
 ];
 
 const WD_INCLUDES = [
-  'Custom design tailored to your brand',
-  'Mobile-friendly — looks great on any device',
-  'SEO basics built in so Google can find you',
-  'Contact form connected to your business email',
-  'Fast load times',
-  'Google Analytics setup',
-  '30 days of support after launch',
+  'Custom design tailored to your brand — not a generic template',
+  'Mobile-friendly layout that looks great on phones, tablets, and desktops',
+  'SEO built in — page titles, meta descriptions, sitemap, and Google Search Console setup',
+  'Contact form connected directly to your business email',
+  'Fast load times optimized for Core Web Vitals',
+  'Google Analytics setup so you can see where visitors come from',
+  'Copywriting assistance — we can draft your page content from your discovery call',
+  '30 days of post-launch support included',
 ];
 
 const WD_INDUSTRIES = [
@@ -814,12 +815,16 @@ const WD_TIERS = [
 ];
 
 const WD_FAQS = [
-  { q: 'How long does it take?',              a: 'Most sites launch within a day or two of the discovery call. Complex projects with e-commerce or many pages may take a bit longer — but never weeks.' },
-  { q: 'Do I need to provide content?',       a: 'Nope. We can write copy with you or draft it entirely based on your discovery call. You just review and approve.' },
-  { q: 'What if I already have a domain?',    a: 'No problem at all. We\'ll connect your existing domain to the new site. If you don\'t have one yet, we\'ll help you get one.' },
-  { q: 'Can you make updates after launch?',  a: 'Yes — that\'s what the 30-day support window is for. After that, ongoing maintenance packages are available starting at $99/month.' },
-  { q: 'Do you build online stores?',         a: 'Yes, e-commerce is available on the Premium tier. Contact us with details about your store and we\'ll give you an accurate quote.' },
-  { q: 'Will my site show up on Google?',     a: 'Every site we build includes SEO basics — proper page titles, meta descriptions, fast load times, and mobile optimization. We also submit your sitemap to Google and Bing on launch day.' },
+  { q: 'How long does it take?',                    a: 'Most sites launch within a day or two of the discovery call. Complex projects with e-commerce or many pages may take a bit longer — but never weeks. Traditional agencies take 4–8 weeks for the same work.' },
+  { q: 'Do I need to provide content?',             a: 'Nope. We can write your page copy with you, or draft it entirely based on what you tell us in the discovery call. You review and approve everything before it goes live.' },
+  { q: 'What if I already have a domain?',          a: 'No problem at all. We\'ll connect your existing domain to the new site. If you don\'t have one yet, we\'ll help you pick and register one — usually $12–15/year.' },
+  { q: 'Can you make updates after launch?',        a: 'Yes — the 30-day support window covers any tweaks after launch. After that, ongoing maintenance packages start at $99/month and include updates, security patches, and priority support.' },
+  { q: 'Do you build online stores?',               a: 'Yes, e-commerce is available on the Premium tier. Tell us about your products and volume and we\'ll give you an accurate quote.' },
+  { q: 'Will my site show up on Google?',           a: 'Every site we build includes SEO from day one — proper page titles, meta descriptions, fast load times, mobile optimization, and sitemap submission to Google Search Console. You\'ll also get a Google Business Profile walkthrough so you show up in local searches.' },
+  { q: 'What platform do you build on?',            a: 'We choose the right tool for your needs. Most small business sites are built as fast, modern static sites. Larger or content-heavy sites may use WordPress. Either way, you own the site and hosting outright.' },
+  { q: 'Will I be able to update it myself?',       a: 'Yes. We build your site so you can make basic content changes — text, photos, prices — without needing a developer. And if you ever get stuck, we\'re one email away.' },
+  { q: 'Is hosting included in the price?',         a: 'Hosting isn\'t bundled into the build price, but we\'ll configure fast, reliable hosting for you. Most small business sites run $15–25/month on the platforms we use.' },
+  { q: 'What do you need from me to get started?',  a: 'Just 30 minutes of your time for a discovery call, and any existing branding you have — logo, colors, photos. If you don\'t have those yet, we can work around it. We handle everything else.' },
 ];
 
 function FAQItem({ q, a }) {
@@ -882,8 +887,9 @@ function WebDesignPage() {
           <div className="cp-service-problem-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
             <FadeIn><h2 style={{ font: '600 clamp(32px, 4vw, 48px)/1.05 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0, textWrap: 'balance' }}>Most small business websites are costing them customers.</h2></FadeIn>
             <FadeIn delay={100}>
-              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>In Acadiana, most small businesses either have an outdated website or none at all. Agencies want $4,000–$10,000 and weeks of back-and-forth. Meanwhile your competitors are showing up online and you're not.</p>
-              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>AI changes that equation entirely. We design, write, and build your site in a fraction of the time — without cutting corners on quality.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>In Acadiana and across Louisiana, most small businesses either have an outdated website or none at all — and it's costing them real customers. Studies show 75% of people judge a business's credibility based on its website design alone. If your site looks old, loads slow, or doesn't show up on Google, potential customers are quietly choosing your competitor instead.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>Traditional web agencies want $4,000–$10,000 and weeks of back-and-forth meetings. DIY builders like Squarespace look generic and still take hours to set up right. Neither option was built for the busy small business owner who just needs something professional that works.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>AI changes that equation entirely. We design, write, and launch your site in a fraction of the time — at a price that makes sense for a small business, without cutting corners on quality or results.</p>
             </FadeIn>
           </div>
         </section>
