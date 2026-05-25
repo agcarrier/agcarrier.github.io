@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16 -16 128 128" width="512" height="512">
+  <!-- Background -->
+  <rect x="-16" y="-16" width="128" height="128" fill="#0c0c0d"/>
+
+  <!-- Pixel pigeon — fg=#f1f1ef, accent=#9bff5b, cell=96/11≈8.727 -->
+  <!-- Row 1 -->
+  <rect x="17.754" y="9.027"  width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="26.481" y="9.027"  width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="70.116" y="9.027"  width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="78.843" y="9.027"  width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+
+  <!-- Row 2 -->
+  <rect x="9.027"  y="17.754" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="17.754" y="17.754" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="26.481" y="17.754" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="35.208" y="17.754" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="61.389" y="17.754" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="70.116" y="17.754" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="78.843" y="17.754" width="8.127" height="8.127" rx="0.8" fill="#9bff5b"/><!-- accent eye -->
+  <rect x="87.570" y="17.754" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+
+  <!-- Row 3 -->
+  <rect x="9.027"  y="26.481" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="17.754" y="26.481" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="26.481" y="26.481" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="35.208" y="26.481" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="43.935" y="26.481" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="52.662" y="26.481" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="61.389" y="26.481" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="70.116" y="26.481" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="78.843" y="26.481" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+
+  <!-- Row 4 -->
+  <rect x="17.754" y="35.208" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="26.481" y="35.208" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="35.208" y="35.208" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="43.935" y="35.208" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="52.662" y="35.208" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="61.389" y="35.208" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="70.116" y="35.208" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+
+  <!-- Row 5 -->
+  <rect x="26.481" y="43.935" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="35.208" y="43.935" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="43.935" y="43.935" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="52.662" y="43.935" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="61.389" y="43.935" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+
+  <!-- Row 6 -->
+  <rect x="17.754" y="52.662" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="26.481" y="52.662" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="35.208" y="52.662" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="43.935" y="52.662" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="52.662" y="52.662" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+
+  <!-- Row 7 -->
+  <rect x="9.027"  y="61.389" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="17.754" y="61.389" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="26.481" y="61.389" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="35.208" y="61.389" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+
+  <!-- Row 8 -->
+  <rect x="0.300"  y="70.116" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+  <rect x="9.027"  y="70.116" width="8.127" height="8.127" rx="0.8" fill="#f1f1ef"/>
+</svg>
