@@ -65,12 +65,32 @@
       .cp-contact-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
       section[data-screen-label] { padding-left: 24px !important; padding-right: 24px !important; }
       nav.cp-nav { padding: 14px 20px !important; }
+      .cp-section-pad      { padding-left: 24px !important; padding-right: 24px !important; }
+      .cp-service-hero     { padding-left: 24px !important; padding-right: 24px !important; }
+      .cp-pain-grid        { grid-template-columns: repeat(2, 1fr) !important; }
+      .cp-service-problem-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+      .cp-process-grid     { grid-template-columns: repeat(2, 1fr) !important; }
+      .cp-pricing-grid     { grid-template-columns: 1fr !important; }
+      .cp-includes-grid    { grid-template-columns: 1fr !important; gap: 40px !important; }
+      .cp-speed-grid       { grid-template-columns: 1fr !important; gap: 24px !important; padding-left: 24px !important; padding-right: 24px !important; }
+      .cp-speed-right      { border-left: none !important; border-top: 1px solid var(--ink-3) !important; padding-left: 0 !important; padding-top: 24px !important; }
+      .cp-speed-headline   { white-space: normal !important; }
     }
     @media (max-width: 700px) {
       .cp-nav-links, .cp-nav-cta { display: none !important; }
       .cp-hamburger   { display: flex !important; }
       .cp-mobile-menu { display: flex !important; }
       .cp-stack-grid  { grid-template-columns: repeat(2, 1fr) !important; }
+      .cp-section-pad      { padding-left: 20px !important; padding-right: 20px !important; }
+      .cp-hero             { padding-top: 100px !important; }
+      .cp-service-hero     { padding: 100px 20px 48px !important; }
+      .cp-speed-grid       { grid-template-columns: 1fr !important; gap: 28px !important; padding: 40px 20px !important; }
+      .cp-speed-right      { border-top: 1px solid var(--ink-3) !important; padding-top: 28px !important; }
+      .cp-pain-grid        { grid-template-columns: 1fr !important; }
+      .cp-founder-bio-row  { grid-template-columns: 1fr !important; gap: 4px !important; }
+      .cp-form-row         { grid-template-columns: 1fr !important; }
+      .cp-process-grid     { grid-template-columns: 1fr !important; }
+      .cp-footer           { padding: 28px 20px !important; flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -83,6 +103,65 @@
       to { transform: rotate(360deg); }
     }
   </style>
+
+  <!-- Schema.org structured data -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "@id": "https://carrierpigeonai.dev/#business",
+  "name": "Carrier Pigeon AI",
+  "url": "https://carrierpigeonai.dev",
+  "email": "andrew@carrierpigeonai.dev",
+  "description": "Carrier Pigeon AI builds practical AI tools, websites, and agents for small and mid-size businesses in Lafayette and beyond.",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Lafayette",
+    "addressRegion": "IN",
+    "addressCountry": "US"
+  },
+  "areaServed": "United States",
+  "priceRange": "$$",
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "AI Services for Small Business",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "AI Receptionist & Voice Agents",
+          "url": "https://carrierpigeonai.dev/services/ai-agents"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "AI Web Design",
+          "url": "https://carrierpigeonai.dev/services/web-design"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Business Process Automation",
+          "url": "https://carrierpigeonai.dev/services/business-automation"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Private AI Knowledge Base",
+          "url": "https://carrierpigeonai.dev/services/knowledge-base"
+        }
+      }
+    ]
+  }
+}
+  </script>
 </head>
 <body>
 <div id="root"></div>

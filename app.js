@@ -205,7 +205,7 @@ function Btn({ children, primary = false, href, onClick, arrow = false, type = '
 // ── Hero ──────────────────────────────────────────────────────────
 function Hero() {
   return (
-    <section data-screen-label="01 Hero" style={{ position: 'relative', zIndex: 2, padding: '180px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
+    <section data-screen-label="01 Hero" className="cp-hero" style={{ position: 'relative', zIndex: 2, padding: '180px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
       <FadeIn>
         <div style={{ marginBottom: 28 }}>
           <Eyebrow>Independent AI Studio · <span style={{ color: 'var(--signal)' }}>Lafayette, LA</span></Eyebrow>
@@ -239,12 +239,12 @@ function Hero() {
 function SpeedCallout() {
   return (
     <div style={{ position: 'relative', zIndex: 2, borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', background: 'var(--ink-2)' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '56px 48px', display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '48px 64px', alignItems: 'center' }}>
+      <div className="cp-speed-grid" style={{ maxWidth: 1200, margin: '0 auto', padding: '56px 48px', display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '48px 64px', alignItems: 'center' }}>
         <div>
-          <div style={{ font: '600 clamp(64px, 10vw, 120px)/1.0 var(--font-sans)', letterSpacing: '-0.05em', color: 'var(--signal)', whiteSpace: 'nowrap' }}>One afternoon.</div>
+          <div className="cp-speed-headline" style={{ font: '600 clamp(64px, 10vw, 120px)/1.0 var(--font-sans)', letterSpacing: '-0.05em', color: 'var(--signal)', whiteSpace: 'nowrap' }}>One afternoon.</div>
           <div style={{ font: '500 12px var(--font-mono)', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--muted)', marginTop: 10 }}>That's all it takes</div>
         </div>
-        <div style={{ borderLeft: '1px solid var(--ink-3)', paddingLeft: 48 }}>
+        <div className="cp-speed-right" style={{ borderLeft: '1px solid var(--ink-3)', paddingLeft: 48 }}>
           <p style={{ font: '400 20px/1.6 var(--font-sans)', color: 'var(--paper)', margin: '0 0 12px', maxWidth: '44ch' }}>
             A website that used to take <span style={{ textDecoration: 'line-through', opacity: 0.4 }}>6–8 weeks</span> now ships in an afternoon.
           </p>
@@ -284,7 +284,7 @@ function PainPointCard({ icon, text, service, href }) {
           <span style={{ fontSize: 24, lineHeight: 1, flexShrink: 0, marginTop: 2 }}>{icon}</span>
           <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--paper)', opacity: hov ? 1 : 0.8, margin: 0, fontStyle: 'italic', transition: 'opacity .2s ease' }}>{text}</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, opacity: hov ? 1 : 0, transform: hov ? 'translateY(0)' : 'translateY(4px)', transition: 'opacity .2s ease, transform .2s ease', marginTop: 'auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, opacity: hov ? 1 : 0.45, transform: hov ? 'translateY(0)' : 'translateY(4px)', transition: 'opacity .2s ease, transform .2s ease', marginTop: 'auto' }}>
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--signal)', flexShrink: 0 }} />
           <span style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--signal)' }}>→ {service}</span>
         </div>
@@ -295,7 +295,7 @@ function PainPointCard({ icon, text, service, href }) {
 
 function PainPoints() {
   return (
-    <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', borderTop: '1px solid var(--ink-3)' }}>
+    <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px', borderTop: '1px solid var(--ink-3)' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <FadeIn>
           <div style={{ marginBottom: 48, textAlign: 'center' }}>
@@ -304,7 +304,7 @@ function PainPoints() {
           </div>
         </FadeIn>
         <FadeIn delay={80}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          <div className="cp-pain-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
             {PAIN_POINTS.map((p, i) => <PainPointCard key={i} {...p} />)}
           </div>
         </FadeIn>
@@ -333,7 +333,7 @@ function ServiceCard({ id, name, desc, tags, href }) {
       <div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 8 }}>
           <h3 style={{ font: '600 22px var(--font-sans)', letterSpacing: '-0.015em', margin: 0, color: 'var(--paper)' }}>{name}</h3>
-          {href && <span style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--signal)', opacity: hov ? 1 : 0, transition: 'opacity .2s ease' }}>Learn more →</span>}
+          {href && <span style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--signal)', opacity: hov ? 1 : 0.45, transition: 'opacity .2s ease' }}>Learn more →</span>}
         </div>
         <p style={{ font: '400 14px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0, maxWidth: '60ch' }}>{desc}</p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 18, marginTop: 14 }}>
@@ -450,7 +450,7 @@ function Founder() {
                   { k: 'Focus',        v: 'AI/ML, LLM APIs, agentic workflows, prompt engineering' },
                   { k: 'Goal',         v: 'Practical AI tools that solve real problems' },
                 ].map(row => (
-                  <div key={row.k} style={{ display: 'grid', gridTemplateColumns: '180px 1fr', gap: 24, padding: '18px 0', borderBottom: '1px solid var(--ink-3)' }}>
+                  <div key={row.k} className="cp-founder-bio-row" style={{ display: 'grid', gridTemplateColumns: '180px 1fr', gap: 24, padding: '18px 0', borderBottom: '1px solid var(--ink-3)' }}>
                     <span style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--muted)' }}>{row.k}</span>
                     <span style={{ font: '400 15px var(--font-sans)', color: 'var(--paper)' }}>{row.v}</span>
                   </div>
@@ -668,7 +668,7 @@ function Contact() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div className="cp-form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                   <FormField label="Name *">
                     <input name="name" required value={form.name} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Jane Smith" style={inputStyle} />
                   </FormField>
@@ -709,7 +709,7 @@ function Contact() {
 // ── Footer ────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer style={{ position: 'relative', zIndex: 2, padding: '40px 48px', borderTop: '1px solid var(--ink-3)', background: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+    <footer className="cp-footer" style={{ position: 'relative', zIndex: 2, padding: '40px 48px', borderTop: '1px solid var(--ink-3)', background: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <PixelBird size={20} />
         <span style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--paper)' }}>Carrier Pigeon AI</span>
@@ -856,7 +856,7 @@ function WebDesignPage() {
       <Nav />
       <main>
         {/* Hero */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '160px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
+        <section className="cp-service-hero" style={{ position: 'relative', zIndex: 2, padding: '160px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
           <FadeIn>
             <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', marginBottom: 32, transition: 'color .15s ease' }}
               onMouseEnter={e => e.currentTarget.style.color = 'var(--paper)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}>← Back to home</a>
@@ -878,8 +878,8 @@ function WebDesignPage() {
         <WebDesignBriefDemo />
 
         {/* Problem */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div className="cp-service-problem-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
             <FadeIn><h2 style={{ font: '600 clamp(32px, 4vw, 48px)/1.05 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0, textWrap: 'balance' }}>Most small business websites are costing them customers.</h2></FadeIn>
             <FadeIn delay={100}>
               <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>In Acadiana, most small businesses either have an outdated website or none at all. Agencies want $4,000–$10,000 and weeks of back-and-forth. Meanwhile your competitors are showing up online and you're not.</p>
@@ -889,10 +889,10 @@ function WebDesignPage() {
         </section>
 
         {/* Process */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <FadeIn><SectionHead num="01" name="Process" theme="Simple. Fast. No surprises." /></FadeIn>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }}>
+            <div className="cp-process-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }}>
               {WD_STEPS.map((s, i) => (
                 <FadeIn key={s.num} delay={i * 80}>
                   <div style={{ padding: '36px 28px', borderRight: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', minHeight: 220 }}>
@@ -907,8 +907,8 @@ function WebDesignPage() {
         </section>
 
         {/* Included + Who it's for */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64 }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div className="cp-includes-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64 }}>
             <FadeIn>
               <SectionHead num="02" name="What's Included" theme="" />
               <div>
@@ -937,11 +937,11 @@ function WebDesignPage() {
         </section>
 
         {/* Pricing */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <FadeIn><SectionHead num="04" name="Pricing" theme="Transparent. No surprises." /></FadeIn>
             <FadeIn delay={80}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+              <div className="cp-pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
                 {WD_TIERS.map(t => (
                   <div key={t.name} style={{ padding: '40px 32px', background: t.featured ? 'var(--ink-2)' : 'transparent', border: `1px solid ${t.featured ? 'var(--signal)' : 'var(--ink-3)'}`, position: 'relative', display: 'flex', flexDirection: 'column' }}>
                     {t.featured && <span style={{ position: 'absolute', top: -1, left: 32, font: '500 10px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', background: 'var(--signal)', color: 'var(--ink)', padding: '4px 10px' }}>Most popular</span>}
@@ -965,7 +965,7 @@ function WebDesignPage() {
         </section>
 
         {/* FAQ */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
           <div style={{ maxWidth: 800, margin: '0 auto' }}>
             <FadeIn><SectionHead num="05" name="FAQ" theme="Common questions, straight answers." /></FadeIn>
             <FadeIn delay={80}>
@@ -977,7 +977,7 @@ function WebDesignPage() {
         </section>
 
         {/* Contact */}
-        <section id="wd-contact" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
+        <section id="wd-contact" className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
           <div style={{ maxWidth: 800, margin: '0 auto' }}>
             <FadeIn>
               <div style={{ textAlign: 'center', marginBottom: 56 }}>
@@ -996,7 +996,7 @@ function WebDesignPage() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div className="cp-form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                     <FormField label="Name *"><input name="name" required value={form.name} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your name" style={inputStyle} /></FormField>
                     <FormField label="Business Name"><input name="company" value={form.company} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your business" style={inputStyle} /></FormField>
                   </div>
@@ -1193,7 +1193,7 @@ function VoiceReceptionistDemo() {
   const starters = ['What are your hours?', 'I need to book an appointment', 'How much does it cost?', 'Can I get a callback?'];
 
   return (
-    <section style={{ position: 'relative', zIndex: 2, padding: '0 48px 80px' }}>
+    <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '0 48px 80px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <FadeIn>
           <DemoLiveBadge />
@@ -1309,7 +1309,7 @@ function KnowledgeBaseDemo() {
   const starters = ["What's the price for an AC tune-up?", 'Do you offer emergency service?', 'What areas do you cover?', 'Is there a labor warranty?'];
 
   return (
-    <section style={{ position: 'relative', zIndex: 2, padding: '0 48px 80px' }}>
+    <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '0 48px 80px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <FadeIn>
           <DemoLiveBadge />
@@ -1402,7 +1402,7 @@ function AutomationAnalyzerDemo() {
   ];
 
   return (
-    <section style={{ position: 'relative', zIndex: 2, padding: '0 48px 80px' }}>
+    <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '0 48px 80px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <FadeIn>
           <DemoLiveBadge />
@@ -1496,7 +1496,7 @@ function WebDesignBriefDemo() {
   ];
 
   return (
-    <section style={{ position: 'relative', zIndex: 2, padding: '0 48px 80px' }}>
+    <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '0 48px 80px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <FadeIn>
           <DemoLiveBadge />
@@ -1628,7 +1628,7 @@ function AgentsPage() {
       <Nav />
       <main>
         {/* Hero */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '160px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
+        <section className="cp-service-hero" style={{ position: 'relative', zIndex: 2, padding: '160px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
           <FadeIn>
             <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', marginBottom: 32, transition: 'color .15s ease' }}
               onMouseEnter={e => e.currentTarget.style.color = 'var(--paper)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}>← Back to home</a>
@@ -1650,8 +1650,8 @@ function AgentsPage() {
         <VoiceReceptionistDemo />
 
         {/* Problem */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div className="cp-service-problem-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
             <FadeIn><h2 style={{ font: '600 clamp(32px, 4vw, 48px)/1.05 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0, textWrap: 'balance' }}>Every missed call is a missed customer.</h2></FadeIn>
             <FadeIn delay={100}>
               <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>Most small businesses miss calls every single day — during jobs, after hours, on weekends. Each one is a potential customer who just called your competitor instead.</p>
@@ -1661,10 +1661,10 @@ function AgentsPage() {
         </section>
 
         {/* Process */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <FadeIn><SectionHead num="01" name="Process" theme="Up and running in days, not weeks." /></FadeIn>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }}>
+            <div className="cp-process-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }}>
               {AA_STEPS.map((s, i) => (
                 <FadeIn key={s.num} delay={i * 80}>
                   <div style={{ padding: '36px 28px', borderRight: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', minHeight: 220 }}>
@@ -1679,8 +1679,8 @@ function AgentsPage() {
         </section>
 
         {/* Included + Who it's for */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64 }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div className="cp-includes-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64 }}>
             <FadeIn>
               <SectionHead num="02" name="What's Included" theme="" />
               <div>
@@ -1709,11 +1709,11 @@ function AgentsPage() {
         </section>
 
         {/* Pricing */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <FadeIn><SectionHead num="04" name="Pricing" theme="Monthly plans. Cancel anytime." /></FadeIn>
             <FadeIn delay={80}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+              <div className="cp-pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
                 {AA_TIERS.map(t => (
                   <div key={t.name} style={{ padding: '40px 32px', background: t.featured ? 'var(--ink-2)' : 'transparent', border: `1px solid ${t.featured ? 'var(--signal)' : 'var(--ink-3)'}`, position: 'relative', display: 'flex', flexDirection: 'column' }}>
                     {t.featured && <span style={{ position: 'absolute', top: -1, left: 32, font: '500 10px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', background: 'var(--signal)', color: 'var(--ink)', padding: '4px 10px' }}>Most popular</span>}
@@ -1741,7 +1741,7 @@ function AgentsPage() {
         </section>
 
         {/* FAQ */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
           <div style={{ maxWidth: 800, margin: '0 auto' }}>
             <FadeIn><SectionHead num="05" name="FAQ" theme="Common questions, straight answers." /></FadeIn>
             <FadeIn delay={80}>
@@ -1753,7 +1753,7 @@ function AgentsPage() {
         </section>
 
         {/* Contact */}
-        <section id="aa-contact" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
+        <section id="aa-contact" className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
           <div style={{ maxWidth: 800, margin: '0 auto' }}>
             <FadeIn>
               <div style={{ textAlign: 'center', marginBottom: 56 }}>
@@ -1772,7 +1772,7 @@ function AgentsPage() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div className="cp-form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                     <FormField label="Name *"><input name="name" required value={form.name} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your name" style={inputStyle} /></FormField>
                     <FormField label="Business Name"><input name="company" value={form.company} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your business" style={inputStyle} /></FormField>
                   </div>
@@ -1855,7 +1855,7 @@ function AutomationPage() {
       <Nav />
       <main>
         {/* Hero */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '160px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
+        <section className="cp-service-hero" style={{ position: 'relative', zIndex: 2, padding: '160px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
           <FadeIn>
             <a href="/" onClick={() => window.scrollTo(0,0)} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', marginBottom: 32, transition: 'color .15s ease' }}
               onMouseEnter={e => e.currentTarget.style.color = 'var(--paper)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}>← Back to home</a>
@@ -1877,8 +1877,8 @@ function AutomationPage() {
         <AutomationAnalyzerDemo />
 
         {/* Problem */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div className="cp-service-problem-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
             <FadeIn><h2 style={{ font: '600 clamp(32px, 4vw, 48px)/1.05 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0, textWrap: 'balance' }}>Your team is spending hours on work that shouldn't require a human.</h2></FadeIn>
             <FadeIn delay={100}>
               <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>Follow-up emails, appointment reminders, data entry, report generation, scheduling — these tasks eat hours every week that could go toward serving customers and growing the business.</p>
@@ -1888,10 +1888,10 @@ function AutomationPage() {
         </section>
 
         {/* Process */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <FadeIn><SectionHead num="01" name="Process" theme="Find it. Build it. Let it run." /></FadeIn>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }}>
+            <div className="cp-process-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }}>
               {BA_STEPS.map((s, i) => (
                 <FadeIn key={s.num} delay={i * 80}>
                   <div style={{ padding: '36px 28px', borderRight: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', minHeight: 220 }}>
@@ -1906,8 +1906,8 @@ function AutomationPage() {
         </section>
 
         {/* Included + Who it's for */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64 }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div className="cp-includes-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64 }}>
             <FadeIn>
               <SectionHead num="02" name="What's Included" theme="" />
               <div>
@@ -1936,11 +1936,11 @@ function AutomationPage() {
         </section>
 
         {/* Pricing */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <FadeIn><SectionHead num="04" name="Pricing" theme="Start once. Grow from there." /></FadeIn>
             <FadeIn delay={80}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+              <div className="cp-pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
                 {BA_TIERS.map(t => (
                   <div key={t.name} style={{ padding: '40px 32px', background: t.featured ? 'var(--ink-2)' : 'transparent', border: `1px solid ${t.featured ? 'var(--signal)' : 'var(--ink-3)'}`, position: 'relative', display: 'flex', flexDirection: 'column' }}>
                     {t.featured && <span style={{ position: 'absolute', top: -1, left: 32, font: '500 10px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', background: 'var(--signal)', color: 'var(--ink)', padding: '4px 10px' }}>Most popular</span>}
@@ -1968,7 +1968,7 @@ function AutomationPage() {
         </section>
 
         {/* FAQ */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
           <div style={{ maxWidth: 800, margin: '0 auto' }}>
             <FadeIn><SectionHead num="05" name="FAQ" theme="Common questions, straight answers." /></FadeIn>
             <FadeIn delay={80}>
@@ -1980,7 +1980,7 @@ function AutomationPage() {
         </section>
 
         {/* Contact */}
-        <section id="ba-contact" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
+        <section id="ba-contact" className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
           <div style={{ maxWidth: 800, margin: '0 auto' }}>
             <FadeIn>
               <div style={{ textAlign: 'center', marginBottom: 56 }}>
@@ -1999,7 +1999,7 @@ function AutomationPage() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div className="cp-form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                     <FormField label="Name *"><input name="name" required value={form.name} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your name" style={inputStyle} /></FormField>
                     <FormField label="Business Name"><input name="company" value={form.company} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your business" style={inputStyle} /></FormField>
                   </div>
@@ -2082,7 +2082,7 @@ function KnowledgePage() {
       <Nav />
       <main>
         {/* Hero */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '160px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
+        <section className="cp-service-hero" style={{ position: 'relative', zIndex: 2, padding: '160px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
           <FadeIn>
             <a href="/" onClick={() => window.scrollTo(0,0)} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', marginBottom: 32, transition: 'color .15s ease' }}
               onMouseEnter={e => e.currentTarget.style.color = 'var(--paper)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}>← Back to home</a>
@@ -2104,8 +2104,8 @@ function KnowledgePage() {
         <KnowledgeBaseDemo />
 
         {/* Problem */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div className="cp-service-problem-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
             <FadeIn><h2 style={{ font: '600 clamp(32px, 4vw, 48px)/1.05 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0, textWrap: 'balance' }}>Your team already has the answers. They're just buried.</h2></FadeIn>
             <FadeIn delay={100}>
               <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>Every business accumulates knowledge over time — in employee handbooks, old emails, product docs, policy manuals. But that knowledge is scattered, hard to find, and usually lives in someone's head instead of somewhere useful.</p>
@@ -2115,10 +2115,10 @@ function KnowledgePage() {
         </section>
 
         {/* Process */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <FadeIn><SectionHead num="01" name="Process" theme="Your knowledge. Made instantly accessible." /></FadeIn>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }}>
+            <div className="cp-process-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }}>
               {KB_STEPS.map((s, i) => (
                 <FadeIn key={s.num} delay={i * 80}>
                   <div style={{ padding: '36px 28px', borderRight: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', minHeight: 220 }}>
@@ -2133,8 +2133,8 @@ function KnowledgePage() {
         </section>
 
         {/* Included + Who it's for */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64 }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div className="cp-includes-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64 }}>
             <FadeIn>
               <SectionHead num="02" name="What's Included" theme="" />
               <div>
@@ -2163,11 +2163,11 @@ function KnowledgePage() {
         </section>
 
         {/* Pricing */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <FadeIn><SectionHead num="04" name="Pricing" theme="Built once. Updated as you grow." /></FadeIn>
             <FadeIn delay={80}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+              <div className="cp-pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
                 {KB_TIERS.map(t => (
                   <div key={t.name} style={{ padding: '40px 32px', background: t.featured ? 'var(--ink-2)' : 'transparent', border: `1px solid ${t.featured ? 'var(--signal)' : 'var(--ink-3)'}`, position: 'relative', display: 'flex', flexDirection: 'column' }}>
                     {t.featured && <span style={{ position: 'absolute', top: -1, left: 32, font: '500 10px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', background: 'var(--signal)', color: 'var(--ink)', padding: '4px 10px' }}>Most popular</span>}
@@ -2195,7 +2195,7 @@ function KnowledgePage() {
         </section>
 
         {/* FAQ */}
-        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
           <div style={{ maxWidth: 800, margin: '0 auto' }}>
             <FadeIn><SectionHead num="05" name="FAQ" theme="Common questions, straight answers." /></FadeIn>
             <FadeIn delay={80}>
@@ -2207,7 +2207,7 @@ function KnowledgePage() {
         </section>
 
         {/* Contact */}
-        <section id="kb-contact" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
+        <section id="kb-contact" className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
           <div style={{ maxWidth: 800, margin: '0 auto' }}>
             <FadeIn>
               <div style={{ textAlign: 'center', marginBottom: 56 }}>
@@ -2226,7 +2226,7 @@ function KnowledgePage() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div className="cp-form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                     <FormField label="Name *"><input name="name" required value={form.name} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your name" style={inputStyle} /></FormField>
                     <FormField label="Business Name"><input name="company" value={form.company} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your business" style={inputStyle} /></FormField>
                   </div>
