@@ -2277,6 +2277,7 @@ function useHash() {
 
 function Root() {
   const hash = useHash();
+  useEffect(() => { window.scrollTo(0, 0); }, [hash]);
   if (hash === '#/services/web-design')          return <WebDesignPage />;
   if (hash === '#/services/ai-agents')           return <AgentsPage />;
   if (hash === '#/services/business-automation') return <AutomationPage />;
