@@ -840,6 +840,40 @@ function FAQItem({ q, a }) {
   );
 }
 
+// ── Related Services ─────────────────────────────────────────────
+const ALL_SERVICES = [
+  { name: 'Web Design',              short: 'Fast, modern websites built to convert — SEO-optimized from day one.',                  href: '/services/web-design',            tag: 'From $799' },
+  { name: 'AI Agents',               short: '24/7 voice and chat agents that answer calls, capture leads, and book appointments.',    href: '/services/ai-agents',             tag: 'From $149/mo' },
+  { name: 'Business Automation',     short: 'Map your workflows, cut the busywork, and deploy AI tools that free your team.',        href: '/services/business-automation',   tag: 'From $799' },
+  { name: 'Knowledge Base',          short: 'A private AI trained on your content — instant answers for staff and customers.',       href: '/services/knowledge-base',        tag: 'From $999' },
+];
+
+function RelatedServices({ current }) {
+  const others = ALL_SERVICES.filter(s => s.href !== current);
+  return (
+    <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '80px 48px', borderTop: '1px solid var(--ink-3)' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <FadeIn>
+          <p style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--signal)', margin: '0 0 32px' }}>Also offered</p>
+        </FadeIn>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--ink-3)' }}>
+          {others.map((s, i) => (
+            <FadeIn key={s.href} delay={i * 60}>
+              <a href={s.href} style={{ display: 'block', padding: '28px 24px', background: 'var(--ink)', textDecoration: 'none', transition: 'background .15s ease' }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--ink-2)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'var(--ink)'}>
+                <div style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--signal)', marginBottom: 10 }}>{s.tag}</div>
+                <h3 style={{ font: '600 18px var(--font-sans)', letterSpacing: '-0.02em', color: 'var(--paper)', margin: '0 0 8px' }}>{s.name} →</h3>
+                <p style={{ font: '400 13px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>{s.short}</p>
+              </a>
+            </FadeIn>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function WebDesignPage() {
   const [form, setForm] = React.useState({ name: '', company: '', message: '' });
   const [status, setStatus] = React.useState('idle');
@@ -983,6 +1017,7 @@ function WebDesignPage() {
         </section>
 
         {/* Contact */}
+        <RelatedServices current="/services/web-design" />
         <section id="wd-contact" className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
           <div style={{ maxWidth: 800, margin: '0 auto' }}>
             <FadeIn>
@@ -1765,6 +1800,7 @@ function AgentsPage() {
         </section>
 
         {/* Contact */}
+        <RelatedServices current="/services/ai-agents" />
         <section id="aa-contact" className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
           <div style={{ maxWidth: 800, margin: '0 auto' }}>
             <FadeIn>
@@ -1997,6 +2033,7 @@ function AutomationPage() {
         </section>
 
         {/* Contact */}
+        <RelatedServices current="/services/business-automation" />
         <section id="ba-contact" className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
           <div style={{ maxWidth: 800, margin: '0 auto' }}>
             <FadeIn>
@@ -2230,6 +2267,7 @@ function KnowledgePage() {
         </section>
 
         {/* Contact */}
+        <RelatedServices current="/services/knowledge-base" />
         <section id="kb-contact" className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
           <div style={{ maxWidth: 800, margin: '0 auto' }}>
             <FadeIn>
