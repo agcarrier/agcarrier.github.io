@@ -375,7 +375,7 @@ const PROJECTS = [
   { id: '003', name: 'Coming soon',  role: 'Knowledge Base',   desc: 'Private RAG system for a 40-person services team.',                placeholder: true },
 ];
 
-function WorkCard({ id, name, role, desc, href, status, preview, placeholder }) {
+function WorkCard({ id, name, role, desc, href, preview, placeholder }) {
   const [hov, setHov] = useState(false);
   const inner = (
     <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
@@ -392,7 +392,6 @@ function WorkCard({ id, name, role, desc, href, status, preview, placeholder }) 
       <div style={{ padding: '18px 20px 20px', display: 'flex', flexDirection: 'column', gap: 6 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
           <h3 style={{ font: '600 17px var(--font-sans)', letterSpacing: '-0.015em', margin: 0, color: 'var(--paper)' }}>{name}</h3>
-          {status && <span style={{ font: '500 9px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--signal)', borderBottom: '1px solid var(--signal)', paddingBottom: 2, whiteSpace: 'nowrap' }}>{status}</span>}
         </div>
         <span style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>{role}</span>
         <p style={{ font: '400 13px/1.5 var(--font-sans)', color: 'var(--muted)', margin: '6px 0 0' }}>{desc}</p>
@@ -516,7 +515,6 @@ function Stack() {
 }
 
 // ── Contact ───────────────────────────────────────────────────────
-// TODO: Replace YOUR_FORM_ID with your actual Formspree form ID (formspree.io/forms)
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xjgzyeol';
 
 // ── Per-page SEO meta ─────────────────────────────────────────────
@@ -1909,7 +1907,7 @@ function AutomationPage() {
         {/* Hero */}
         <section className="cp-service-hero" style={{ position: 'relative', zIndex: 2, padding: '160px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
           <FadeIn>
-            <a href="/" onClick={() => window.scrollTo(0,0)} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', marginBottom: 32, transition: 'color .15s ease' }}
+            <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', marginBottom: 32, transition: 'color .15s ease' }}
               onMouseEnter={e => e.currentTarget.style.color = 'var(--paper)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}>← Back to home</a>
           </FadeIn>
           <FadeIn delay={40}><div style={{ marginBottom: 24 }}><Eyebrow>Service 03 · <span style={{ color: 'var(--signal)' }}>Business Automation</span></Eyebrow></div></FadeIn>
@@ -2143,7 +2141,7 @@ function KnowledgePage() {
         {/* Hero */}
         <section className="cp-service-hero" style={{ position: 'relative', zIndex: 2, padding: '160px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
           <FadeIn>
-            <a href="/" onClick={() => window.scrollTo(0,0)} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', marginBottom: 32, transition: 'color .15s ease' }}
+            <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', marginBottom: 32, transition: 'color .15s ease' }}
               onMouseEnter={e => e.currentTarget.style.color = 'var(--paper)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}>← Back to home</a>
           </FadeIn>
           <FadeIn delay={40}><div style={{ marginBottom: 24 }}><Eyebrow>Service 04 · <span style={{ color: 'var(--signal)' }}>Knowledge Base</span></Eyebrow></div></FadeIn>
