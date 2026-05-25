@@ -1160,8 +1160,28 @@ function VoiceReceptionistDemo() {
   const [busy, setBusy] = React.useState(false);
   const [listening, setListening] = React.useState(false);
   const [err, setErr] = React.useState(null);
+  const [voices, setVoices] = React.useState([]);
+  const [selectedVoice, setSelectedVoice] = React.useState('');
   const recRef = React.useRef(null);
   const msgsRef = React.useRef(null);
+
+  // Load available English voices (async — fires after voiceschanged)
+  React.useEffect(() => {
+    function loadVoices() {
+      const all = window.speechSynthesis?.getVoices() || [];
+      const eng = all.filter(v => v.lang.startsWith('en'));
+      setVoices(eng);
+      if (eng.length && !selectedVoice) {
+        const preferred = eng.find(v => /samantha|ava|karen|moira|zira|heather|allison/i.test(v.name))
+          || eng.find(v => v.lang === 'en-US')
+          || eng[0];
+        if (preferred) setSelectedVoice(preferred.name);
+      }
+    }
+    loadVoices();
+    window.speechSynthesis?.addEventListener('voiceschanged', loadVoices);
+    return () => window.speechSynthesis?.removeEventListener('voiceschanged', loadVoices);
+  }, []);
 
   // Reset conversation when business changes
   React.useEffect(() => {
@@ -1178,9 +1198,9 @@ function VoiceReceptionistDemo() {
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.rate = 0.92;
-    const voices = window.speechSynthesis.getVoices();
-    const pick = voices.find(v => v.lang.startsWith('en') && /samantha|karen|female|zira|heather|moira/i.test(v.name))
-      || voices.find(v => v.lang.startsWith('en-US'));
+    const pick = voices.find(v => v.name === selectedVoice)
+      || voices.find(v => v.lang === 'en-US')
+      || voices[0];
     if (pick) u.voice = pick;
     window.speechSynthesis.speak(u);
   }
@@ -1243,9 +1263,22 @@ function VoiceReceptionistDemo() {
           {/* Chat widget */}
           <div style={{ background: 'var(--ink-2)', border: '1px solid var(--ink-3)', maxWidth: 660 }}>
             {/* Header bar */}
-            <div style={{ padding: '12px 18px', borderBottom: '1px solid var(--ink-3)', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--signal)' }} />
+            <div style={{ padding: '12px 18px', borderBottom: '1px solid var(--ink-3)', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <div style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--signal)', flexShrink: 0 }} />
               <span style={{ font: '500 11px var(--font-mono)', color: 'var(--paper)', letterSpacing: '0.06em' }}>Ava · AI Receptionist · {biz.name}</span>
+              {voices.length > 0 && (
+                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 7 }}>
+                  <span style={{ font: '400 9px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>Voice</span>
+                  <select value={selectedVoice} onChange={e => setSelectedVoice(e.target.value)} style={{
+                    font: '400 11px var(--font-mono)', background: 'var(--ink)', border: '1px solid var(--ink-3)',
+                    color: 'var(--paper)', padding: '3px 7px', cursor: 'pointer', outline: 'none', maxWidth: 180,
+                  }}>
+                    {voices.map(v => (
+                      <option key={v.name} value={v.name}>{v.name} ({v.lang})</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
 
             {/* Messages */}
