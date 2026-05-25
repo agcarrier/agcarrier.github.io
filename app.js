@@ -1576,20 +1576,21 @@ function WebDesignBriefDemo() {
 
 // ── AI Agents & Receptionist Page ────────────────────────────────
 const AA_STEPS = [
-  { num: '01', title: 'Discovery',  desc: 'We learn your business — your common calls, FAQs, booking process, and how you like to communicate. No two agents are the same.' },
-  { num: '02', title: 'Build',      desc: 'We configure your agent with your business info, custom scripts, and connect it to your calendar or booking system.' },
-  { num: '03', title: 'Test',       desc: 'We run through real-world scenarios until it sounds exactly right. You approve before anything goes live.' },
-  { num: '04', title: 'Deploy',     desc: 'Your agent goes live and starts working around the clock — answering, qualifying, and booking while you focus on the job.' },
+  { num: '01', title: 'Discovery',  desc: 'A focused call to understand your business — the calls you get most, your FAQs, how you like to handle bookings, and what tone fits your brand. Every agent is built from scratch for your specific workflows, not copied from a template.' },
+  { num: '02', title: 'Build',      desc: 'We configure your agent with your business details, custom scripts, pricing, hours, and service area. If you use a calendar or booking system, we connect it so the agent can check availability and schedule in real time.' },
+  { num: '03', title: 'Test',       desc: 'We run through dozens of real-world scenarios — common questions, edge cases, difficult callers — until it handles every situation exactly right. You review and approve every response before anything goes live.' },
+  { num: '04', title: 'Deploy',     desc: 'Your agent goes live and starts working immediately — answering calls and messages 24/7, capturing lead information, and booking appointments while you focus on the work. You get a summary of every interaction by email.' },
 ];
 
 const AA_INCLUDES = [
-  '24/7 call and message answering',
-  'Lead qualification and capture',
-  'Appointment booking synced to your calendar',
-  'Custom FAQ handling trained on your business',
-  'Call and message summaries sent to your email',
-  'Smart escalation for complex or sensitive issues',
-  'Monthly performance summary',
+  '24/7 call and message answering — nights, weekends, holidays',
+  'Lead qualification that captures name, number, and job details before you ever pick up',
+  'Appointment booking synced directly to your Google, Outlook, or Calendly calendar',
+  'Custom FAQ handling trained on your specific services, pricing, and policies',
+  'Call and message summaries delivered to your email after every interaction',
+  'Smart escalation — knows when to take a message and flag it as urgent',
+  'Monthly performance report showing call volume, leads captured, and bookings made',
+  'Ongoing tuning included — update hours, pricing, or FAQs anytime',
 ];
 
 const AA_INDUSTRIES = [
@@ -1605,12 +1606,16 @@ const AA_TIERS = [
 ];
 
 const AA_FAQS = [
-  { q: 'Does it really sound like a real person?',          a: 'Modern AI voice agents are remarkably natural — most callers can\'t tell the difference. We tune the voice, tone, and pacing to match your brand before going live.' },
-  { q: 'What happens when it doesn\'t know the answer?',    a: 'The agent is trained to gracefully escalate — it takes a message, captures contact info, and notifies you immediately so you can follow up.' },
-  { q: 'Can it book appointments on my calendar?',          a: 'Yes. We connect it to your existing calendar (Google, Outlook, Calendly, etc.) so it can check availability and book in real time.' },
-  { q: 'How long does setup take?',                         a: 'Most agents are live within 3–5 business days of the discovery call. More complex integrations may take a bit longer.' },
-  { q: 'What do I need to provide to get started?',         a: 'Just your time for a discovery call. We\'ll gather everything we need — your FAQs, business hours, booking process, and how you want calls handled.' },
-  { q: 'Can I make changes after it\'s live?',              a: 'Absolutely. Your monthly plan includes ongoing updates. Business changes, new FAQs, seasonal hours — just let us know and we\'ll update the agent.' },
+  { q: 'Does it really sound like a real person?',             a: 'Modern AI voice agents are remarkably natural — most callers can\'t tell the difference. We tune the voice, tone, and pacing to match your brand before going live. You\'ll hear it yourself and approve before we flip the switch.' },
+  { q: 'What happens when it doesn\'t know the answer?',       a: 'The agent is trained to escalate gracefully — it takes a message, captures the caller\'s name and number, explains that someone will call back shortly, and sends you an immediate notification. No caller gets left hanging.' },
+  { q: 'Can it book appointments on my calendar?',             a: 'Yes. We connect it to your existing calendar (Google, Outlook, Calendly, etc.) so it can check real-time availability and book appointments without any manual work on your end.' },
+  { q: 'How long does setup take?',                            a: 'Most agents are live within 3–5 business days of the discovery call. More complex builds with custom integrations or multi-location setups may take a few days longer, but never weeks.' },
+  { q: 'What do I need to provide to get started?',            a: 'Just 30–45 minutes for a discovery call. We\'ll gather your FAQs, business hours, service area, pricing, booking process, and how you want different types of calls handled. You don\'t need to write a script.' },
+  { q: 'Can I make changes after it\'s live?',                 a: 'Absolutely. Your monthly plan includes ongoing updates — business changes, new services, seasonal hours, updated pricing. Just let us know and we\'ll update the agent, usually within 24 hours.' },
+  { q: 'What if I already have a receptionist?',               a: 'AI agents work great as backup — handling overflow calls during busy periods, after-hours coverage, and weekend calls. Many clients use an agent to supplement their receptionist rather than replace them.' },
+  { q: 'Does it work for texts and web chat too?',             a: 'Yes. The Basic plan covers text and chat. Standard and Pro include voice. We can also add web chat directly to your website so visitors get immediate responses without picking up the phone.' },
+  { q: 'What industries does this work best for?',             a: 'Any business that receives inbound calls — contractors, HVAC, plumbers, electricians, dental offices, salons, real estate agents, law offices, restaurants. If you\'re missing calls right now, the agent pays for itself quickly.' },
+  { q: 'How does billing work?',                               a: 'There\'s a one-time setup fee to build and configure your agent, then a flat monthly subscription. No per-minute charges, no usage spikes. You know exactly what it costs every month.' },
 ];
 
 function AgentsPage() {
@@ -1660,8 +1665,9 @@ function AgentsPage() {
           <div className="cp-service-problem-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
             <FadeIn><h2 style={{ font: '600 clamp(32px, 4vw, 48px)/1.05 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0, textWrap: 'balance' }}>Every missed call is a missed customer.</h2></FadeIn>
             <FadeIn delay={100}>
-              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>Most small businesses miss calls every single day — during jobs, after hours, on weekends. Each one is a potential customer who just called your competitor instead.</p>
-              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>Hiring a receptionist costs $1,200–$1,500/month and only covers business hours. An AI agent costs a fraction of that and never clocks out.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>Most small businesses miss calls every single day — during jobs, after hours, on weekends. Each one is a potential customer who didn't leave a voicemail and just called your competitor instead. Studies show that 80% of callers who reach voicemail don't call back.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>Hiring a full-time receptionist costs $1,200–$1,500/month in Lafayette — and they only cover business hours. Answering services use off-script operators who don't know your business. Neither solution captures leads, books appointments, or handles FAQs the way a trained AI agent can.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>An AI agent costs a fraction of that, knows your business inside and out, and never clocks out. It answers on the first ring at 2am the same way it answers at 2pm on a Monday.</p>
             </FadeIn>
           </div>
         </section>
@@ -1803,20 +1809,21 @@ function AgentsPage() {
 
 // ── Business Automation Page ──────────────────────────────────────
 const BA_STEPS = [
-  { num: '01', title: 'Assessment',   desc: 'We map your current workflows and find where time and money are leaking. Most businesses are surprised how much is automatable.' },
-  { num: '02', title: 'Identify',     desc: 'We prioritize the highest-impact opportunities — the tasks that eat the most hours and are easiest to hand off to AI.' },
-  { num: '03', title: 'Build',        desc: 'We deploy the right AI tools for each workflow and connect them to the software you already use.' },
-  { num: '04', title: 'Optimize',     desc: 'We monitor performance, tune as needed, and expand automation as your business grows.' },
+  { num: '01', title: 'Assessment',   desc: 'We walk through your day-to-day operations and map where time and money are leaking. Most businesses are surprised by how much of their work is already automatable — follow-ups, reminders, data entry, scheduling, reporting, and more.' },
+  { num: '02', title: 'Identify',     desc: 'We prioritize by impact — the tasks that eat the most hours and carry the least risk to automate go first. You see real time savings fast while we build toward bigger, more complex wins.' },
+  { num: '03', title: 'Build',        desc: 'We deploy the right tools for each workflow using platforms like Zapier, Make, n8n, and Claude AI — and connect them to the software you already use. No ripping anything out, no learning a new system.' },
+  { num: '04', title: 'Optimize',     desc: 'We monitor performance after launch, fix anything that needs tuning, and document everything we\'ve built. Growth Partner clients get new automations added every month as your business evolves.' },
 ];
 
 const BA_INCLUDES = [
-  'Full workflow assessment and mapping',
-  'AI tool selection tailored to your business',
-  'Integration with your existing software',
-  'Staff onboarding and training',
-  '30-day monitoring and tuning after launch',
-  'Documentation of every automation built',
-  'Ongoing support and expansion available',
+  'Full workflow audit — we find what\'s automatable before we build anything',
+  'Tool selection tailored to your workflows and budget (Zapier, Make, n8n, Claude AI, and more)',
+  'Integration with the software you already use — no system replacements required',
+  'Staff onboarding so your team knows exactly how each automation works',
+  '30-day post-launch monitoring and tuning at no extra charge',
+  'Written documentation of every automation so nothing lives only in our heads',
+  'Same-day turnaround on minor tweaks during the support window',
+  'Expansion roadmap — a prioritized list of future automations to tackle next',
 ];
 
 const BA_INDUSTRIES = [
@@ -1832,12 +1839,15 @@ const BA_TIERS = [
 ];
 
 const BA_FAQS = [
-  { q: 'What kinds of tasks can actually be automated?',      a: 'More than most people expect — appointment reminders, follow-up emails, invoice generation, data entry, report creation, social media scheduling, customer onboarding, and more. If it\'s repetitive, there\'s a good chance AI can handle it.' },
-  { q: 'Do I need to change the software I\'m already using?', a: 'Usually not. We work with what you have — Google Workspace, QuickBooks, Outlook, your CRM, your booking system. The goal is to make your existing tools smarter, not replace them.' },
-  { q: 'How long before we see results?',                     a: 'Most clients see time savings within the first week of go-live. Some automations pay for themselves in the first month.' },
-  { q: 'Will my staff need a lot of training?',               a: 'No. We design automations to be invisible where possible — they just run. Where staff interaction is needed, we keep it simple and include training in every package.' },
-  { q: 'What if an automation breaks or stops working?',      a: 'We monitor everything during the 30-day support window and fix any issues at no extra charge. Growth Partner clients get ongoing monitoring indefinitely.' },
-  { q: 'How do you decide which tasks to automate first?',    a: 'We prioritize by time saved versus complexity — the tasks that eat the most hours and are straightforward to automate go first. You see results fast while we build toward bigger wins.' },
+  { q: 'What kinds of tasks can actually be automated?',       a: 'More than most people expect — appointment reminders, follow-up emails, invoice generation, data entry, report creation, lead routing, customer onboarding, social media scheduling, and more. If a task is repetitive and rule-based, there\'s a strong chance AI can handle it.' },
+  { q: 'Do I need to change the software I\'m already using?', a: 'Usually not. We work with what you have — Google Workspace, QuickBooks, Outlook, HubSpot, your CRM, your booking system. The goal is to make your existing tools smarter and connect them together, not replace them.' },
+  { q: 'How long before we see results?',                      a: 'Most clients see measurable time savings within the first week of go-live. Simpler automations like email follow-ups and appointment reminders often pay for themselves in the first month.' },
+  { q: 'Will my staff need a lot of training?',                a: 'No. We design automations to be invisible where possible — they just run in the background. Where staff interaction is needed, we keep it simple and include a training session in every package.' },
+  { q: 'What if an automation breaks or stops working?',       a: 'We monitor everything during the 30-day support window and fix issues at no extra charge. Growth Partner clients get ongoing monitoring and same-day fixes indefinitely.' },
+  { q: 'How do you decide which tasks to automate first?',     a: 'We prioritize by time-saved-versus-complexity. Tasks that eat the most hours and are low-risk to automate go first. You see results quickly while we build toward bigger, more complex workflows.' },
+  { q: 'Is this just Zapier? Can\'t I do this myself?',        a: 'Zapier and Make are tools we often use, but the value is in knowing what to build, how to build it reliably, and how to connect it to your specific setup. Most DIY automations break within weeks because edge cases weren\'t handled. We build them to last.' },
+  { q: 'What size business is this right for?',                a: 'Any business with repetitive internal tasks — typically 1 to 50 employees. The smaller the team, the more impact automation has, because everyone is wearing multiple hats. A 5-person shop automating their follow-up emails can reclaim 10+ hours a week.' },
+  { q: 'Do you offer ongoing help after the project ends?',    a: 'Yes — the Growth Partner plan gives you a dedicated automation partner who adds new workflows monthly, monitors performance, and handles tweaks as your business changes. It\'s ideal for businesses that want to keep improving over time.' },
 ];
 
 function AutomationPage() {
@@ -1887,8 +1897,9 @@ function AutomationPage() {
           <div className="cp-service-problem-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
             <FadeIn><h2 style={{ font: '600 clamp(32px, 4vw, 48px)/1.05 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0, textWrap: 'balance' }}>Your team is spending hours on work that shouldn't require a human.</h2></FadeIn>
             <FadeIn delay={100}>
-              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>Follow-up emails, appointment reminders, data entry, report generation, scheduling — these tasks eat hours every week that could go toward serving customers and growing the business.</p>
-              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>AI doesn't replace your team — it removes the busywork so they can focus on what actually matters. Most businesses automate their first workflow within days of starting.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>Follow-up emails, appointment reminders, data entry, invoice generation, report creation, lead routing — these tasks eat hours every week that could go toward serving customers and growing the business. For most small businesses, 30–40% of daily work is repetitive enough to automate entirely.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>The problem isn't that the tools don't exist — Zapier, Make, and AI platforms are more capable than ever. The problem is knowing which tasks to automate, how to connect them to your existing software, and how to build them so they don't break the moment something unexpected happens.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>AI doesn't replace your team — it removes the busywork so they can focus on what actually matters. Most clients have their first automation live and saving time within a week of the assessment call.</p>
             </FadeIn>
           </div>
         </section>
@@ -2030,20 +2041,21 @@ function AutomationPage() {
 
 // ── Knowledge Base Page ───────────────────────────────────────────
 const KB_STEPS = [
-  { num: '01', title: 'Discovery',  desc: 'We learn what your team and customers ask most — the questions that get answered the same way a hundred times a week.' },
-  { num: '02', title: 'Gather',     desc: 'We collect your existing content — docs, PDFs, FAQs, policies, emails, manuals. If the answer exists somewhere, we find it.' },
-  { num: '03', title: 'Build',      desc: 'We train a private AI on your content and configure the interface — staff portal, customer widget, or both.' },
-  { num: '04', title: 'Deploy',     desc: 'Your knowledge base goes live. Staff get instant answers. Customers get instant answers. You stop fielding the same calls.' },
+  { num: '01', title: 'Discovery',  desc: 'We identify the questions your team and customers ask most — the ones that get answered the same way dozens of times a week. We also map where your existing knowledge lives so we know what to collect.' },
+  { num: '02', title: 'Gather',     desc: 'We collect your existing content — PDFs, Word docs, Google Docs, emails, FAQs, product manuals, policy documents, website pages. If the answer exists somewhere in your business, we find it and bring it in.' },
+  { num: '03', title: 'Build',      desc: 'We train a private AI exclusively on your content and configure the interface — a staff-facing portal, a customer-facing web widget, or both. Your data never leaves your environment or touches a public AI model.' },
+  { num: '04', title: 'Deploy',     desc: 'Your knowledge base goes live. Staff get instant, accurate answers without pulling a manager aside. Customers get answers at 3am without sending an email. You stop fielding the same questions over and over.' },
 ];
 
 const KB_INCLUDES = [
-  'Private AI trained exclusively on your content',
-  'Custom knowledge ingestion — docs, PDFs, FAQs, emails',
-  'Staff-facing internal portal',
-  'Customer-facing web widget (Standard and above)',
-  'Secure — your data stays private, never used to train public models',
-  '30-day monitoring and accuracy tuning',
-  'Ongoing content updates available',
+  'Private AI trained exclusively on your content — not general web knowledge',
+  'Ingestion of any text format — PDFs, Word docs, Google Docs, spreadsheets, emails, web pages',
+  'Staff-facing internal portal for instant employee answers and onboarding',
+  'Branded customer-facing web widget embeddable on any page (Standard and above)',
+  'Fully private and secure — your data is never shared with or used to train any public model',
+  'Source citations so users can see exactly where each answer came from',
+  '30-day post-launch accuracy monitoring and tuning included',
+  'Content update service — add new documents or revise existing ones as your business changes',
 ];
 
 const KB_INDUSTRIES = [
@@ -2059,12 +2071,16 @@ const KB_TIERS = [
 ];
 
 const KB_FAQS = [
-  { q: 'Is my data secure and private?',                   a: 'Absolutely. Your knowledge base is trained on your content alone and hosted privately. Your data is never shared with or used to train any public AI model.' },
-  { q: 'What kinds of documents can it learn from?',       a: 'Almost anything — PDFs, Word docs, Google Docs, spreadsheets, emails, website pages, employee handbooks, product manuals, FAQs. If it\'s text, we can use it.' },
-  { q: 'How accurate are the answers?',                    a: 'Very accurate for content it\'s been trained on. It only answers from your documents — it won\'t make things up. If it doesn\'t know, it says so and suggests who to ask.' },
-  { q: 'Can customers use it on my website?',              a: 'Yes — Standard and Growth plans include a branded chat widget you can embed on any page of your website. Customers get instant answers without calling or emailing.' },
-  { q: 'What happens when my content changes?',            a: 'On the Growth plan, we update the knowledge base monthly as your content evolves. On one-time plans, updates are available at a flat hourly rate.' },
-  { q: 'How is this different from just using ChatGPT?',   a: 'ChatGPT knows everything — which means it can also make things up. Your knowledge base only knows what you\'ve trained it on, so answers are accurate, consistent, and specific to your business.' },
+  { q: 'Is my data secure and private?',                    a: 'Absolutely. Your knowledge base is trained on your content alone and hosted in a private environment. Your data is never shared with, sold to, or used to train any public AI model — unlike uploading documents to ChatGPT or similar tools.' },
+  { q: 'What kinds of documents can it learn from?',        a: 'Almost anything text-based — PDFs, Word docs, Google Docs, spreadsheets, emails, website pages, employee handbooks, product manuals, FAQs, training materials. If it\'s text, we can ingest it.' },
+  { q: 'How accurate are the answers?',                     a: 'Very accurate for content it\'s been trained on. It answers only from your documents and won\'t fabricate information. If it doesn\'t have the answer, it says so clearly and can be configured to suggest who to contact instead.' },
+  { q: 'Can customers use it on my website?',               a: 'Yes — Standard and Growth plans include a branded chat widget you can embed on any page. Customers type their question and get an instant answer, day or night, without calling or emailing your team.' },
+  { q: 'What happens when my content changes?',             a: 'Growth plan clients get monthly content updates as part of the subscription. One-time plan clients can add or update documents at a flat hourly rate. Either way, the knowledge base stays current.' },
+  { q: 'How is this different from just using ChatGPT?',    a: 'ChatGPT is trained on the entire internet — which means it can also confidently make things up. Your private knowledge base only knows what you\'ve given it, so answers are accurate, consistent, and specific to your business. It will never tell a customer something that isn\'t true about you.' },
+  { q: 'How long does setup take?',                         a: 'Most knowledge bases are live within 5–7 business days of receiving your content. Larger builds with hundreds of documents may take a bit longer, but we\'ll give you a clear timeline upfront.' },
+  { q: 'What if my team doesn\'t have organized documentation?', a: 'That\'s very common. We can work from whatever you have — even unstructured emails, old FAQ lists, or a brain-dump call where you walk us through how things work. We help organize and structure it as part of the build.' },
+  { q: 'Can it handle follow-up questions in a conversation?', a: 'Yes. The chat interface supports multi-turn conversations — users can ask follow-up questions and the AI understands the context of what was already discussed, just like chatting with a knowledgeable coworker.' },
+  { q: 'Who is this built for?',                            a: 'Any business where people spend time answering the same questions repeatedly — dental offices, law firms, contractors, property managers, HR teams, restaurants with complex menus or policies. If someone on your team is the unofficial "answer person," this replaces that bottleneck.' },
 ];
 
 function KnowledgePage() {
@@ -2114,8 +2130,9 @@ function KnowledgePage() {
           <div className="cp-service-problem-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
             <FadeIn><h2 style={{ font: '600 clamp(32px, 4vw, 48px)/1.05 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0, textWrap: 'balance' }}>Your team already has the answers. They're just buried.</h2></FadeIn>
             <FadeIn delay={100}>
-              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>Every business accumulates knowledge over time — in employee handbooks, old emails, product docs, policy manuals. But that knowledge is scattered, hard to find, and usually lives in someone's head instead of somewhere useful.</p>
-              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>We take everything your business already knows and turn it into a private AI that gives instant, accurate answers — to your staff, your customers, or both.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>Every business accumulates knowledge over time — in employee handbooks, old emails, product docs, policy manuals, training materials. But that knowledge is scattered across folders no one opens, buried in inboxes, or living entirely in one person's head. When that person is busy, on vacation, or leaves — everyone's stuck.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>The result is the same questions getting answered over and over. New employees spending their first weeks asking instead of doing. Customers emailing for information that should be instantly available. Managers pulled away from real work to answer things that are already documented somewhere.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>We take everything your business already knows and turn it into a private AI that gives instant, accurate answers — to your staff, your customers, or both — without pulling anyone away from what they should be doing.</p>
             </FadeIn>
           </div>
         </section>
