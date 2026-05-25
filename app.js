@@ -219,14 +219,16 @@ function Hero() {
         </h1>
       </FadeIn>
       <FadeIn delay={160}>
-        <p style={{ font: '400 18px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 16px' }}>
-          Carrier Pigeon AI builds practical AI tools, websites, and agents for small and mid-size businesses. AI changes what small businesses can afford and how fast they can move — calm tech, no hype, built by an IT professional who's been keeping systems running for years.
-        </p>
-        <p style={{ font: '400 16px/1.6 var(--font-sans)', color: 'var(--signal)', maxWidth: '52ch', margin: '0 0 40px', fontStyle: 'italic' }}>
-          We start with your problem — not the technology.
+        <p style={{ font: '400 18px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 24px' }}>
+          Calm tech, no hype — practical AI tools, websites, and agents built for small businesses by someone who's been keeping systems running for years.
         </p>
       </FadeIn>
       <FadeIn delay={240}>
+        <p style={{ font: '400 17px/1.6 var(--font-sans)', color: 'var(--signal)', maxWidth: '52ch', margin: '0 0 44px', fontStyle: 'italic' }}>
+          We start with your problem — not the technology.
+        </p>
+      </FadeIn>
+      <FadeIn delay={320}>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 56 }}>
           <Btn primary arrow href="#services">See services</Btn>
         </div>
@@ -370,48 +372,44 @@ function Services() {
 
 // ── Work ──────────────────────────────────────────────────────────
 const PROJECTS = [
-  { id: '001', name: 'AAVA Rescue',  role: 'Website',          desc: 'Marketing site and donation flow for an animal rescue org.',        href: 'https://aavarescue.com', preview: 'https://image.thum.io/get/width/600/crop/380/https://aavarescue.com' },
-  { id: '002', name: 'Coming soon',  role: 'Custom AI Agent',  desc: 'A back-office agent for an SMB client. NDA — case study soon.',    placeholder: true },
-  { id: '003', name: 'Coming soon',  role: 'Knowledge Base',   desc: 'Private RAG system for a 40-person services team.',                placeholder: true },
+  { id: '001', name: 'AAVA Rescue',  role: 'Website',  desc: 'Marketing site and donation flow for an animal rescue org. Built in a day, live the same week.',  href: 'https://aavarescue.com', preview: 'https://image.thum.io/get/width/600/crop/380/https://aavarescue.com' },
 ];
 
-function WorkCard({ id, name, role, desc, href, preview, placeholder }) {
+function WorkCard({ id, name, role, desc, href, preview }) {
   const [hov, setHov] = useState(false);
   const inner = (
     <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
-      style={{ position: 'relative', border: `1px solid ${hov && !placeholder ? 'var(--signal)' : 'var(--ink-3)'}`, background: 'var(--ink)', display: 'flex', flexDirection: 'column', color: 'var(--paper)', transition: 'border-color .2s ease, transform .2s ease', transform: hov && !placeholder ? 'translateY(-2px)' : 'translateY(0)', cursor: placeholder ? 'default' : 'pointer' }}>
-      <div style={{ height: 2, background: hov && !placeholder ? 'var(--signal)' : 'var(--ink-3)', transition: 'background .2s ease' }} />
+      className="cp-work-card" style={{ position: 'relative', border: `1px solid ${hov ? 'var(--signal)' : 'var(--ink-3)'}`, background: 'var(--ink)', display: 'grid', gridTemplateColumns: '1fr 1fr', color: 'var(--paper)', transition: 'border-color .2s ease', cursor: 'pointer' }}>
+      <div style={{ height: 2, background: hov ? 'var(--signal)' : 'var(--ink-3)', transition: 'background .2s ease', position: 'absolute', top: 0, left: 0, right: 0 }} />
       <div style={{ aspectRatio: '16 / 10', overflow: 'hidden', background: 'var(--ink-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-        {preview ? (
-          <img src={preview} alt={`${name} preview`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: hov ? 'none' : 'grayscale(0.2)', transition: 'filter .3s ease, transform .4s ease', transform: hov ? 'scale(1.02)' : 'scale(1)' }} />
-        ) : (
-          <PixelBird size={56} fg="#2a2a2d" accent="#2a2a2d" />
-        )}
+        {preview && <img src={preview} alt={`${name} preview`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: hov ? 'none' : 'grayscale(0.2)', transition: 'filter .3s ease, transform .4s ease', transform: hov ? 'scale(1.02)' : 'scale(1)' }} />}
         <span style={{ position: 'absolute', top: 12, left: 12, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', color: 'var(--paper)', mixBlendMode: 'difference' }}>{id}</span>
       </div>
-      <div style={{ padding: '18px 20px 20px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
-          <h3 style={{ font: '600 17px var(--font-sans)', letterSpacing: '-0.015em', margin: 0, color: 'var(--paper)' }}>{name}</h3>
+      <div style={{ padding: '32px 36px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 10 }}>
+        <span style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--signal)' }}>{role}</span>
+        <h3 style={{ font: '600 28px/1.1 var(--font-sans)', letterSpacing: '-0.02em', margin: 0, color: 'var(--paper)' }}>{name}</h3>
+        <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', margin: '4px 0 0', maxWidth: '36ch' }}>{desc}</p>
+        <div style={{ marginTop: 8 }}>
+          <span style={{ font: '500 12px var(--font-mono)', letterSpacing: '0.1em', color: hov ? 'var(--signal)' : 'var(--muted)', transition: 'color .2s ease' }}>VIEW SITE →</span>
         </div>
-        <span style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>{role}</span>
-        <p style={{ font: '400 13px/1.5 var(--font-sans)', color: 'var(--muted)', margin: '6px 0 0' }}>{desc}</p>
       </div>
     </div>
   );
-  return placeholder
-    ? inner
-    : <a href={href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block' }}>{inner}</a>;
+  return <a href={href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block' }}>{inner}</a>;
 }
 
 function Work() {
   return (
     <section id="work" data-screen-label="03 Work" style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <FadeIn><SectionHead num="03" name="Work" theme="Live and shipping soon." count={`${PROJECTS.length} / Active`} /></FadeIn>
+        <FadeIn><SectionHead num="03" name="Work" theme="Built and shipped." count="1 / Active" /></FadeIn>
         <FadeIn>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }} className="cp-work-grid">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
             {PROJECTS.map(p => <WorkCard key={p.id} {...p} />)}
           </div>
+        </FadeIn>
+        <FadeIn delay={120}>
+          <p style={{ font: '400 13px/1.5 var(--font-sans)', color: 'var(--muted)', marginTop: 20, textAlign: 'right' }}>More case studies in progress — check back soon.</p>
         </FadeIn>
       </div>
     </section>
