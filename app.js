@@ -729,35 +729,88 @@ function ScrollProgressBar() {
   return <div style={{ position: 'fixed', top: 0, left: 0, zIndex: 1000, height: 2, width: `${p}%`, background: 'var(--signal)', transition: 'width .08s linear', pointerEvents: 'none' }} />;
 }
 
+const NAV_SERVICES = [
+  { name: 'Web Design',           sub: 'Fast, modern sites built to convert',           href: '/services/web-design' },
+  { name: 'AI Agents',            sub: '24/7 voice & chat — never miss a lead',         href: '/services/ai-agents' },
+  { name: 'Business Automation',  sub: 'Cut busywork, free your team',                  href: '/services/business-automation' },
+  { name: 'Knowledge Base',       sub: 'Private AI trained on your content',            href: '/services/knowledge-base' },
+];
+
 function Nav() {
-  const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen]           = useState(false);
+  const [scrolled, setScrolled]   = useState(false);
+  const [svcOpen, setSvcOpen]     = useState(false); // mobile services accordion
+  const [svcHov, setSvcHov]       = useState(false); // desktop dropdown
+  const closeTimer                = useRef(null);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
-  const links = ['Services', 'Work', 'Stack', 'Founder', 'Contact'];
-  // Prefix section anchors with "/" so they work from any service page
+
+  // Close dropdown with a small delay so moving into the menu doesn't flicker
+  const openDropdown  = () => { clearTimeout(closeTimer.current); setSvcHov(true); };
+  const closeDropdown = () => { closeTimer.current = setTimeout(() => setSvcHov(false), 120); };
+
   const isHome = window.location.pathname === '/';
   const anchor = id => isHome ? `#${id}` : `/#${id}`;
+  const otherLinks = ['Work', 'Stack', 'Founder', 'Contact'];
+
+  const linkStyle = { font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', transition: 'color .15s ease' };
+
   return (
     <>
       <nav className="cp-nav" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 48px', borderBottom: scrolled ? '1px solid var(--ink-3)' : '1px solid transparent', background: scrolled ? 'rgba(12,12,13,0.78)' : 'rgba(12,12,13,0.42)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', transition: 'background .2s ease, border-color .2s ease' }}>
+
+        {/* Logo */}
         <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 14, textDecoration: 'none' }} aria-label="Carrier Pigeon AI home">
           <PixelBird size={28} />
           <span style={{ font: '600 14px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)' }}>Carrier Pigeon AI</span>
         </a>
+
+        {/* Desktop links */}
         <div className="cp-nav-links" style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
-          {links.map(l => (
-            <a key={l} href={anchor(l.toLowerCase())}
-              style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', transition: 'color .15s ease' }}
+
+          {/* Services dropdown trigger */}
+          <div style={{ position: 'relative' }} onMouseEnter={openDropdown} onMouseLeave={closeDropdown}>
+            <button style={{ ...linkStyle, background: 'none', border: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, color: svcHov ? 'var(--paper)' : 'var(--muted)', transition: 'color .15s ease', padding: 0 }}>
+              Services
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ transform: svcHov ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform .2s ease', marginTop: 1 }}>
+                <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="square"/>
+              </svg>
+            </button>
+
+            {/* Dropdown panel */}
+            {svcHov && (
+              <div onMouseEnter={openDropdown} onMouseLeave={closeDropdown}
+                style={{ position: 'absolute', top: 'calc(100% + 16px)', left: '50%', transform: 'translateX(-50%)', width: 280, background: 'var(--ink-2)', border: '1px solid var(--ink-3)', padding: '8px 0', zIndex: 200 }}>
+                {/* Arrow notch */}
+                <div style={{ position: 'absolute', top: -5, left: '50%', transform: 'translateX(-50%)', width: 9, height: 9, background: 'var(--ink-2)', border: '1px solid var(--ink-3)', borderBottom: 'none', borderRight: 'none', rotate: '45deg' }} />
+                {NAV_SERVICES.map(s => (
+                  <a key={s.href} href={s.href}
+                    style={{ display: 'block', padding: '12px 20px', textDecoration: 'none', transition: 'background .12s ease' }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'var(--ink-3)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                    <div style={{ font: '600 12px var(--font-sans)', letterSpacing: '-0.01em', color: 'var(--paper)', marginBottom: 2 }}>{s.name}</div>
+                    <div style={{ font: '400 11px var(--font-sans)', color: 'var(--muted)' }}>{s.sub}</div>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Other nav links */}
+          {otherLinks.map(l => (
+            <a key={l} href={anchor(l.toLowerCase())} style={linkStyle}
               onMouseEnter={e => e.target.style.color = 'var(--paper)'}
               onMouseLeave={e => e.target.style.color = 'var(--muted)'}
             >{l}</a>
           ))}
         </div>
+
+        {/* CTA + hamburger */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div className="cp-nav-cta"><Btn arrow href={anchor('contact')}>Send a Pigeon</Btn></div>
           <button className="cp-hamburger" onClick={() => setOpen(o => !o)} aria-label="Toggle menu"
@@ -769,8 +822,31 @@ function Nav() {
           </button>
         </div>
       </nav>
+
+      {/* Mobile menu */}
       <div className="cp-mobile-menu" style={{ position: 'fixed', top: 60, left: 0, right: 0, zIndex: 99, background: 'rgba(12,12,13,0.97)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', borderBottom: '1px solid var(--ink-3)', padding: '12px 24px 28px', display: 'none', flexDirection: 'column', transform: open ? 'translateY(0)' : 'translateY(-110%)', transition: 'transform .28s cubic-bezier(0.4,0,0.2,1)', pointerEvents: open ? 'auto' : 'none' }}>
-        {links.map(l => (
+
+        {/* Services accordion */}
+        <button onClick={() => setSvcOpen(o => !o)}
+          style={{ font: '500 13px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)', background: 'none', border: 0, borderBottom: '1px solid var(--ink-3)', padding: '18px 0', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', textAlign: 'left' }}>
+          Services
+          <svg width="12" height="12" viewBox="0 0 10 10" fill="none" style={{ transform: svcOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform .2s ease', flexShrink: 0 }}>
+            <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="square"/>
+          </svg>
+        </button>
+        {svcOpen && (
+          <div style={{ borderBottom: '1px solid var(--ink-3)' }}>
+            {NAV_SERVICES.map(s => (
+              <a key={s.href} href={s.href} onClick={() => setOpen(false)}
+                style={{ display: 'block', font: '500 12px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', padding: '14px 0 14px 16px', borderTop: '1px solid var(--ink-3)' }}>
+                {s.name}
+              </a>
+            ))}
+          </div>
+        )}
+
+        {/* Other mobile links */}
+        {otherLinks.map(l => (
           <a key={l} href={anchor(l.toLowerCase())} onClick={() => setOpen(false)}
             style={{ font: '500 13px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)', textDecoration: 'none', padding: '18px 0', borderBottom: '1px solid var(--ink-3)' }}
           >{l}</a>
