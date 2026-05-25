@@ -1161,7 +1161,7 @@ function VoiceReceptionistDemo() {
   const [listening, setListening] = React.useState(false);
   const [err, setErr] = React.useState(null);
   const recRef = React.useRef(null);
-  const bottomRef = React.useRef(null);
+  const msgsRef = React.useRef(null);
 
   // Reset conversation when business changes
   React.useEffect(() => {
@@ -1170,7 +1170,7 @@ function VoiceReceptionistDemo() {
   }, [biz.name]);
 
   React.useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (msgsRef.current) msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
   }, [msgs, busy]);
 
   function speak(text) {
@@ -1249,10 +1249,9 @@ function VoiceReceptionistDemo() {
             </div>
 
             {/* Messages */}
-            <div style={{ height: 270, overflowY: 'auto', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div ref={msgsRef} style={{ height: 270, overflowY: 'auto', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
               {msgs.map((m, i) => <DemoChatBubble key={i} {...m} />)}
               {busy && <DemoTyping label="Ava is typing…" />}
-              <div ref={bottomRef} />
             </div>
 
             <DemoError msg={err} />
@@ -1298,9 +1297,11 @@ function KnowledgeBaseDemo() {
   const [input, setInput] = React.useState('');
   const [busy, setBusy] = React.useState(false);
   const [err, setErr] = React.useState(null);
-  const bottomRef = React.useRef(null);
+  const msgsRef = React.useRef(null);
 
-  React.useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs, busy]);
+  React.useEffect(() => {
+    if (msgsRef.current) msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
+  }, [msgs, busy]);
 
   async function send(text) {
     const t = (text || input).trim();
@@ -1346,10 +1347,9 @@ function KnowledgeBaseDemo() {
           <div style={{ background: 'var(--ink-2)', border: '1px solid var(--ink-3)', borderTop: 'none', maxWidth: 660 }}>
             {tab === 'chat' ? (
               <>
-                <div style={{ height: 270, overflowY: 'auto', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div ref={msgsRef} style={{ height: 270, overflowY: 'auto', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {msgs.map((m, i) => <DemoChatBubble key={i} {...m} label={m.role === 'assistant' ? 'KNOWLEDGE BASE' : undefined} />)}
                   {busy && <DemoTyping label="Searching knowledge base…" />}
-                  <div ref={bottomRef} />
                 </div>
                 <DemoError msg={err} />
                 <div style={{ padding: '12px 18px', borderTop: '1px solid var(--ink-3)', display: 'flex', gap: 8 }}>
