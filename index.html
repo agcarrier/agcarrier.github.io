@@ -61,6 +61,13 @@
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
     }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.85); }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
@@ -587,6 +594,59 @@ function Stack() {
 // TODO: Replace YOUR_FORM_ID with your actual Formspree form ID (formspree.io/forms)
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xjgzyeol';
 
+// ── Demo API ──────────────────────────────────────────────────────
+const DEMO_API = 'https://carrier-pigeon-api.vercel.app';
+
+const DEMO_BUSINESSES = [
+  { label: 'HVAC',        name: 'Riverside HVAC',   type: 'HVAC heating and cooling service' },
+  { label: 'Dental',      name: 'Lakeside Dental',  type: 'dental and orthodontic practice' },
+  { label: 'Real Estate', name: 'Summit Realty',    type: 'residential real estate agency' },
+  { label: 'Salon & Spa', name: 'Luxe Studio',      type: 'hair salon and day spa' },
+];
+
+const KB_SAMPLE = `RIVERSIDE HVAC — Knowledge Base
+
+SERVICES
+- Central air conditioning: installation, repair, maintenance
+- Heating: furnace installation, repair, tune-ups
+- Heat pumps: installation and repair
+- Indoor air quality: air purifiers, humidifiers, UV systems
+- Emergency repairs: 24/7 for maintenance contract customers
+
+PRICING
+- Diagnostic service call: $89 (waived with completed repair)
+- AC tune-up: $129/unit
+- Furnace tune-up: $99/unit
+- Emergency after-hours fee: $150 + parts/labor
+- Free estimates on new installations
+
+HOURS
+Monday–Friday: 7:00am – 6:00pm
+Saturday: 8:00am – 2:00pm
+Sunday: Closed (emergency calls for contract customers only)
+
+WARRANTIES
+- Parts: 1-year manufacturer warranty
+- Labor: 90-day guarantee
+- New installations: 5-year labor warranty
+- Maintenance contract: covers all tune-up costs + 15% off repairs
+
+COVERAGE AREA
+Greater River Valley area including Oak Ridge, Cedar Falls, and Millbrook.
+
+FAQS
+Q: What brands do you service?
+A: All major brands — Carrier, Lennox, Trane, Rheem, Goodman, Daikin, and more.
+
+Q: How do I sign up for a maintenance plan?
+A: Call (555) 100-2345 or ask any technician. Plans start at $129/year per unit.
+
+Q: How quickly can you come out?
+A: Same-day for emergencies. Scheduled service is usually within 1–2 business days.
+
+Q: Do you offer financing?
+A: Yes, 12-month same-as-cash financing on new installations over $2,000. Ask about it during your estimate.`;
+
 const inputStyle = {
   width: '100%', boxSizing: 'border-box', background: 'var(--ink-2)',
   border: '1px solid var(--ink-3)', color: 'var(--paper)', outline: 'none',
@@ -863,6 +923,8 @@ function WebDesignPage() {
           <FadeIn delay={220}><Btn primary arrow href="#wd-contact">Start your project</Btn></FadeIn>
         </section>
 
+        <WebDesignBriefDemo />
+
         {/* Problem */}
         <section style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
@@ -1027,6 +1089,500 @@ function App() {
   );
 }
 
+// ── Demo Helpers ─────────────────────────────────────────────────
+function DemoLiveBadge() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+      <div style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--muted)' }}>Live Demo</div>
+      <div style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--signal)', animation: 'pulse 2s ease-in-out infinite' }} />
+    </div>
+  );
+}
+
+function DemoStarterBtn({ label, onClick }) {
+  return (
+    <button onClick={onClick}
+      style={{ font: '400 12px var(--font-sans)', padding: '4px 10px', background: 'transparent', border: '1px solid var(--ink-3)', color: 'var(--muted)', cursor: 'pointer', transition: 'all .15s', lineHeight: 1.4 }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--signal)'; e.currentTarget.style.color = 'var(--paper)'; }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--ink-3)'; e.currentTarget.style.color = 'var(--muted)'; }}>
+      "{label}"
+    </button>
+  );
+}
+
+function DemoChatBubble({ role, content, label }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: role === 'user' ? 'flex-end' : 'flex-start' }}>
+      <div style={{
+        maxWidth: '78%', padding: '9px 13px',
+        background: role === 'user' ? 'var(--signal)' : 'var(--ink-3)',
+        color: role === 'user' ? 'var(--ink)' : 'var(--paper)',
+        font: '400 13.5px/1.55 var(--font-sans)',
+      }}>
+        {label && <div style={{ font: '500 9px var(--font-mono)', letterSpacing: '0.14em', color: 'var(--signal)', marginBottom: 5 }}>{label}</div>}
+        {content}
+      </div>
+    </div>
+  );
+}
+
+function DemoTyping({ label = 'typing…' }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+      <div style={{ padding: '9px 13px', background: 'var(--ink-3)', color: 'var(--muted)', font: '400 12px var(--font-mono)' }}>{label}</div>
+    </div>
+  );
+}
+
+function DemoError({ msg }) {
+  if (!msg) return null;
+  return <div style={{ padding: '8px 20px', background: 'rgba(229,85,85,0.08)', borderTop: '1px solid rgba(229,85,85,0.18)', font: '400 12px var(--font-sans)', color: '#e55' }}>{msg}</div>;
+}
+
+async function callDemoAPI(payload) {
+  const r = await fetch(`${DEMO_API}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!r.ok) {
+    const d = await r.json().catch(() => ({}));
+    throw new Error(d.error || `HTTP ${r.status}`);
+  }
+  return r.json();
+}
+
+// ── Voice Receptionist Demo ───────────────────────────────────────
+function VoiceReceptionistDemo() {
+  const [biz, setBiz] = React.useState(DEMO_BUSINESSES[0]);
+  const [msgs, setMsgs] = React.useState([]);
+  const [input, setInput] = React.useState('');
+  const [busy, setBusy] = React.useState(false);
+  const [listening, setListening] = React.useState(false);
+  const [err, setErr] = React.useState(null);
+  const recRef = React.useRef(null);
+  const bottomRef = React.useRef(null);
+
+  // Reset conversation when business changes
+  React.useEffect(() => {
+    setMsgs([{ role: 'assistant', content: `Thanks for calling ${biz.name}! How can I help you today?` }]);
+    setErr(null);
+  }, [biz.name]);
+
+  React.useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [msgs, busy]);
+
+  function speak(text) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.92;
+    const voices = window.speechSynthesis.getVoices();
+    const pick = voices.find(v => v.lang.startsWith('en') && /samantha|karen|female|zira|heather|moira/i.test(v.name))
+      || voices.find(v => v.lang.startsWith('en-US'));
+    if (pick) u.voice = pick;
+    window.speechSynthesis.speak(u);
+  }
+
+  async function send(text) {
+    const t = (text || input).trim();
+    if (!t || busy) return;
+    const next = [...msgs, { role: 'user', content: t }];
+    setMsgs(next);
+    setInput('');
+    setBusy(true);
+    setErr(null);
+    try {
+      const d = await callDemoAPI({ mode: 'receptionist', businessName: biz.name, businessType: biz.type, messages: next });
+      setMsgs(prev => [...prev, { role: 'assistant', content: d.content }]);
+      speak(d.content);
+    } catch (e) {
+      setErr(e.message || 'Demo unavailable — the API may not be deployed yet.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function toggleMic() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { setErr('Voice input requires Chrome or Edge — or just type below.'); return; }
+    if (listening) { recRef.current?.stop(); return; }
+    window.speechSynthesis?.cancel();
+    const r = new SR();
+    r.lang = 'en-US'; r.interimResults = false;
+    r.onresult = e => { send(e.results[0][0].transcript); setListening(false); };
+    r.onerror = r.onend = () => setListening(false);
+    recRef.current = r;
+    r.start();
+    setListening(true);
+  }
+
+  const starters = ['What are your hours?', 'I need to book an appointment', 'How much does it cost?', 'Can I get a callback?'];
+
+  return (
+    <section style={{ position: 'relative', zIndex: 2, padding: '0 48px 80px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <FadeIn>
+          <DemoLiveBadge />
+          <h2 style={{ font: '600 clamp(22px, 2.5vw, 32px)/1.1 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: '0 0 10px' }}>Try the receptionist — right now.</h2>
+          <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '50ch', margin: '0 0 22px' }}>This is a live AI agent running on real AI. Pick a business type and start a conversation — type or use your mic.</p>
+
+          {/* Business picker */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 18 }}>
+            {DEMO_BUSINESSES.map(b => (
+              <button key={b.label} onClick={() => setBiz(b)} style={{
+                font: '500 10px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase',
+                padding: '7px 13px', background: 'transparent', cursor: 'pointer', transition: 'all .15s',
+                border: `1px solid ${biz.label === b.label ? 'var(--signal)' : 'var(--ink-3)'}`,
+                color: biz.label === b.label ? 'var(--signal)' : 'var(--muted)',
+              }}>{b.label}</button>
+            ))}
+          </div>
+
+          {/* Chat widget */}
+          <div style={{ background: 'var(--ink-2)', border: '1px solid var(--ink-3)', maxWidth: 660 }}>
+            {/* Header bar */}
+            <div style={{ padding: '12px 18px', borderBottom: '1px solid var(--ink-3)', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--signal)' }} />
+              <span style={{ font: '500 11px var(--font-mono)', color: 'var(--paper)', letterSpacing: '0.06em' }}>Ava · AI Receptionist · {biz.name}</span>
+            </div>
+
+            {/* Messages */}
+            <div style={{ height: 270, overflowY: 'auto', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {msgs.map((m, i) => <DemoChatBubble key={i} {...m} />)}
+              {busy && <DemoTyping label="Ava is typing…" />}
+              <div ref={bottomRef} />
+            </div>
+
+            <DemoError msg={err} />
+
+            {/* Input row */}
+            <div style={{ padding: '12px 18px', borderTop: '1px solid var(--ink-3)', display: 'flex', gap: 8 }}>
+              <button onClick={toggleMic} title={listening ? 'Stop' : 'Speak'} style={{
+                padding: '9px 11px', background: listening ? 'var(--signal)' : 'var(--ink-3)',
+                border: 'none', color: listening ? 'var(--ink)' : 'var(--muted)',
+                cursor: 'pointer', transition: 'all .15s', fontSize: 14, flexShrink: 0,
+              }}>
+                {listening ? '⏹' : '🎙'}
+              </button>
+              <input value={input} onChange={e => setInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send(input)}
+                placeholder={listening ? 'Listening…' : 'Type a message or use the mic…'}
+                disabled={busy || listening}
+                style={{ flex: 1, padding: '9px 12px', background: 'var(--ink)', border: '1px solid var(--ink-3)', color: 'var(--paper)', font: '400 13px var(--font-sans)', outline: 'none' }} />
+              <button onClick={() => send(input)} disabled={!input.trim() || busy} style={{
+                padding: '9px 16px', background: 'var(--signal)', border: 'none', color: 'var(--ink)',
+                font: '600 12px var(--font-sans)', cursor: 'pointer', flexShrink: 0,
+                opacity: !input.trim() || busy ? 0.4 : 1, transition: 'opacity .15s',
+              }}>Send</button>
+            </div>
+          </div>
+
+          {/* Starter prompts */}
+          <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+            <span style={{ font: '400 11px var(--font-sans)', color: 'var(--muted)' }}>Try:</span>
+            {starters.map(s => <DemoStarterBtn key={s} label={s} onClick={() => send(s)} />)}
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+// ── Knowledge Base Demo ───────────────────────────────────────────
+function KnowledgeBaseDemo() {
+  const [tab, setTab] = React.useState('chat');
+  const [kb, setKb] = React.useState(KB_SAMPLE);
+  const [msgs, setMsgs] = React.useState([{ role: 'assistant', content: 'Ask me anything about Riverside HVAC — services, pricing, hours, warranties, coverage area…' }]);
+  const [input, setInput] = React.useState('');
+  const [busy, setBusy] = React.useState(false);
+  const [err, setErr] = React.useState(null);
+  const bottomRef = React.useRef(null);
+
+  React.useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs, busy]);
+
+  async function send(text) {
+    const t = (text || input).trim();
+    if (!t || busy) return;
+    const next = [...msgs, { role: 'user', content: t }];
+    setMsgs(next);
+    setInput('');
+    setBusy(true);
+    setErr(null);
+    try {
+      const d = await callDemoAPI({ mode: 'knowledge', knowledge: kb, messages: next });
+      setMsgs(prev => [...prev, { role: 'assistant', content: d.content }]);
+    } catch (e) {
+      setErr(e.message || 'Demo unavailable — the API may not be deployed yet.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const starters = ["What's the price for an AC tune-up?", 'Do you offer emergency service?', 'What areas do you cover?', 'Is there a labor warranty?'];
+
+  return (
+    <section style={{ position: 'relative', zIndex: 2, padding: '0 48px 80px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <FadeIn>
+          <DemoLiveBadge />
+          <h2 style={{ font: '600 clamp(22px, 2.5vw, 32px)/1.1 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: '0 0 10px' }}>Ask the knowledge base — live.</h2>
+          <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 22px' }}>This AI only answers from a sample knowledge base — no making things up. Switch to the <strong style={{ color: 'var(--paper)' }}>Knowledge Base</strong> tab to see (or edit) the content it's working from.</p>
+
+          {/* Tabs */}
+          <div style={{ display: 'flex', borderBottom: '1px solid var(--ink-3)', marginBottom: 0, maxWidth: 660 }}>
+            {[['chat', '💬 Ask Questions'], ['kb', '📄 Knowledge Base']].map(([t, label]) => (
+              <button key={t} onClick={() => setTab(t)} style={{
+                font: '500 10px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase',
+                padding: '10px 18px', background: 'transparent', border: 'none', cursor: 'pointer',
+                color: tab === t ? 'var(--signal)' : 'var(--muted)',
+                borderBottom: `2px solid ${tab === t ? 'var(--signal)' : 'transparent'}`,
+                marginBottom: -1, transition: 'color .15s',
+              }}>{label}</button>
+            ))}
+          </div>
+
+          <div style={{ background: 'var(--ink-2)', border: '1px solid var(--ink-3)', borderTop: 'none', maxWidth: 660 }}>
+            {tab === 'chat' ? (
+              <>
+                <div style={{ height: 270, overflowY: 'auto', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {msgs.map((m, i) => <DemoChatBubble key={i} {...m} label={m.role === 'assistant' ? 'KNOWLEDGE BASE' : undefined} />)}
+                  {busy && <DemoTyping label="Searching knowledge base…" />}
+                  <div ref={bottomRef} />
+                </div>
+                <DemoError msg={err} />
+                <div style={{ padding: '12px 18px', borderTop: '1px solid var(--ink-3)', display: 'flex', gap: 8 }}>
+                  <input value={input} onChange={e => setInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send(input)}
+                    placeholder="Ask anything about Riverside HVAC…" disabled={busy}
+                    style={{ flex: 1, padding: '9px 12px', background: 'var(--ink)', border: '1px solid var(--ink-3)', color: 'var(--paper)', font: '400 13px var(--font-sans)', outline: 'none' }} />
+                  <button onClick={() => send(input)} disabled={!input.trim() || busy} style={{
+                    padding: '9px 16px', background: 'var(--signal)', border: 'none', color: 'var(--ink)',
+                    font: '600 12px var(--font-sans)', cursor: 'pointer', flexShrink: 0,
+                    opacity: !input.trim() || busy ? 0.4 : 1,
+                  }}>Ask</button>
+                </div>
+              </>
+            ) : (
+              <div style={{ padding: '16px 18px' }}>
+                <p style={{ font: '400 12px var(--font-sans)', color: 'var(--muted)', margin: '0 0 10px' }}>Edit this content and switch back to "Ask Questions" — the AI will use your updated version live.</p>
+                <textarea value={kb} onChange={e => setKb(e.target.value)} rows={14}
+                  style={{ width: '100%', padding: '12px', background: 'var(--ink)', border: '1px solid var(--ink-3)', color: 'var(--paper)', font: '400 12px var(--font-mono)', outline: 'none', resize: 'vertical', lineHeight: 1.65 }} />
+              </div>
+            )}
+          </div>
+
+          {tab === 'chat' && (
+            <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+              <span style={{ font: '400 11px var(--font-sans)', color: 'var(--muted)' }}>Try:</span>
+              {starters.map(s => <DemoStarterBtn key={s} label={s} onClick={() => send(s)} />)}
+            </div>
+          )}
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+// ── Business Automation Demo ──────────────────────────────────────
+function AutomationAnalyzerDemo() {
+  const [input, setInput] = React.useState('');
+  const [result, setResult] = React.useState(null);
+  const [busy, setBusy] = React.useState(false);
+  const [err, setErr] = React.useState(null);
+
+  async function analyze(text) {
+    const t = (text || input).trim();
+    if (!t || busy) return;
+    setInput(t);
+    setBusy(true);
+    setResult(null);
+    setErr(null);
+    try {
+      const d = await callDemoAPI({ mode: 'automation', messages: [{ role: 'user', content: t }] });
+      setResult(d.content);
+    } catch (e) {
+      setErr(e.message || 'Demo unavailable — the API may not be deployed yet.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const examples = [
+    'I manually text appointment reminders to every client the morning of their visit',
+    'Every Monday I copy last week\'s sales from our POS into a Google Sheet for reporting',
+    'We answer the same 10 new-customer questions over email every single week',
+    'My team manually writes up a quote PDF and emails it to every new inquiry',
+  ];
+
+  return (
+    <section style={{ position: 'relative', zIndex: 2, padding: '0 48px 80px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <FadeIn>
+          <DemoLiveBadge />
+          <h2 style={{ font: '600 clamp(22px, 2.5vw, 32px)/1.1 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: '0 0 10px' }}>Describe a task. See the automation plan.</h2>
+          <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 22px' }}>Tell us something your team does manually. The AI will show you exactly how to automate it, what tools to use, and what it takes to set up.</p>
+
+          <div style={{ maxWidth: 700 }}>
+            <div style={{ background: 'var(--ink-2)', border: '1px solid var(--ink-3)', padding: '20px' }}>
+              <div style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 10 }}>Describe a repetitive task</div>
+              <textarea value={input} onChange={e => setInput(e.target.value)} rows={3}
+                placeholder="E.g.: Every morning I manually send reminder texts to clients who have appointments that day…"
+                style={{ width: '100%', padding: '12px', background: 'var(--ink)', border: '1px solid var(--ink-3)', color: 'var(--paper)', font: '400 14px/1.5 var(--font-sans)', outline: 'none', resize: 'vertical', marginBottom: 14 }} />
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button onClick={() => analyze()} disabled={!input.trim() || busy} style={{
+                  padding: '10px 22px', background: 'var(--signal)', border: 'none', color: 'var(--ink)',
+                  font: '600 13px var(--font-sans)', cursor: 'pointer',
+                  opacity: !input.trim() || busy ? 0.4 : 1, transition: 'opacity .15s',
+                }}>{busy ? 'Analyzing…' : 'Analyze →'}</button>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+              <span style={{ font: '400 11px var(--font-sans)', color: 'var(--muted)', paddingTop: 5, flexShrink: 0 }}>Examples:</span>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {examples.map((ex, i) => (
+                  <button key={i} onClick={() => analyze(ex)} style={{
+                    font: '400 12px var(--font-sans)', padding: '4px 10px',
+                    background: 'transparent', border: '1px solid var(--ink-3)', color: 'var(--muted)',
+                    cursor: 'pointer', transition: 'all .15s', textAlign: 'left',
+                  }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--signal)'; e.currentTarget.style.color = 'var(--paper)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--ink-3)'; e.currentTarget.style.color = 'var(--muted)'; }}>
+                    {ex.length > 52 ? ex.slice(0, 50) + '…' : ex}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {err && <div style={{ marginTop: 14, padding: '10px 14px', background: 'rgba(229,85,85,0.08)', border: '1px solid rgba(229,85,85,0.18)', font: '400 13px var(--font-sans)', color: '#e55' }}>{err}</div>}
+
+            {busy && (
+              <div style={{ marginTop: 14, padding: '24px', background: 'var(--ink-2)', border: '1px solid var(--ink-3)', textAlign: 'center' }}>
+                <div style={{ font: '400 13px var(--font-mono)', color: 'var(--muted)' }}>Analyzing your workflow…</div>
+              </div>
+            )}
+
+            {result && (
+              <div style={{ marginTop: 14, background: 'var(--ink-2)', border: '1px solid var(--signal)', padding: '22px' }}>
+                <div style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--signal)', marginBottom: 16 }}>Automation Analysis</div>
+                <div style={{ font: '400 14px/1.75 var(--font-sans)', color: 'var(--paper)', whiteSpace: 'pre-wrap' }}>{result}</div>
+                <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid var(--ink-3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                  <span style={{ font: '400 13px var(--font-sans)', color: 'var(--muted)' }}>Want us to build this for you?</span>
+                  <Btn primary arrow href="#ba-contact">Get started</Btn>
+                </div>
+              </div>
+            )}
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+// ── Web Design Brief Demo ─────────────────────────────────────────
+function WebDesignBriefDemo() {
+  const [step, setStep] = React.useState('input');
+  const [input, setInput] = React.useState('');
+  const [result, setResult] = React.useState(null);
+  const [err, setErr] = React.useState(null);
+
+  async function generate(text) {
+    const t = (text || input).trim();
+    if (!t) return;
+    setInput(t);
+    setStep('loading');
+    setErr(null);
+    try {
+      const d = await callDemoAPI({ mode: 'webdesign', messages: [{ role: 'user', content: t }] });
+      setResult(d.content);
+      setStep('result');
+    } catch (e) {
+      setErr(e.message || 'Demo unavailable — the API may not be deployed yet.');
+      setStep('input');
+    }
+  }
+
+  const examples = [
+    'Local plumbing company, 20 years in business, serving greater Nashville, residential and commercial',
+    'Independent yoga studio, 2 locations, group classes and private sessions, mainly female clients 25–45',
+    'Family-owned Italian restaurant, 15 years open, dine-in and takeout, downtown location',
+  ];
+
+  return (
+    <section style={{ position: 'relative', zIndex: 2, padding: '0 48px 80px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <FadeIn>
+          <DemoLiveBadge />
+          <h2 style={{ font: '600 clamp(22px, 2.5vw, 32px)/1.1 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: '0 0 10px' }}>Describe your business. See your site plan.</h2>
+          <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 22px' }}>Tell us what your business does in a sentence or two. Our AI will generate a complete website brief — structure, headline, CTAs, and SEO keywords — in seconds.</p>
+
+          <div style={{ maxWidth: 700 }}>
+            {step === 'input' && (
+              <>
+                <div style={{ background: 'var(--ink-2)', border: '1px solid var(--ink-3)', padding: '20px' }}>
+                  <div style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 10 }}>Tell us about your business</div>
+                  <textarea value={input} onChange={e => setInput(e.target.value)} rows={3}
+                    placeholder="E.g.: Family-owned plumbing company, serving Denver for 20 years, residential and commercial repairs and installs…"
+                    style={{ width: '100%', padding: '12px', background: 'var(--ink)', border: '1px solid var(--ink-3)', color: 'var(--paper)', font: '400 14px/1.5 var(--font-sans)', outline: 'none', resize: 'vertical', marginBottom: 14 }} />
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button onClick={() => generate()} disabled={!input.trim()} style={{
+                      padding: '10px 22px', background: 'var(--signal)', border: 'none', color: 'var(--ink)',
+                      font: '600 13px var(--font-sans)', cursor: 'pointer', opacity: !input.trim() ? 0.4 : 1,
+                    }}>Generate Site Brief →</button>
+                  </div>
+                </div>
+                {err && <div style={{ marginTop: 12, padding: '10px 14px', background: 'rgba(229,85,85,0.08)', border: '1px solid rgba(229,85,85,0.18)', font: '400 13px var(--font-sans)', color: '#e55' }}>{err}</div>}
+                <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                  <span style={{ font: '400 11px var(--font-sans)', color: 'var(--muted)', paddingTop: 5, flexShrink: 0 }}>Examples:</span>
+                  {examples.map((ex, i) => (
+                    <button key={i} onClick={() => generate(ex)} style={{
+                      font: '400 12px var(--font-sans)', padding: '4px 10px',
+                      background: 'transparent', border: '1px solid var(--ink-3)', color: 'var(--muted)',
+                      cursor: 'pointer', transition: 'all .15s', textAlign: 'left',
+                    }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--signal)'; e.currentTarget.style.color = 'var(--paper)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--ink-3)'; e.currentTarget.style.color = 'var(--muted)'; }}>
+                      {ex.length > 52 ? ex.slice(0, 50) + '…' : ex}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {step === 'loading' && (
+              <div style={{ padding: '48px 24px', textAlign: 'center', background: 'var(--ink-2)', border: '1px solid var(--ink-3)' }}>
+                <div style={{ font: '400 13px var(--font-mono)', color: 'var(--muted)', marginBottom: 8 }}>Generating your site brief…</div>
+                <div style={{ font: '400 12px var(--font-sans)', color: 'var(--muted)', opacity: 0.5 }}>Usually takes 5–10 seconds</div>
+              </div>
+            )}
+
+            {step === 'result' && result && (
+              <>
+                <div style={{ background: 'var(--ink-2)', border: '1px solid var(--signal)', padding: '24px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+                    <div style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--signal)' }}>Website Brief</div>
+                    <button onClick={() => { setStep('input'); setResult(null); setInput(''); }} style={{
+                      font: '400 11px var(--font-mono)', padding: '4px 10px', background: 'transparent',
+                      border: '1px solid var(--ink-3)', color: 'var(--muted)', cursor: 'pointer',
+                    }}>← Start over</button>
+                  </div>
+                  <div style={{ font: '400 14px/1.8 var(--font-sans)', color: 'var(--paper)', whiteSpace: 'pre-wrap' }}>{result}</div>
+                </div>
+                <div style={{ marginTop: 14, padding: '18px 22px', background: 'var(--ink-2)', border: '1px solid var(--ink-3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                  <span style={{ font: '400 14px var(--font-sans)', color: 'var(--muted)' }}>Ready to build this? We can have it live in days.</span>
+                  <Btn primary arrow href="#wd-contact">Start your project</Btn>
+                </div>
+              </>
+            )}
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
 // ── AI Agents & Receptionist Page ────────────────────────────────
 const AA_STEPS = [
   { num: '01', title: 'Discovery',  desc: 'We learn your business — your common calls, FAQs, booking process, and how you like to communicate. No two agents are the same.' },
@@ -1105,6 +1661,8 @@ function AgentsPage() {
           </FadeIn>
           <FadeIn delay={220}><Btn primary arrow href="#aa-contact">Get started</Btn></FadeIn>
         </section>
+
+        <VoiceReceptionistDemo />
 
         {/* Problem */}
         <section style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
@@ -1331,6 +1889,8 @@ function AutomationPage() {
           <FadeIn delay={220}><Btn primary arrow href="#ba-contact">Get started</Btn></FadeIn>
         </section>
 
+        <AutomationAnalyzerDemo />
+
         {/* Problem */}
         <section style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
@@ -1555,6 +2115,8 @@ function KnowledgePage() {
           </FadeIn>
           <FadeIn delay={220}><Btn primary arrow href="#kb-contact">Get started</Btn></FadeIn>
         </section>
+
+        <KnowledgeBaseDemo />
 
         {/* Problem */}
         <section style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
