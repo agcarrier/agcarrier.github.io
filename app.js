@@ -1,0 +1,2291 @@
+const { useState, useEffect, useRef } = React;
+
+// ── Pixel Bird ────────────────────────────────────────────────────
+const PIGEON_GRID = [
+  [0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,1,1,0,0,0,0,1,1,0],
+  [0,1,1,1,1,0,0,1,1,2,1],
+  [0,1,1,1,1,1,1,1,1,1,0],
+  [0,0,1,1,1,1,1,1,1,0,0],
+  [0,0,0,1,1,1,1,1,0,0,0],
+  [0,0,1,1,1,1,1,0,0,0,0],
+  [0,1,1,1,1,0,0,0,0,0,0],
+  [1,1,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0],
+];
+
+function PixelBird({ size = 24, fg = '#f1f1ef', accent = '#9bff5b', ariaLabel = 'Carrier Pigeon mark' }) {
+  const cell = 96 / 11;
+  return (
+    <svg width={size} height={size} viewBox="0 0 96 96" role="img" aria-label={ariaLabel} style={{ display: 'block', flex: '0 0 auto' }}>
+      {PIGEON_GRID.flatMap((row, y) => row.map((v, x) => v ? (
+        <rect key={`${x}-${y}`} x={x * cell + 0.3} y={y * cell + 0.3} width={cell - 0.6} height={cell - 0.6} rx={0.8} fill={v === 2 ? accent : fg} />
+      ) : null))}
+    </svg>
+  );
+}
+
+// ── Courier Graph ─────────────────────────────────────────────────
+function CourierGraph({ nodeCount = 110, speed = 0.16, threshold = 160, lineAlpha = 0.10, nodeAlpha = 0.35, packetRate = 0.008, packetSpeed = 0.01, color = '#f1f1ef', signal = '#9bff5b' }) {
+  const canvasRef = useRef(null);
+  const cfgRef = useRef({});
+  cfgRef.current = { nodeCount, speed, threshold, lineAlpha, nodeAlpha, packetRate, packetSpeed, color, signal };
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width  = Math.floor(canvas.clientWidth  * dpr);
+      canvas.height = Math.floor(canvas.clientHeight * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    if (prefersReduced) {
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      ctx.strokeStyle = '#f1f1ef';
+      ctx.globalAlpha = 0.04;
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= w; x += 60) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+      return () => window.removeEventListener('resize', resize);
+    }
+
+    const W = () => canvas.clientWidth;
+    const H = () => canvas.clientHeight;
+
+    function newNode() {
+      const cfg = cfgRef.current;
+      return { x: Math.random() * W(), y: Math.random() * H(), vx: (Math.random() - 0.5) * cfg.speed * 2, vy: (Math.random() - 0.5) * cfg.speed * 2, r: 1.4 + Math.random() * 0.6 };
+    }
+
+    const nodes = Array.from({ length: cfgRef.current.nodeCount }, newNode);
+    const livePackets = [];
+
+    function spawnPacket() {
+      const cfg = cfgRef.current;
+      const i = (Math.random() * nodes.length) | 0;
+      const a = nodes[i];
+      const candidates = [];
+      for (let j = 0; j < nodes.length; j++) {
+        if (j !== i && Math.hypot(a.x - nodes[j].x, a.y - nodes[j].y) < cfg.threshold) candidates.push(j);
+      }
+      if (candidates.length) livePackets.push({ from: i, to: candidates[(Math.random() * candidates.length) | 0], p: 0 });
+    }
+
+    const REF_AREA = 1440 * 900;
+    function effectiveNodeCount() {
+      return Math.min(cfgRef.current.nodeCount, Math.max(20, Math.round(cfgRef.current.nodeCount * (Math.max(1, W() * H()) / REF_AREA))));
+    }
+    function reconcileNodes() {
+      const target = effectiveNodeCount();
+      while (nodes.length < target) nodes.push(newNode());
+      if (nodes.length > target) nodes.length = target;
+    }
+
+    let raf;
+    function draw() {
+      const cfg = cfgRef.current;
+      reconcileNodes();
+      const w = W(), h = H();
+      ctx.clearRect(0, 0, w, h);
+
+      for (const n of nodes) {
+        n.x += n.vx; n.y += n.vy;
+        if (n.x < 0 || n.x > w) n.vx *= -1;
+        if (n.y < 0 || n.y > h) n.vy *= -1;
+      }
+
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = cfg.color;
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+          if (d < cfg.threshold) {
+            ctx.globalAlpha = (1 - d / cfg.threshold) * cfg.lineAlpha;
+            ctx.beginPath(); ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(nodes[j].x, nodes[j].y); ctx.stroke();
+          }
+        }
+      }
+
+      ctx.fillStyle = cfg.color;
+      ctx.globalAlpha = cfg.nodeAlpha;
+      for (const n of nodes) { ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fill(); }
+
+      if (Math.random() < cfg.packetRate) spawnPacket();
+      for (let k = livePackets.length - 1; k >= 0; k--) {
+        const pk = livePackets[k];
+        pk.p += cfg.packetSpeed;
+        if (pk.p >= 1 || !nodes[pk.from] || !nodes[pk.to]) { livePackets.splice(k, 1); continue; }
+        const a = nodes[pk.from], b = nodes[pk.to];
+        const x = a.x + (b.x - a.x) * pk.p, y = a.y + (b.y - a.y) * pk.p;
+        const trail = 0.18;
+        const tx = a.x + (b.x - a.x) * Math.max(0, pk.p - trail), ty = a.y + (b.y - a.y) * Math.max(0, pk.p - trail);
+        const grad = ctx.createLinearGradient(tx, ty, x, y);
+        grad.addColorStop(0, 'rgba(155,255,91,0)'); grad.addColorStop(1, cfg.signal);
+        ctx.strokeStyle = grad; ctx.globalAlpha = 0.9; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(x, y); ctx.stroke();
+        ctx.fillStyle = cfg.signal;
+        ctx.globalAlpha = 1; ctx.beginPath(); ctx.arc(x, y, 2.2, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = 0.25; ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      raf = requestAnimationFrame(draw);
+    }
+    draw();
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); };
+  }, []);
+
+  return <canvas ref={canvasRef} style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', display: 'block', pointerEvents: 'none', zIndex: 0 }} />;
+}
+
+// ── Shared atoms ──────────────────────────────────────────────────
+function FadeIn({ children, delay = 0 }) {
+  const ref = useRef(null);
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setShown(true); io.disconnect(); } }, { threshold: 0.08 });
+    if (ref.current) io.observe(ref.current);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <div ref={ref} style={{ opacity: shown ? 1 : 0, transform: shown ? 'translateY(0)' : 'translateY(12px)', transition: `opacity .55s ease ${delay}ms, transform .55s ease ${delay}ms` }}>
+      {children}
+    </div>
+  );
+}
+
+function Eyebrow({ children }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10, font: '500 11px var(--font-mono)', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--paper)', opacity: 0.7 }}>
+      <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--signal)', flexShrink: 0 }} />
+      {children}
+    </span>
+  );
+}
+
+function SectionHead({ num, name, theme, count }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: 24, flexWrap: 'wrap', paddingBottom: 16, marginBottom: 40, borderBottom: '1px solid var(--ink-3)' }}>
+      <span style={{ font: '500 12px var(--font-mono)', letterSpacing: '0.2em', color: 'var(--muted)' }}>{num}</span>
+      <span style={{ font: '500 13px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--paper)' }}>{name}</span>
+      {theme && <span style={{ font: '400 14px var(--font-sans)', color: 'var(--muted)' }}>{theme}</span>}
+      {count && <span style={{ marginLeft: 'auto', font: '500 11px var(--font-mono)', letterSpacing: '0.14em', color: 'var(--muted)' }}>{count}</span>}
+    </div>
+  );
+}
+
+function Btn({ children, primary = false, href, onClick, arrow = false, type = 'button', disabled = false }) {
+  const [hov, setHov] = useState(false);
+  const style = {
+    display: 'inline-flex', alignItems: 'center', gap: 8,
+    font: '500 11px var(--font-mono)', letterSpacing: '0.12em', textTransform: 'uppercase',
+    padding: '11px 18px', borderRadius: 0, cursor: disabled ? 'not-allowed' : 'pointer', textDecoration: 'none',
+    border: `1px solid ${primary && hov && !disabled ? 'var(--signal)' : 'var(--paper)'}`,
+    background: primary ? (hov && !disabled ? 'var(--signal)' : 'var(--paper)') : (hov && !disabled ? 'var(--paper)' : 'transparent'),
+    color: primary ? 'var(--ink)' : (hov && !disabled ? 'var(--ink)' : 'var(--paper)'),
+    opacity: disabled ? 0.5 : 1,
+    transition: 'transform .18s ease, background .18s ease, color .18s ease, border-color .18s ease',
+    transform: hov && !disabled ? 'translateY(-1px)' : 'translateY(0)',
+  };
+  const Tag = href ? 'a' : 'button';
+  return (
+    <Tag href={href} onClick={onClick} type={href ? undefined : type} disabled={href ? undefined : disabled} style={style} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}>
+      {children}
+      {arrow && <span style={{ display: 'inline-block', transform: hov && !disabled ? 'translateX(3px)' : 'translateX(0)', transition: 'transform .18s ease' }}>→</span>}
+    </Tag>
+  );
+}
+
+// ── Hero ──────────────────────────────────────────────────────────
+function Hero() {
+  return (
+    <section data-screen-label="01 Hero" style={{ position: 'relative', zIndex: 2, padding: '180px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
+      <FadeIn>
+        <div style={{ marginBottom: 28 }}>
+          <Eyebrow>Independent AI Studio · <span style={{ color: 'var(--signal)' }}>Lafayette, LA</span></Eyebrow>
+        </div>
+      </FadeIn>
+      <FadeIn delay={80}>
+        <h1 style={{ font: '600 clamp(56px, 8vw, 104px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', margin: '0 0 28px', maxWidth: '14ch', textWrap: 'balance', color: 'var(--paper)' }}>
+          Quiet AI that{' '}
+          <span style={{ background: 'var(--signal)', color: 'var(--ink)', padding: '0 6px', margin: '0 -2px' }}>carries</span>{' '}
+          the message.
+        </h1>
+      </FadeIn>
+      <FadeIn delay={160}>
+        <p style={{ font: '400 18px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 16px' }}>
+          Carrier Pigeon AI builds practical AI tools, websites, and agents for small and mid-size businesses. AI changes what small businesses can afford and how fast they can move — calm tech, no hype, built by an IT professional who's been keeping systems running for years.
+        </p>
+        <p style={{ font: '400 16px/1.6 var(--font-sans)', color: 'var(--signal)', maxWidth: '52ch', margin: '0 0 40px', fontStyle: 'italic' }}>
+          We start with your problem — not the technology.
+        </p>
+      </FadeIn>
+      <FadeIn delay={240}>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 56 }}>
+          <Btn primary arrow href="#services">See services</Btn>
+        </div>
+      </FadeIn>
+    </section>
+  );
+}
+
+// ── Speed Callout ─────────────────────────────────────────────────
+function SpeedCallout() {
+  return (
+    <div style={{ position: 'relative', zIndex: 2, borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', background: 'var(--ink-2)' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '56px 48px', display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '48px 64px', alignItems: 'center' }}>
+        <div>
+          <div style={{ font: '600 clamp(64px, 10vw, 120px)/1.0 var(--font-sans)', letterSpacing: '-0.05em', color: 'var(--signal)', whiteSpace: 'nowrap' }}>One afternoon.</div>
+          <div style={{ font: '500 12px var(--font-mono)', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--muted)', marginTop: 10 }}>That's all it takes</div>
+        </div>
+        <div style={{ borderLeft: '1px solid var(--ink-3)', paddingLeft: 48 }}>
+          <p style={{ font: '400 20px/1.6 var(--font-sans)', color: 'var(--paper)', margin: '0 0 12px', maxWidth: '44ch' }}>
+            A website that used to take <span style={{ textDecoration: 'line-through', opacity: 0.4 }}>6–8 weeks</span> now ships in an afternoon.
+          </p>
+          <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0, maxWidth: '44ch' }}>
+            AI doesn't just speed things up — it changes what's possible on a small business budget. More capability, faster delivery, without the agency price tag.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Pain Points ───────────────────────────────────────────────────
+const PAIN_POINTS = [
+  { icon: '📞', text: 'I keep missing calls and losing leads after hours.',                    service: 'AI Agents & Receptionist', href: '/services/ai-agents' },
+  { icon: '🌐', text: 'My website looks outdated — or I don\'t have one at all.',             service: 'Web Design',               href: '/services/web-design' },
+  { icon: '🔁', text: 'My staff answers the same questions a hundred times a week.',          service: 'Knowledge Base',           href: '/services/knowledge-base' },
+  { icon: '⏱️', text: 'I\'m drowning in tasks that should just handle themselves.',           service: 'Business Automation',      href: '/services/business-automation' },
+  { icon: '💸', text: 'I can\'t afford to hire, but I\'m running out of hours.',              service: 'AI Agents & Receptionist', href: '/services/ai-agents' },
+  { icon: '🤷', text: 'I know AI could help my business — I just don\'t know where to start.', service: 'Business Automation',    href: '/services/business-automation' },
+];
+
+function PainPointCard({ icon, text, service, href }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <a href={href} style={{ textDecoration: 'none', display: 'block' }}
+      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}>
+      <div style={{
+        padding: '32px 28px', height: '100%', background: hov ? 'var(--ink-3)' : 'var(--ink-2)',
+        border: `1px solid ${hov ? 'var(--signal)' : 'var(--ink-3)'}`,
+        display: 'flex', flexDirection: 'column', gap: 14,
+        transition: 'background .2s ease, border-color .2s ease, transform .2s ease',
+        transform: hov ? 'translateY(-3px)' : 'translateY(0)',
+        cursor: 'pointer', position: 'relative',
+      }}>
+        <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+          <span style={{ fontSize: 24, lineHeight: 1, flexShrink: 0, marginTop: 2 }}>{icon}</span>
+          <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--paper)', opacity: hov ? 1 : 0.8, margin: 0, fontStyle: 'italic', transition: 'opacity .2s ease' }}>{text}</p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, opacity: hov ? 1 : 0, transform: hov ? 'translateY(0)' : 'translateY(4px)', transition: 'opacity .2s ease, transform .2s ease', marginTop: 'auto' }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--signal)', flexShrink: 0 }} />
+          <span style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--signal)' }}>→ {service}</span>
+        </div>
+      </div>
+    </a>
+  );
+}
+
+function PainPoints() {
+  return (
+    <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', borderTop: '1px solid var(--ink-3)' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <FadeIn>
+          <div style={{ marginBottom: 48, textAlign: 'center' }}>
+            <h2 style={{ font: '600 clamp(36px, 5vw, 56px)/1.05 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: '0 0 16px', textWrap: 'balance' }}>Sound familiar?</h2>
+            <p style={{ font: '400 18px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0, maxWidth: '52ch', marginLeft: 'auto', marginRight: 'auto' }}>We start with your problem — AI is just how we solve it faster.</p>
+          </div>
+        </FadeIn>
+        <FadeIn delay={80}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+            {PAIN_POINTS.map((p, i) => <PainPointCard key={i} {...p} />)}
+          </div>
+        </FadeIn>
+        <FadeIn delay={160}>
+          <p style={{ font: '500 15px var(--font-sans)', color: 'var(--signal)', textAlign: 'center', margin: '40px 0 0' }}>If any of these hit close to home, you're in the right place.</p>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+// ── Services ──────────────────────────────────────────────────────
+const SERVICES = [
+  { id: '001', name: 'Web Design',             desc: 'A local agency might quote you $4,000–$10,000 and a 6-week timeline. We use AI to undercut both without cutting corners. Fast, modern, built to convert — and optimized for search from day one.',             tags: ['Fast Delivery', 'Modern Design', 'AI-Built', 'SEO'], href: '/services/web-design' },
+  { id: '002', name: 'AI Agents & Receptionist', desc: 'AI agents work around the clock so you don\'t have to. They answer calls, qualify leads, book appointments, and handle FAQs automatically — at 3am or during your busiest hour. Never lose a customer to voicemail again.', tags: ['Voice AI', '24/7', 'Lead Capture'], href: '/services/ai-agents' },
+  { id: '003', name: 'Business Automation',    desc: 'Most small businesses are still doing manually what AI can handle in seconds. I map your workflows, find the bottlenecks, and deploy AI tools that free your team to focus on what actually grows the business.',             tags: ['Workflow', 'Implementation', 'Strategy'], href: '/services/business-automation' },
+  { id: '004', name: 'Knowledge Base',         desc: 'Your business already has the answers — they\'re just buried in emails, docs, and your team\'s heads. I build private AI systems trained on your content so staff and customers get instant, accurate answers around the clock.', tags: ['Private AI', 'Instant Answers', 'RAG'], href: '/services/knowledge-base' },
+];
+
+function ServiceCard({ id, name, desc, tags, href }) {
+  const [hov, setHov] = useState(false);
+  const inner = (
+    <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{ display: 'grid', gridTemplateColumns: '52px 1fr', gap: 18, paddingTop: 28, paddingBottom: 28, paddingRight: 4, paddingLeft: hov ? 16 : 4, borderBottom: '1px solid var(--ink-3)', background: hov ? 'var(--ink-2)' : 'transparent', transition: 'background .2s ease, padding-left .2s ease', cursor: href ? 'pointer' : 'default' }}>
+      <span style={{ font: '500 12px var(--font-mono)', letterSpacing: '0.1em', color: hov && href ? 'var(--signal)' : hov ? 'var(--signal)' : 'var(--muted)', paddingTop: 6, transition: 'color .2s ease' }}>{id}</span>
+      <div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 8 }}>
+          <h3 style={{ font: '600 22px var(--font-sans)', letterSpacing: '-0.015em', margin: 0, color: 'var(--paper)' }}>{name}</h3>
+          {href && <span style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--signal)', opacity: hov ? 1 : 0, transition: 'opacity .2s ease' }}>Learn more →</span>}
+        </div>
+        <p style={{ font: '400 14px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0, maxWidth: '60ch' }}>{desc}</p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 18, marginTop: 14 }}>
+          {tags.map(t => (
+            <span key={t} style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)', borderBottom: '1px solid var(--ink-3)', paddingBottom: 3 }}>{t}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+  return href ? <a href={href} style={{ textDecoration: 'none', display: 'block' }}>{inner}</a> : inner;
+}
+
+function Services() {
+  return (
+    <section id="services" data-screen-label="02 Services" style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <FadeIn><SectionHead num="02" name="Services" theme="Your problems, solved." count={`${SERVICES.length} / Offered`} /></FadeIn>
+        <FadeIn>
+          <div style={{ borderTop: '1px solid var(--ink-3)' }}>
+            {SERVICES.map(s => <ServiceCard key={s.id} {...s} />)}
+          </div>
+        </FadeIn>
+        <FadeIn>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 28, flexWrap: 'wrap', gap: 16 }}>
+            <p style={{ font: '400 14px var(--font-sans)', color: 'var(--muted)', margin: 0 }}>Looking for something else? I tailor every engagement.</p>
+            <Btn arrow href="#contact">Start a project</Btn>
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+// ── Work ──────────────────────────────────────────────────────────
+const PROJECTS = [
+  { id: '001', name: 'AAVA Rescue',  role: 'Website',          desc: 'Marketing site and donation flow for an animal rescue org.',        href: 'https://aavarescue.com', preview: 'https://image.thum.io/get/width/600/crop/380/https://aavarescue.com' },
+  { id: '002', name: 'Coming soon',  role: 'Custom AI Agent',  desc: 'A back-office agent for an SMB client. NDA — case study soon.',    placeholder: true },
+  { id: '003', name: 'Coming soon',  role: 'Knowledge Base',   desc: 'Private RAG system for a 40-person services team.',                placeholder: true },
+];
+
+function WorkCard({ id, name, role, desc, href, status, preview, placeholder }) {
+  const [hov, setHov] = useState(false);
+  const inner = (
+    <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{ position: 'relative', border: `1px solid ${hov && !placeholder ? 'var(--signal)' : 'var(--ink-3)'}`, background: 'var(--ink)', display: 'flex', flexDirection: 'column', color: 'var(--paper)', transition: 'border-color .2s ease, transform .2s ease', transform: hov && !placeholder ? 'translateY(-2px)' : 'translateY(0)', cursor: placeholder ? 'default' : 'pointer' }}>
+      <div style={{ height: 2, background: hov && !placeholder ? 'var(--signal)' : 'var(--ink-3)', transition: 'background .2s ease' }} />
+      <div style={{ aspectRatio: '16 / 10', overflow: 'hidden', background: 'var(--ink-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+        {preview ? (
+          <img src={preview} alt={`${name} preview`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: hov ? 'none' : 'grayscale(0.2)', transition: 'filter .3s ease, transform .4s ease', transform: hov ? 'scale(1.02)' : 'scale(1)' }} />
+        ) : (
+          <PixelBird size={56} fg="#2a2a2d" accent="#2a2a2d" />
+        )}
+        <span style={{ position: 'absolute', top: 12, left: 12, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', color: 'var(--paper)', mixBlendMode: 'difference' }}>{id}</span>
+      </div>
+      <div style={{ padding: '18px 20px 20px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
+          <h3 style={{ font: '600 17px var(--font-sans)', letterSpacing: '-0.015em', margin: 0, color: 'var(--paper)' }}>{name}</h3>
+          {status && <span style={{ font: '500 9px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--signal)', borderBottom: '1px solid var(--signal)', paddingBottom: 2, whiteSpace: 'nowrap' }}>{status}</span>}
+        </div>
+        <span style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>{role}</span>
+        <p style={{ font: '400 13px/1.5 var(--font-sans)', color: 'var(--muted)', margin: '6px 0 0' }}>{desc}</p>
+      </div>
+    </div>
+  );
+  return placeholder
+    ? inner
+    : <a href={href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block' }}>{inner}</a>;
+}
+
+function Work() {
+  return (
+    <section id="work" data-screen-label="03 Work" style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <FadeIn><SectionHead num="03" name="Work" theme="Live and shipping soon." count={`${PROJECTS.length} / Active`} /></FadeIn>
+        <FadeIn>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }} className="cp-work-grid">
+            {PROJECTS.map(p => <WorkCard key={p.id} {...p} />)}
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+// ── Founder ───────────────────────────────────────────────────────
+function Founder() {
+  return (
+    <section id="founder" data-screen-label="05 Founder" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <FadeIn><SectionHead num="05" name="Founder" theme="The person behind Carrier Pigeon AI." /></FadeIn>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 64, alignItems: 'start' }} className="cp-founder-grid">
+          <FadeIn>
+            <div style={{ aspectRatio: '4 / 5', background: 'var(--ink-2)', border: '1px solid var(--ink-3)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+              <PixelBird size={240} />
+              <span style={{ position: 'absolute', bottom: 18, left: 18, font: '500 10px var(--font-mono)', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--muted)' }}>Andrew Carrier · Founder</span>
+              <span style={{ position: 'absolute', bottom: 18, right: 18, font: '500 10px var(--font-mono)', letterSpacing: '0.16em', color: 'var(--signal)' }}>EST. 2026</span>
+            </div>
+          </FadeIn>
+          <FadeIn delay={120}>
+            <div>
+              <p style={{ font: '500 12px var(--font-mono)', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--signal)', margin: '0 0 16px' }}>A note from the founder</p>
+              <h2 style={{ font: '600 clamp(36px, 4vw, 52px)/1.05 var(--font-sans)', letterSpacing: '-0.03em', margin: '0 0 24px', color: 'var(--paper)', textWrap: 'balance' }}>From networks to neural nets.</h2>
+              <p style={{ font: '400 16px/1.65 var(--font-sans)', color: 'var(--paper)', opacity: 0.78, margin: '0 0 16px', maxWidth: '60ch' }}>
+                I'm Andrew Carrier — 38, with years in IT infrastructure and network administration. After a career keeping systems running, I became fascinated by what AI could unlock and started building with it.
+              </p>
+              <p style={{ font: '400 16px/1.65 var(--font-sans)', color: 'var(--paper)', opacity: 0.78, margin: '0 0 32px', maxWidth: '60ch' }}>
+                Carrier Pigeon AI is the studio I started to bring that work to small and mid-size businesses. Same instinct as fifteen years of network admin — get the right message to the right place, reliably, without drama.
+              </p>
+              <div style={{ borderTop: '1px solid var(--ink-3)' }}>
+                {[
+                  { k: 'Education',    v: 'B.S. Business Administration · University of Louisiana at Lafayette · 2011' },
+                  { k: 'Background',   v: 'Network administration & IT systems · 15+ yrs' },
+                  { k: 'Focus',        v: 'AI/ML, LLM APIs, agentic workflows, prompt engineering' },
+                  { k: 'Goal',         v: 'Practical AI tools that solve real problems' },
+                ].map(row => (
+                  <div key={row.k} style={{ display: 'grid', gridTemplateColumns: '180px 1fr', gap: 24, padding: '18px 0', borderBottom: '1px solid var(--ink-3)' }}>
+                    <span style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--muted)' }}>{row.k}</span>
+                    <span style={{ font: '400 15px var(--font-sans)', color: 'var(--paper)' }}>{row.v}</span>
+                  </div>
+                ))}
+                <div style={{ display: 'flex', gap: 24, padding: '22px 0', flexWrap: 'wrap' }}>
+                  {[
+                    { label: 'GitHub',      href: 'https://github.com/agcarrier' },
+                    { label: 'X / Twitter', href: 'https://x.com/agcarrierpigeon' },
+                    { label: 'Instagram',   href: 'https://www.instagram.com/acarrierpigeon/' },
+                  ].map(s => (
+                    <a key={s.label} href={s.href} target={s.href.startsWith('mailto') ? undefined : '_blank'} rel="noopener noreferrer"
+                      style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', transition: 'color .15s ease' }}
+                      onMouseEnter={e => e.currentTarget.style.color = 'var(--paper)'}
+                      onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}
+                    >{s.label} →</a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Stack ─────────────────────────────────────────────────────────
+const STACK = [
+  { name: 'Claude',    vendor: 'Anthropic', url: 'https://claude.ai' },
+  { name: 'ChatGPT',   vendor: 'OpenAI',    url: 'https://chatgpt.com' },
+  { name: 'Gemini',    vendor: 'Google',    url: 'https://gemini.google.com' },
+  { name: 'Cursor',    vendor: 'Editor',    url: 'https://cursor.com' },
+  { name: 'Lovable',   vendor: 'Builder',   url: 'https://lovable.dev' },
+  { name: 'GitHub',    vendor: 'Source',    url: 'https://github.com' },
+  { name: 'Vercel',    vendor: 'Hosting',   url: 'https://vercel.com' },
+  { name: 'Hostinger', vendor: 'Hosting',   url: 'https://hostinger.com' },
+  { name: 'Formspree', vendor: 'Forms',     url: 'https://formspree.io' },
+];
+
+function Stack() {
+  return (
+    <section id="stack" data-screen-label="04 Stack" style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <FadeIn><SectionHead num="04" name="Stack" theme="Tools of the trade." count={`${STACK.length} / Daily`} /></FadeIn>
+        <FadeIn>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }} className="cp-stack-grid">
+            {STACK.map((s, i) => (
+              <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer"
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', gap: 32, padding: '32px 22px', minHeight: 160, borderRight: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', textDecoration: 'none', background: 'transparent', transition: 'background .2s ease', position: 'relative' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--ink-2)'; e.currentTarget.querySelector('.cp-stack-arr').style.color = 'var(--signal)'; e.currentTarget.querySelector('.cp-stack-arr').style.transform = 'translate(3px,-3px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.querySelector('.cp-stack-arr').style.color = 'var(--muted)'; e.currentTarget.querySelector('.cp-stack-arr').style.transform = 'translate(0,0)'; }}
+              >
+                <span className="cp-stack-arr" style={{ position: 'absolute', top: 14, right: 16, font: '500 12px var(--font-mono)', color: 'var(--muted)', transition: 'transform .2s ease, color .2s ease' }}>↗</span>
+                <span style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--muted)' }}>{String(i + 1).padStart(2, '0')} · {s.vendor}</span>
+                <span style={{ font: '600 15px var(--font-sans)', letterSpacing: '-0.02em', color: 'var(--paper)' }}>{s.name}</span>
+              </a>
+            ))}
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+// ── Contact ───────────────────────────────────────────────────────
+// TODO: Replace YOUR_FORM_ID with your actual Formspree form ID (formspree.io/forms)
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xjgzyeol';
+
+// ── Per-page SEO meta ─────────────────────────────────────────────
+const PAGE_META = {
+  '/': {
+    title: 'Carrier Pigeon AI — Calm AI for small business',
+    description: 'Carrier Pigeon AI builds practical AI tools, websites, and agents for small and mid-size businesses in Lafayette and beyond.',
+  },
+  '/services/web-design': {
+    title: 'AI Web Design for Small Businesses | Carrier Pigeon AI',
+    description: 'Professional, modern websites built with AI — launched faster than traditional agencies and priced for small businesses. Starting at $799.',
+  },
+  '/services/ai-agents': {
+    title: 'AI Receptionist & Voice Agents for Small Business | Carrier Pigeon AI',
+    description: 'AI agents that answer calls, qualify leads, and book appointments 24/7 — so you never lose a customer to voicemail again. Starting at $149/mo.',
+  },
+  '/services/business-automation': {
+    title: 'Business Process Automation with AI | Carrier Pigeon AI',
+    description: 'Stop doing manually what AI can handle in seconds. We map your workflows, find the bottlenecks, and deploy AI tools that free your team.',
+  },
+  '/services/knowledge-base': {
+    title: 'Private AI Knowledge Base for Small Business | Carrier Pigeon AI',
+    description: 'A private AI trained on your business content — so staff and customers get instant, accurate answers around the clock without pulling anyone away.',
+  },
+};
+
+// ── Demo API ──────────────────────────────────────────────────────
+const DEMO_API = 'https://carrier-pigeon-api-gold.vercel.app';
+
+const DEMO_BUSINESSES = [
+  { label: 'HVAC',        name: 'Riverside HVAC',   type: 'HVAC heating and cooling service' },
+  { label: 'Dental',      name: 'Lakeside Dental',  type: 'dental and orthodontic practice' },
+  { label: 'Real Estate', name: 'Summit Realty',    type: 'residential real estate agency' },
+  { label: 'Salon & Spa', name: 'Luxe Studio',      type: 'hair salon and day spa' },
+];
+
+const KB_SAMPLE = `RIVERSIDE HVAC — Knowledge Base
+
+SERVICES
+- Central air conditioning: installation, repair, maintenance
+- Heating: furnace installation, repair, tune-ups
+- Heat pumps: installation and repair
+- Indoor air quality: air purifiers, humidifiers, UV systems
+- Emergency repairs: 24/7 for maintenance contract customers
+
+PRICING
+- Diagnostic service call: $89 (waived with completed repair)
+- AC tune-up: $129/unit
+- Furnace tune-up: $99/unit
+- Emergency after-hours fee: $150 + parts/labor
+- Free estimates on new installations
+
+HOURS
+Monday–Friday: 7:00am – 6:00pm
+Saturday: 8:00am – 2:00pm
+Sunday: Closed (emergency calls for contract customers only)
+
+WARRANTIES
+- Parts: 1-year manufacturer warranty
+- Labor: 90-day guarantee
+- New installations: 5-year labor warranty
+- Maintenance contract: covers all tune-up costs + 15% off repairs
+
+COVERAGE AREA
+Greater River Valley area including Oak Ridge, Cedar Falls, and Millbrook.
+
+FAQS
+Q: What brands do you service?
+A: All major brands — Carrier, Lennox, Trane, Rheem, Goodman, Daikin, and more.
+
+Q: How do I sign up for a maintenance plan?
+A: Call (555) 100-2345 or ask any technician. Plans start at $129/year per unit.
+
+Q: How quickly can you come out?
+A: Same-day for emergencies. Scheduled service is usually within 1–2 business days.
+
+Q: Do you offer financing?
+A: Yes, 12-month same-as-cash financing on new installations over $2,000. Ask about it during your estimate.`;
+
+const inputStyle = {
+  width: '100%', boxSizing: 'border-box', background: 'var(--ink-2)',
+  border: '1px solid var(--ink-3)', color: 'var(--paper)', outline: 'none',
+  font: '400 15px var(--font-sans)', padding: '11px 14px', borderRadius: 0,
+  appearance: 'none', WebkitAppearance: 'none', transition: 'border-color .15s ease',
+};
+
+function FormField({ label, children }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+      <span style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--muted)' }}>{label}</span>
+      {children}
+    </div>
+  );
+}
+
+function Contact() {
+  const [form, setForm] = React.useState({ name: '', company: '', service: '', message: '' });
+  const [status, setStatus] = React.useState('idle');
+
+  function handleChange(e) {
+    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  }
+
+  function handleFocus(e) { e.target.style.borderColor = 'var(--signal)'; }
+  function handleBlur(e)  { e.target.style.borderColor = 'var(--ink-3)'; }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setStatus('sending');
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      setStatus(res.ok ? 'success' : 'error');
+    } catch {
+      setStatus('error');
+    }
+  }
+
+  return (
+    <section id="contact" data-screen-label="06 Contact" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <FadeIn><SectionHead num="06" name="Contact" theme="Let's build something." /></FadeIn>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'start' }} className="cp-contact-grid">
+          <FadeIn>
+            <div>
+              <h2 style={{ font: '600 clamp(40px, 5vw, 64px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', margin: '0 0 24px', color: 'var(--paper)', textWrap: 'balance' }}>
+                Have a project in{' '}
+                <span style={{ background: 'var(--signal)', color: 'var(--ink)', padding: '0 6px', margin: '0 -2px' }}>flight</span>?
+              </h2>
+              <p style={{ font: '400 16px/1.65 var(--font-sans)', color: 'var(--muted)', margin: '0 0 12px', maxWidth: '46ch' }}>Tell me what you're building. Most projects start with a quick conversation to see if there's a fit — no commitment, no sales pitch.</p>
+              <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', margin: '0 0 32px', maxWidth: '46ch' }}>
+                <span style={{ color: 'var(--signal)', fontFamily: 'var(--font-mono)', fontSize: 12, letterSpacing: '0.14em', textTransform: 'uppercase' }}>📍 Lafayette, LA</span>
+                {' '}— locally owned and operated, serving businesses in Acadiana and beyond.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <a href="mailto:andrew@carrierpigeonai.dev" style={{ font: '500 13px var(--font-mono)', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none' }}>Or email directly → andrew@carrierpigeonai.dev</a>
+              </div>
+            </div>
+          </FadeIn>
+          <FadeIn delay={120}>
+            {status === 'success' ? (
+              <div style={{ padding: '48px 0', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+                <PixelBird size={72} fg="#f1f1ef" accent="#9bff5b" />
+                <p style={{ font: '600 20px/1.3 var(--font-sans)', color: 'var(--paper)', margin: 0 }}>Pigeon sent.</p>
+                <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>I'll be in touch quickly — typically within a few hours.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <FormField label="Name *">
+                    <input name="name" required value={form.name} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Jane Smith" style={inputStyle} />
+                  </FormField>
+                  <FormField label="Company">
+                    <input name="company" value={form.company} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Acme Co." style={inputStyle} />
+                  </FormField>
+                </div>
+                <FormField label="What do you need? *">
+                  <select name="service" required value={form.service} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputStyle, backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center', paddingRight: 36 }}>
+                    <option value="">Select a service…</option>
+                    <option value="Web Design">Web Design</option>
+                    <option value="AI Agents & Receptionist">AI Agents & Receptionist</option>
+                    <option value="Business Automation">Business Automation</option>
+                    <option value="Knowledge Base">Knowledge Base</option>
+                    <option value="Something else">Something else</option>
+                  </select>
+                </FormField>
+                <FormField label="Message *">
+                  <textarea name="message" required value={form.message} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Tell me about the project — what's the problem you're trying to solve?" rows={5} style={{ ...inputStyle, resize: 'vertical', minHeight: 120 }} />
+                </FormField>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
+                  <Btn primary arrow type="submit" disabled={status === 'sending'}>
+                    {status === 'sending' ? 'Sending…' : 'Send a Pigeon'}
+                  </Btn>
+                  {status === 'error' && (
+                    <span style={{ font: '400 13px var(--font-sans)', color: '#e55' }}>Something went wrong — try emailing andrew@carrierpigeonai.dev directly.</span>
+                  )}
+                </div>
+              </form>
+            )}
+          </FadeIn>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Footer ────────────────────────────────────────────────────────
+function Footer() {
+  return (
+    <footer style={{ position: 'relative', zIndex: 2, padding: '40px 48px', borderTop: '1px solid var(--ink-3)', background: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <PixelBird size={20} />
+        <span style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--paper)' }}>Carrier Pigeon AI</span>
+      </div>
+      <span style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.12em', color: 'var(--muted)' }}>© 2026 · Built by Andrew Carrier · Calm AI for small business</span>
+    </footer>
+  );
+}
+
+// ── Scroll Progress & Nav ─────────────────────────────────────────
+function ScrollProgressBar() {
+  const [p, setP] = useState(0);
+  useEffect(() => {
+    const onScroll = () => { const t = document.documentElement.scrollHeight - window.innerHeight; setP(t > 0 ? (window.scrollY / t) * 100 : 0); };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  return <div style={{ position: 'fixed', top: 0, left: 0, zIndex: 1000, height: 2, width: `${p}%`, background: 'var(--signal)', transition: 'width .08s linear', pointerEvents: 'none' }} />;
+}
+
+function Nav() {
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  const links = ['Services', 'Work', 'Stack', 'Founder', 'Contact'];
+  // Prefix section anchors with "/" so they work from any service page
+  const isHome = window.location.pathname === '/';
+  const anchor = id => isHome ? `#${id}` : `/#${id}`;
+  return (
+    <>
+      <nav className="cp-nav" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 48px', borderBottom: scrolled ? '1px solid var(--ink-3)' : '1px solid transparent', background: scrolled ? 'rgba(12,12,13,0.78)' : 'rgba(12,12,13,0.42)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', transition: 'background .2s ease, border-color .2s ease' }}>
+        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 14, textDecoration: 'none' }} aria-label="Carrier Pigeon AI home">
+          <PixelBird size={28} />
+          <span style={{ font: '600 14px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)' }}>Carrier Pigeon AI</span>
+        </a>
+        <div className="cp-nav-links" style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
+          {links.map(l => (
+            <a key={l} href={anchor(l.toLowerCase())}
+              style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', transition: 'color .15s ease' }}
+              onMouseEnter={e => e.target.style.color = 'var(--paper)'}
+              onMouseLeave={e => e.target.style.color = 'var(--muted)'}
+            >{l}</a>
+          ))}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div className="cp-nav-cta"><Btn arrow href={anchor('contact')}>Send a Pigeon</Btn></div>
+          <button className="cp-hamburger" onClick={() => setOpen(o => !o)} aria-label="Toggle menu"
+            style={{ display: 'none', background: 'none', border: 0, cursor: 'pointer', padding: 6, color: 'var(--paper)', lineHeight: 0 }}>
+            {open
+              ? <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="square"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+              : <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="square"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+            }
+          </button>
+        </div>
+      </nav>
+      <div className="cp-mobile-menu" style={{ position: 'fixed', top: 60, left: 0, right: 0, zIndex: 99, background: 'rgba(12,12,13,0.97)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', borderBottom: '1px solid var(--ink-3)', padding: '12px 24px 28px', display: 'none', flexDirection: 'column', transform: open ? 'translateY(0)' : 'translateY(-110%)', transition: 'transform .28s cubic-bezier(0.4,0,0.2,1)', pointerEvents: open ? 'auto' : 'none' }}>
+        {links.map(l => (
+          <a key={l} href={anchor(l.toLowerCase())} onClick={() => setOpen(false)}
+            style={{ font: '500 13px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)', textDecoration: 'none', padding: '18px 0', borderBottom: '1px solid var(--ink-3)' }}
+          >{l}</a>
+        ))}
+        <div style={{ marginTop: 24 }}><Btn primary arrow href={anchor('contact')} onClick={() => setOpen(false)}>Send a Pigeon</Btn></div>
+      </div>
+    </>
+  );
+}
+
+// ── Web Design Page ───────────────────────────────────────────────
+const WD_STEPS = [
+  { num: '01', title: 'Discovery',  desc: 'A 30-minute call to understand your business, goals, and what you need. No jargon, no sales pitch — just a real conversation.' },
+  { num: '02', title: 'Design',     desc: 'AI-accelerated design means you see a first draft the same day — built around your brand, your colors, your vibe.' },
+  { num: '03', title: 'Review',     desc: 'You give feedback, we refine until it\'s exactly right. Most clients wrap this up in one round.' },
+  { num: '04', title: 'Launch',     desc: 'Live on your domain, optimized for search from day one. We handle the technical details so you don\'t have to.' },
+];
+
+const WD_INCLUDES = [
+  'Custom design tailored to your brand',
+  'Mobile-friendly — looks great on any device',
+  'SEO basics built in so Google can find you',
+  'Contact form connected to your business email',
+  'Fast load times',
+  'Google Analytics setup',
+  '30 days of support after launch',
+];
+
+const WD_INDUSTRIES = [
+  'Restaurants & Food', 'Contractors & Trades', 'Salons & Spas',
+  'Medical & Dental', 'Real Estate', 'Retail Shops',
+  'Professional Services', 'Nonprofits',
+];
+
+const WD_TIERS = [
+  { name: 'Starter',  price: '$799',    desc: 'Everything you need to exist and look professional online.',  features: ['1–3 pages', 'Mobile-friendly', 'Contact form', 'Basic SEO', 'Domain connection'],                                                                   featured: false },
+  { name: 'Standard', price: '$1,499',  desc: 'The full package. Most clients choose this.',                  features: ['Up to 6 pages', 'Full SEO optimization', 'Google Analytics', 'Content assistance', '30 days support', 'Everything in Starter'],                  featured: true  },
+  { name: 'Premium',  price: '$2,499+', desc: 'For bigger projects that need more.',                          features: ['Unlimited pages', 'E-commerce ready', 'Content writing included', 'Priority support', 'Custom integrations', 'Everything in Standard'], featured: false },
+];
+
+const WD_FAQS = [
+  { q: 'How long does it take?',              a: 'Most sites launch within a day or two of the discovery call. Complex projects with e-commerce or many pages may take a bit longer — but never weeks.' },
+  { q: 'Do I need to provide content?',       a: 'Nope. We can write copy with you or draft it entirely based on your discovery call. You just review and approve.' },
+  { q: 'What if I already have a domain?',    a: 'No problem at all. We\'ll connect your existing domain to the new site. If you don\'t have one yet, we\'ll help you get one.' },
+  { q: 'Can you make updates after launch?',  a: 'Yes — that\'s what the 30-day support window is for. After that, ongoing maintenance packages are available starting at $99/month.' },
+  { q: 'Do you build online stores?',         a: 'Yes, e-commerce is available on the Premium tier. Contact us with details about your store and we\'ll give you an accurate quote.' },
+  { q: 'Will my site show up on Google?',     a: 'Every site we build includes SEO basics — proper page titles, meta descriptions, fast load times, and mobile optimization. We also submit your sitemap to Google and Bing on launch day.' },
+];
+
+function FAQItem({ q, a }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ borderBottom: '1px solid var(--ink-3)' }}>
+      <button onClick={() => setOpen(o => !o)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, padding: '22px 0', background: 'none', border: 0, cursor: 'pointer', textAlign: 'left' }}>
+        <span style={{ font: '500 16px var(--font-sans)', color: 'var(--paper)', letterSpacing: '-0.01em' }}>{q}</span>
+        <span style={{ font: '500 20px var(--font-mono)', color: 'var(--signal)', flexShrink: 0, transform: open ? 'rotate(45deg)' : 'rotate(0)', transition: 'transform .2s ease', display: 'block' }}>+</span>
+      </button>
+      {open && <p style={{ font: '400 15px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 22px', maxWidth: '70ch' }}>{a}</p>}
+    </div>
+  );
+}
+
+function WebDesignPage() {
+  const [form, setForm] = React.useState({ name: '', company: '', message: '' });
+  const [status, setStatus] = React.useState('idle');
+  function handleChange(e) { setForm(f => ({ ...f, [e.target.name]: e.target.value })); }
+  function handleFocus(e) { e.target.style.borderColor = 'var(--signal)'; }
+  function handleBlur(e)  { e.target.style.borderColor = 'var(--ink-3)'; }
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setStatus('sending');
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, { method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, service: 'Web Design' }) });
+      setStatus(res.ok ? 'success' : 'error');
+    } catch { setStatus('error'); }
+  }
+  return (
+    <div style={{ background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--font-sans)', minHeight: '100vh', position: 'relative', overflowX: 'hidden' }}>
+      <ScrollProgressBar />
+      <CourierGraph />
+      <Nav />
+      <main>
+        {/* Hero */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '160px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
+          <FadeIn>
+            <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', marginBottom: 32, transition: 'color .15s ease' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--paper)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}>← Back to home</a>
+          </FadeIn>
+          <FadeIn delay={40}><div style={{ marginBottom: 24 }}><Eyebrow>Service 01 · <span style={{ color: 'var(--signal)' }}>Web Design</span></Eyebrow></div></FadeIn>
+          <FadeIn delay={80}>
+            <h1 style={{ font: '600 clamp(48px, 7vw, 96px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', margin: '0 0 24px', maxWidth: '16ch', textWrap: 'balance', color: 'var(--paper)' }}>
+              A website that works as <span style={{ background: 'var(--signal)', color: 'var(--ink)', padding: '0 6px', margin: '0 -2px' }}>hard</span> as you do.
+            </h1>
+          </FadeIn>
+          <FadeIn delay={160}>
+            <p style={{ font: '400 18px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 40px' }}>
+              Professional, modern, and built to bring in business — launched faster than you'd expect and priced for small businesses, not agencies.
+            </p>
+          </FadeIn>
+          <FadeIn delay={220}><Btn primary arrow href="#wd-contact">Start your project</Btn></FadeIn>
+        </section>
+
+        <WebDesignBriefDemo />
+
+        {/* Problem */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
+            <FadeIn><h2 style={{ font: '600 clamp(32px, 4vw, 48px)/1.05 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0, textWrap: 'balance' }}>Most small business websites are costing them customers.</h2></FadeIn>
+            <FadeIn delay={100}>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>In Acadiana, most small businesses either have an outdated website or none at all. Agencies want $4,000–$10,000 and weeks of back-and-forth. Meanwhile your competitors are showing up online and you're not.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>AI changes that equation entirely. We design, write, and build your site in a fraction of the time — without cutting corners on quality.</p>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Process */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="01" name="Process" theme="Simple. Fast. No surprises." /></FadeIn>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }}>
+              {WD_STEPS.map((s, i) => (
+                <FadeIn key={s.num} delay={i * 80}>
+                  <div style={{ padding: '36px 28px', borderRight: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', minHeight: 220 }}>
+                    <div style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.2em', color: 'var(--signal)', marginBottom: 20 }}>{s.num}</div>
+                    <h3 style={{ font: '600 20px var(--font-sans)', letterSpacing: '-0.015em', color: 'var(--paper)', margin: '0 0 12px' }}>{s.title}</h3>
+                    <p style={{ font: '400 14px/1.65 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>{s.desc}</p>
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Included + Who it's for */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64 }}>
+            <FadeIn>
+              <SectionHead num="02" name="What's Included" theme="" />
+              <div>
+                {WD_INCLUDES.map((item, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '14px 0', borderBottom: '1px solid var(--ink-3)' }}>
+                    <span style={{ color: 'var(--signal)', font: '600 14px var(--font-mono)', flexShrink: 0, marginTop: 2 }}>✓</span>
+                    <span style={{ font: '400 15px var(--font-sans)', color: 'var(--paper)' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </FadeIn>
+            <FadeIn delay={120}>
+              <SectionHead num="03" name="Who It's For" theme="" />
+              <p style={{ font: '400 15px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 24px' }}>If you run a local business and need a professional online presence, this is for you. We especially serve:</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 36 }}>
+                {WD_INDUSTRIES.map(ind => (
+                  <span key={ind} style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--paper)', border: '1px solid var(--ink-3)', padding: '8px 14px' }}>{ind}</span>
+                ))}
+              </div>
+              <div style={{ padding: '24px', background: 'var(--ink-2)', borderLeft: '2px solid var(--signal)' }}>
+                <p style={{ font: '400 13px var(--font-sans)', color: 'var(--muted)', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 11 }}>Ongoing support available</p>
+                <p style={{ font: '600 16px var(--font-sans)', color: 'var(--paper)', margin: 0 }}>Keep your site fast, secure, and up to date — starting at <span style={{ color: 'var(--signal)' }}>$99/month</span>.</p>
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Pricing */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="04" name="Pricing" theme="Transparent. No surprises." /></FadeIn>
+            <FadeIn delay={80}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+                {WD_TIERS.map(t => (
+                  <div key={t.name} style={{ padding: '40px 32px', background: t.featured ? 'var(--ink-2)' : 'transparent', border: `1px solid ${t.featured ? 'var(--signal)' : 'var(--ink-3)'}`, position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                    {t.featured && <span style={{ position: 'absolute', top: -1, left: 32, font: '500 10px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', background: 'var(--signal)', color: 'var(--ink)', padding: '4px 10px' }}>Most popular</span>}
+                    <div style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 12 }}>{t.name}</div>
+                    <div style={{ font: '600 clamp(36px, 4vw, 48px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', color: t.featured ? 'var(--signal)' : 'var(--paper)', marginBottom: 12 }}>{t.price}</div>
+                    <p style={{ font: '400 14px/1.6 var(--font-sans)', color: 'var(--muted)', margin: '0 0 28px' }}>{t.desc}</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 'auto', marginBottom: 32 }}>
+                      {t.features.map(f => (
+                        <div key={f} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                          <span style={{ color: 'var(--signal)', font: '600 12px var(--font-mono)', flexShrink: 0, marginTop: 2 }}>✓</span>
+                          <span style={{ font: '400 13px var(--font-sans)', color: 'var(--paper)', opacity: 0.8 }}>{f}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Btn primary={t.featured} arrow href="#wd-contact">{t.featured ? 'Get started' : 'Choose plan'}</Btn>
+                  </div>
+                ))}
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 800, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="05" name="FAQ" theme="Common questions, straight answers." /></FadeIn>
+            <FadeIn delay={80}>
+              <div style={{ borderTop: '1px solid var(--ink-3)' }}>
+                {WD_FAQS.map((f, i) => <FAQItem key={i} {...f} />)}
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Contact */}
+        <section id="wd-contact" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 800, margin: '0 auto' }}>
+            <FadeIn>
+              <div style={{ textAlign: 'center', marginBottom: 56 }}>
+                <h2 style={{ font: '600 clamp(36px, 5vw, 64px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', margin: '0 0 16px', color: 'var(--paper)', textWrap: 'balance' }}>
+                  Ready to stop losing customers to a <span style={{ background: 'var(--signal)', color: 'var(--ink)', padding: '0 6px', margin: '0 -2px' }}>bad first impression</span>?
+                </h2>
+                <p style={{ font: '400 17px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>Tell us about your business and we'll take it from there.</p>
+              </div>
+            </FadeIn>
+            <FadeIn delay={80}>
+              {status === 'success' ? (
+                <div style={{ padding: '48px 0', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+                  <PixelBird size={72} fg="#f1f1ef" accent="#9bff5b" />
+                  <p style={{ font: '600 20px/1.3 var(--font-sans)', color: 'var(--paper)', margin: 0 }}>Pigeon sent.</p>
+                  <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>I'll be in touch quickly — typically within a few hours.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                    <FormField label="Name *"><input name="name" required value={form.name} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your name" style={inputStyle} /></FormField>
+                    <FormField label="Business Name"><input name="company" value={form.company} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your business" style={inputStyle} /></FormField>
+                  </div>
+                  <FormField label="Tell us about your project *">
+                    <textarea name="message" required value={form.message} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="What kind of site do you need? Any details help..." rows={5} style={{ ...inputStyle, resize: 'vertical', minHeight: 120 }} />
+                  </FormField>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+                    <span style={{ font: '400 13px var(--font-sans)', color: 'var(--muted)' }}>Or email → <a href="mailto:andrew@carrierpigeonai.dev" style={{ color: 'var(--muted)' }}>andrew@carrierpigeonai.dev</a></span>
+                    <Btn primary arrow onClick={handleSubmit}>{status === 'sending' ? 'Sending…' : 'Send a Pigeon'}</Btn>
+                  </div>
+                  {status === 'error' && <span style={{ font: '400 13px var(--font-sans)', color: '#e55' }}>Something went wrong — try emailing andrew@carrierpigeonai.dev directly.</span>}
+                </form>
+              )}
+            </FadeIn>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+// ── App ───────────────────────────────────────────────────────────
+function App() {
+  return (
+    <div style={{ background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--font-sans)', minHeight: '100vh', position: 'relative', overflowX: 'hidden' }}>
+      <ScrollProgressBar />
+      <CourierGraph />
+      <Nav />
+      <main>
+        <Hero />
+        <SpeedCallout />
+        <PainPoints />
+        <Services />
+        <Work />
+        <Stack />
+        <Founder />
+        <Contact />
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+// ── Demo Helpers ─────────────────────────────────────────────────
+function DemoLiveBadge() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+      <div style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--muted)' }}>Live Demo</div>
+      <div style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--signal)', animation: 'pulse 2s ease-in-out infinite' }} />
+    </div>
+  );
+}
+
+function DemoStarterBtn({ label, onClick }) {
+  return (
+    <button onClick={onClick}
+      style={{ font: '400 12px var(--font-sans)', padding: '4px 10px', background: 'transparent', border: '1px solid var(--ink-3)', color: 'var(--muted)', cursor: 'pointer', transition: 'all .15s', lineHeight: 1.4 }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--signal)'; e.currentTarget.style.color = 'var(--paper)'; }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--ink-3)'; e.currentTarget.style.color = 'var(--muted)'; }}>
+      "{label}"
+    </button>
+  );
+}
+
+function DemoChatBubble({ role, content, label }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: role === 'user' ? 'flex-end' : 'flex-start' }}>
+      <div style={{
+        maxWidth: '78%', padding: '9px 13px',
+        background: role === 'user' ? 'var(--signal)' : 'var(--ink-3)',
+        color: role === 'user' ? 'var(--ink)' : 'var(--paper)',
+        font: '400 13.5px/1.55 var(--font-sans)',
+      }}>
+        {label && <div style={{ font: '500 9px var(--font-mono)', letterSpacing: '0.14em', color: 'var(--signal)', marginBottom: 5 }}>{label}</div>}
+        {content}
+      </div>
+    </div>
+  );
+}
+
+function DemoTyping({ label = 'typing…' }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+      <div style={{ padding: '9px 13px', background: 'var(--ink-3)', color: 'var(--muted)', font: '400 12px var(--font-mono)' }}>{label}</div>
+    </div>
+  );
+}
+
+function DemoError({ msg }) {
+  if (!msg) return null;
+  return <div style={{ padding: '8px 20px', background: 'rgba(229,85,85,0.08)', borderTop: '1px solid rgba(229,85,85,0.18)', font: '400 12px var(--font-sans)', color: '#e55' }}>{msg}</div>;
+}
+
+async function callDemoAPI(payload) {
+  const r = await fetch(`${DEMO_API}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!r.ok) {
+    const d = await r.json().catch(() => ({}));
+    throw new Error(d.error || `HTTP ${r.status}`);
+  }
+  return r.json();
+}
+
+// ── Voice Receptionist Demo ───────────────────────────────────────
+function VoiceReceptionistDemo() {
+  const [biz, setBiz] = React.useState(DEMO_BUSINESSES[0]);
+  const [msgs, setMsgs] = React.useState([]);
+  const [input, setInput] = React.useState('');
+  const [busy, setBusy] = React.useState(false);
+  const [listening, setListening] = React.useState(false);
+  const [err, setErr] = React.useState(null);
+  const [voices, setVoices] = React.useState([]);
+  const [selectedVoice, setSelectedVoice] = React.useState('');
+  const recRef = React.useRef(null);
+  const msgsRef = React.useRef(null);
+
+  // Load available English voices (async — fires after voiceschanged)
+  React.useEffect(() => {
+    function loadVoices() {
+      const all = window.speechSynthesis?.getVoices() || [];
+      const eng = all.filter(v => v.lang.startsWith('en'));
+      setVoices(eng);
+      if (eng.length && !selectedVoice) {
+        const preferred = eng.find(v => /samantha|ava|karen|moira|zira|heather|allison/i.test(v.name))
+          || eng.find(v => v.lang === 'en-US')
+          || eng[0];
+        if (preferred) setSelectedVoice(preferred.name);
+      }
+    }
+    loadVoices();
+    window.speechSynthesis?.addEventListener('voiceschanged', loadVoices);
+    return () => window.speechSynthesis?.removeEventListener('voiceschanged', loadVoices);
+  }, []);
+
+  // Reset conversation when business changes
+  React.useEffect(() => {
+    setMsgs([{ role: 'assistant', content: `Thanks for calling ${biz.name}! How can I help you today?` }]);
+    setErr(null);
+  }, [biz.name]);
+
+  React.useEffect(() => {
+    if (msgsRef.current) msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
+  }, [msgs, busy]);
+
+  function speak(text) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.92;
+    const pick = voices.find(v => v.name === selectedVoice)
+      || voices.find(v => v.lang === 'en-US')
+      || voices[0];
+    if (pick) u.voice = pick;
+    window.speechSynthesis.speak(u);
+  }
+
+  async function send(text) {
+    const t = (text || input).trim();
+    if (!t || busy) return;
+    const next = [...msgs, { role: 'user', content: t }];
+    setMsgs(next);
+    setInput('');
+    setBusy(true);
+    setErr(null);
+    try {
+      const d = await callDemoAPI({ mode: 'receptionist', businessName: biz.name, businessType: biz.type, messages: next });
+      setMsgs(prev => [...prev, { role: 'assistant', content: d.content }]);
+      speak(d.content);
+    } catch (e) {
+      setErr(e.message || 'Demo unavailable — the API may not be deployed yet.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function toggleMic() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { setErr('Voice input requires Chrome or Edge — or just type below.'); return; }
+    if (listening) { recRef.current?.stop(); return; }
+    window.speechSynthesis?.cancel();
+    const r = new SR();
+    r.lang = 'en-US'; r.interimResults = false;
+    r.onresult = e => { send(e.results[0][0].transcript); setListening(false); };
+    r.onerror = r.onend = () => setListening(false);
+    recRef.current = r;
+    r.start();
+    setListening(true);
+  }
+
+  const starters = ['What are your hours?', 'I need to book an appointment', 'How much does it cost?', 'Can I get a callback?'];
+
+  return (
+    <section style={{ position: 'relative', zIndex: 2, padding: '0 48px 80px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <FadeIn>
+          <DemoLiveBadge />
+          <h2 style={{ font: '600 clamp(22px, 2.5vw, 32px)/1.1 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: '0 0 10px' }}>Try the receptionist — right now.</h2>
+          <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '50ch', margin: '0 0 22px' }}>This is a live AI agent running on real AI. Pick a business type and start a conversation — type or use your mic.</p>
+
+          {/* Business picker */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 18 }}>
+            {DEMO_BUSINESSES.map(b => (
+              <button key={b.label} onClick={() => setBiz(b)} style={{
+                font: '500 10px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase',
+                padding: '7px 13px', background: 'transparent', cursor: 'pointer', transition: 'all .15s',
+                border: `1px solid ${biz.label === b.label ? 'var(--signal)' : 'var(--ink-3)'}`,
+                color: biz.label === b.label ? 'var(--signal)' : 'var(--muted)',
+              }}>{b.label}</button>
+            ))}
+          </div>
+
+          {/* Chat widget */}
+          <div style={{ background: 'var(--ink-2)', border: '1px solid var(--ink-3)', maxWidth: 660 }}>
+            {/* Header bar */}
+            <div style={{ padding: '12px 18px', borderBottom: '1px solid var(--ink-3)', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <div style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--signal)', flexShrink: 0 }} />
+              <span style={{ font: '500 11px var(--font-mono)', color: 'var(--paper)', letterSpacing: '0.06em' }}>Ava · AI Receptionist · {biz.name}</span>
+              {voices.length > 0 && (
+                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 7 }}>
+                  <span style={{ font: '400 9px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>Voice</span>
+                  <select value={selectedVoice} onChange={e => setSelectedVoice(e.target.value)} style={{
+                    font: '400 11px var(--font-mono)', background: 'var(--ink)', border: '1px solid var(--ink-3)',
+                    color: 'var(--paper)', padding: '3px 7px', cursor: 'pointer', outline: 'none', maxWidth: 180,
+                  }}>
+                    {voices.map(v => (
+                      <option key={v.name} value={v.name}>{v.name} ({v.lang})</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
+            {/* Messages */}
+            <div ref={msgsRef} style={{ height: 270, overflowY: 'auto', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {msgs.map((m, i) => <DemoChatBubble key={i} {...m} />)}
+              {busy && <DemoTyping label="Ava is typing…" />}
+            </div>
+
+            <DemoError msg={err} />
+
+            {/* Input row */}
+            <div style={{ padding: '12px 18px', borderTop: '1px solid var(--ink-3)', display: 'flex', gap: 8 }}>
+              <button onClick={toggleMic} title={listening ? 'Stop' : 'Speak'} style={{
+                padding: '9px 11px', background: listening ? 'var(--signal)' : 'var(--ink-3)',
+                border: 'none', color: listening ? 'var(--ink)' : 'var(--muted)',
+                cursor: 'pointer', transition: 'all .15s', fontSize: 14, flexShrink: 0,
+              }}>
+                {listening ? '⏹' : '🎙'}
+              </button>
+              <input value={input} onChange={e => setInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send(input)}
+                placeholder={listening ? 'Listening…' : 'Type a message or use the mic…'}
+                disabled={busy || listening}
+                style={{ flex: 1, padding: '9px 12px', background: 'var(--ink)', border: '1px solid var(--ink-3)', color: 'var(--paper)', font: '400 13px var(--font-sans)', outline: 'none' }} />
+              <button onClick={() => send(input)} disabled={!input.trim() || busy} style={{
+                padding: '9px 16px', background: 'var(--signal)', border: 'none', color: 'var(--ink)',
+                font: '600 12px var(--font-sans)', cursor: 'pointer', flexShrink: 0,
+                opacity: !input.trim() || busy ? 0.4 : 1, transition: 'opacity .15s',
+              }}>Send</button>
+            </div>
+          </div>
+
+          {/* Starter prompts */}
+          <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+            <span style={{ font: '400 11px var(--font-sans)', color: 'var(--muted)' }}>Try:</span>
+            {starters.map(s => <DemoStarterBtn key={s} label={s} onClick={() => send(s)} />)}
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+// ── Knowledge Base Demo ───────────────────────────────────────────
+function KnowledgeBaseDemo() {
+  const [tab, setTab] = React.useState('chat');
+  const [kb, setKb] = React.useState(KB_SAMPLE);
+  const [msgs, setMsgs] = React.useState([{ role: 'assistant', content: 'Ask me anything about Riverside HVAC — services, pricing, hours, warranties, coverage area…' }]);
+  const [input, setInput] = React.useState('');
+  const [busy, setBusy] = React.useState(false);
+  const [err, setErr] = React.useState(null);
+  const msgsRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (msgsRef.current) msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
+  }, [msgs, busy]);
+
+  async function send(text) {
+    const t = (text || input).trim();
+    if (!t || busy) return;
+    const next = [...msgs, { role: 'user', content: t }];
+    setMsgs(next);
+    setInput('');
+    setBusy(true);
+    setErr(null);
+    try {
+      const d = await callDemoAPI({ mode: 'knowledge', knowledge: kb, messages: next });
+      setMsgs(prev => [...prev, { role: 'assistant', content: d.content }]);
+    } catch (e) {
+      setErr(e.message || 'Demo unavailable — the API may not be deployed yet.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const starters = ["What's the price for an AC tune-up?", 'Do you offer emergency service?', 'What areas do you cover?', 'Is there a labor warranty?'];
+
+  return (
+    <section style={{ position: 'relative', zIndex: 2, padding: '0 48px 80px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <FadeIn>
+          <DemoLiveBadge />
+          <h2 style={{ font: '600 clamp(22px, 2.5vw, 32px)/1.1 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: '0 0 10px' }}>Ask the knowledge base — live.</h2>
+          <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 22px' }}>This AI only answers from a sample knowledge base — no making things up. Switch to the <strong style={{ color: 'var(--paper)' }}>Knowledge Base</strong> tab to see (or edit) the content it's working from.</p>
+
+          {/* Tabs */}
+          <div style={{ display: 'flex', borderBottom: '1px solid var(--ink-3)', marginBottom: 0, maxWidth: 660 }}>
+            {[['chat', '💬 Ask Questions'], ['kb', '📄 Knowledge Base']].map(([t, label]) => (
+              <button key={t} onClick={() => setTab(t)} style={{
+                font: '500 10px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase',
+                padding: '10px 18px', background: 'transparent', border: 'none', cursor: 'pointer',
+                color: tab === t ? 'var(--signal)' : 'var(--muted)',
+                borderBottom: `2px solid ${tab === t ? 'var(--signal)' : 'transparent'}`,
+                marginBottom: -1, transition: 'color .15s',
+              }}>{label}</button>
+            ))}
+          </div>
+
+          <div style={{ background: 'var(--ink-2)', border: '1px solid var(--ink-3)', borderTop: 'none', maxWidth: 660 }}>
+            {tab === 'chat' ? (
+              <>
+                <div ref={msgsRef} style={{ height: 270, overflowY: 'auto', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {msgs.map((m, i) => <DemoChatBubble key={i} {...m} label={m.role === 'assistant' ? 'KNOWLEDGE BASE' : undefined} />)}
+                  {busy && <DemoTyping label="Searching knowledge base…" />}
+                </div>
+                <DemoError msg={err} />
+                <div style={{ padding: '12px 18px', borderTop: '1px solid var(--ink-3)', display: 'flex', gap: 8 }}>
+                  <input value={input} onChange={e => setInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send(input)}
+                    placeholder="Ask anything about Riverside HVAC…" disabled={busy}
+                    style={{ flex: 1, padding: '9px 12px', background: 'var(--ink)', border: '1px solid var(--ink-3)', color: 'var(--paper)', font: '400 13px var(--font-sans)', outline: 'none' }} />
+                  <button onClick={() => send(input)} disabled={!input.trim() || busy} style={{
+                    padding: '9px 16px', background: 'var(--signal)', border: 'none', color: 'var(--ink)',
+                    font: '600 12px var(--font-sans)', cursor: 'pointer', flexShrink: 0,
+                    opacity: !input.trim() || busy ? 0.4 : 1,
+                  }}>Ask</button>
+                </div>
+              </>
+            ) : (
+              <div style={{ padding: '16px 18px' }}>
+                <p style={{ font: '400 12px var(--font-sans)', color: 'var(--muted)', margin: '0 0 10px' }}>Edit this content and switch back to "Ask Questions" — the AI will use your updated version live.</p>
+                <textarea value={kb} onChange={e => setKb(e.target.value)} rows={14}
+                  style={{ width: '100%', padding: '12px', background: 'var(--ink)', border: '1px solid var(--ink-3)', color: 'var(--paper)', font: '400 12px var(--font-mono)', outline: 'none', resize: 'vertical', lineHeight: 1.65 }} />
+              </div>
+            )}
+          </div>
+
+          {tab === 'chat' && (
+            <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+              <span style={{ font: '400 11px var(--font-sans)', color: 'var(--muted)' }}>Try:</span>
+              {starters.map(s => <DemoStarterBtn key={s} label={s} onClick={() => send(s)} />)}
+            </div>
+          )}
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+// ── Business Automation Demo ──────────────────────────────────────
+function AutomationAnalyzerDemo() {
+  const [input, setInput] = React.useState('');
+  const [result, setResult] = React.useState(null);
+  const [busy, setBusy] = React.useState(false);
+  const [err, setErr] = React.useState(null);
+
+  async function analyze(text) {
+    const t = (text || input).trim();
+    if (!t || busy) return;
+    setInput(t);
+    setBusy(true);
+    setResult(null);
+    setErr(null);
+    try {
+      const d = await callDemoAPI({ mode: 'automation', messages: [{ role: 'user', content: t }] });
+      setResult(d.content);
+    } catch (e) {
+      setErr(e.message || 'Demo unavailable — the API may not be deployed yet.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const examples = [
+    'I manually text appointment reminders to every client the morning of their visit',
+    'Every Monday I copy last week\'s sales from our POS into a Google Sheet for reporting',
+    'We answer the same 10 new-customer questions over email every single week',
+    'My team manually writes up a quote PDF and emails it to every new inquiry',
+  ];
+
+  return (
+    <section style={{ position: 'relative', zIndex: 2, padding: '0 48px 80px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <FadeIn>
+          <DemoLiveBadge />
+          <h2 style={{ font: '600 clamp(22px, 2.5vw, 32px)/1.1 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: '0 0 10px' }}>Describe a task. See the automation plan.</h2>
+          <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 22px' }}>Tell us something your team does manually. The AI will show you exactly how to automate it, what tools to use, and what it takes to set up.</p>
+
+          <div style={{ maxWidth: 700 }}>
+            <div style={{ background: 'var(--ink-2)', border: '1px solid var(--ink-3)', padding: '20px' }}>
+              <div style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 10 }}>Describe a repetitive task</div>
+              <textarea value={input} onChange={e => setInput(e.target.value)} rows={3}
+                placeholder="E.g.: Every morning I manually send reminder texts to clients who have appointments that day…"
+                style={{ width: '100%', padding: '12px', background: 'var(--ink)', border: '1px solid var(--ink-3)', color: 'var(--paper)', font: '400 14px/1.5 var(--font-sans)', outline: 'none', resize: 'vertical', marginBottom: 14 }} />
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button onClick={() => analyze()} disabled={!input.trim() || busy} style={{
+                  padding: '10px 22px', background: 'var(--signal)', border: 'none', color: 'var(--ink)',
+                  font: '600 13px var(--font-sans)', cursor: 'pointer',
+                  opacity: !input.trim() || busy ? 0.4 : 1, transition: 'opacity .15s',
+                }}>{busy ? 'Analyzing…' : 'Analyze →'}</button>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+              <span style={{ font: '400 11px var(--font-sans)', color: 'var(--muted)', paddingTop: 5, flexShrink: 0 }}>Examples:</span>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {examples.map((ex, i) => (
+                  <button key={i} onClick={() => analyze(ex)} style={{
+                    font: '400 12px var(--font-sans)', padding: '4px 10px',
+                    background: 'transparent', border: '1px solid var(--ink-3)', color: 'var(--muted)',
+                    cursor: 'pointer', transition: 'all .15s', textAlign: 'left',
+                  }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--signal)'; e.currentTarget.style.color = 'var(--paper)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--ink-3)'; e.currentTarget.style.color = 'var(--muted)'; }}>
+                    {ex.length > 52 ? ex.slice(0, 50) + '…' : ex}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {err && <div style={{ marginTop: 14, padding: '10px 14px', background: 'rgba(229,85,85,0.08)', border: '1px solid rgba(229,85,85,0.18)', font: '400 13px var(--font-sans)', color: '#e55' }}>{err}</div>}
+
+            {busy && (
+              <div style={{ marginTop: 14, padding: '24px', background: 'var(--ink-2)', border: '1px solid var(--ink-3)', textAlign: 'center' }}>
+                <div style={{ font: '400 13px var(--font-mono)', color: 'var(--muted)' }}>Analyzing your workflow…</div>
+              </div>
+            )}
+
+            {result && (
+              <div style={{ marginTop: 14, background: 'var(--ink-2)', border: '1px solid var(--signal)', padding: '22px' }}>
+                <div style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--signal)', marginBottom: 16 }}>Automation Analysis</div>
+                <div style={{ font: '400 14px/1.75 var(--font-sans)', color: 'var(--paper)', whiteSpace: 'pre-wrap' }}>{result}</div>
+                <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid var(--ink-3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                  <span style={{ font: '400 13px var(--font-sans)', color: 'var(--muted)' }}>Want us to build this for you?</span>
+                  <Btn primary arrow href="#ba-contact">Get started</Btn>
+                </div>
+              </div>
+            )}
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+// ── Web Design Brief Demo ─────────────────────────────────────────
+function WebDesignBriefDemo() {
+  const [step, setStep] = React.useState('input');
+  const [input, setInput] = React.useState('');
+  const [result, setResult] = React.useState(null);
+  const [err, setErr] = React.useState(null);
+
+  async function generate(text) {
+    const t = (text || input).trim();
+    if (!t) return;
+    setInput(t);
+    setStep('loading');
+    setErr(null);
+    try {
+      const d = await callDemoAPI({ mode: 'webdesign', messages: [{ role: 'user', content: t }] });
+      setResult(d.content);
+      setStep('result');
+    } catch (e) {
+      setErr(e.message || 'Demo unavailable — the API may not be deployed yet.');
+      setStep('input');
+    }
+  }
+
+  const examples = [
+    'Local plumbing company, 20 years in business, serving greater Nashville, residential and commercial',
+    'Independent yoga studio, 2 locations, group classes and private sessions, mainly female clients 25–45',
+    'Family-owned Italian restaurant, 15 years open, dine-in and takeout, downtown location',
+  ];
+
+  return (
+    <section style={{ position: 'relative', zIndex: 2, padding: '0 48px 80px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <FadeIn>
+          <DemoLiveBadge />
+          <h2 style={{ font: '600 clamp(22px, 2.5vw, 32px)/1.1 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: '0 0 10px' }}>Describe your business. See your site plan.</h2>
+          <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 22px' }}>Tell us what your business does in a sentence or two. Our AI will generate a complete website brief — structure, headline, CTAs, and SEO keywords — in seconds.</p>
+
+          <div style={{ maxWidth: 700 }}>
+            {step === 'input' && (
+              <>
+                <div style={{ background: 'var(--ink-2)', border: '1px solid var(--ink-3)', padding: '20px' }}>
+                  <div style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 10 }}>Tell us about your business</div>
+                  <textarea value={input} onChange={e => setInput(e.target.value)} rows={3}
+                    placeholder="E.g.: Family-owned plumbing company, serving Denver for 20 years, residential and commercial repairs and installs…"
+                    style={{ width: '100%', padding: '12px', background: 'var(--ink)', border: '1px solid var(--ink-3)', color: 'var(--paper)', font: '400 14px/1.5 var(--font-sans)', outline: 'none', resize: 'vertical', marginBottom: 14 }} />
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button onClick={() => generate()} disabled={!input.trim()} style={{
+                      padding: '10px 22px', background: 'var(--signal)', border: 'none', color: 'var(--ink)',
+                      font: '600 13px var(--font-sans)', cursor: 'pointer', opacity: !input.trim() ? 0.4 : 1,
+                    }}>Generate Site Brief →</button>
+                  </div>
+                </div>
+                {err && <div style={{ marginTop: 12, padding: '10px 14px', background: 'rgba(229,85,85,0.08)', border: '1px solid rgba(229,85,85,0.18)', font: '400 13px var(--font-sans)', color: '#e55' }}>{err}</div>}
+                <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                  <span style={{ font: '400 11px var(--font-sans)', color: 'var(--muted)', paddingTop: 5, flexShrink: 0 }}>Examples:</span>
+                  {examples.map((ex, i) => (
+                    <button key={i} onClick={() => generate(ex)} style={{
+                      font: '400 12px var(--font-sans)', padding: '4px 10px',
+                      background: 'transparent', border: '1px solid var(--ink-3)', color: 'var(--muted)',
+                      cursor: 'pointer', transition: 'all .15s', textAlign: 'left',
+                    }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--signal)'; e.currentTarget.style.color = 'var(--paper)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--ink-3)'; e.currentTarget.style.color = 'var(--muted)'; }}>
+                      {ex.length > 52 ? ex.slice(0, 50) + '…' : ex}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {step === 'loading' && (
+              <div style={{ padding: '48px 24px', textAlign: 'center', background: 'var(--ink-2)', border: '1px solid var(--ink-3)' }}>
+                <div style={{ font: '400 13px var(--font-mono)', color: 'var(--muted)', marginBottom: 8 }}>Generating your site brief…</div>
+                <div style={{ font: '400 12px var(--font-sans)', color: 'var(--muted)', opacity: 0.5 }}>Usually takes 5–10 seconds</div>
+              </div>
+            )}
+
+            {step === 'result' && result && (
+              <>
+                <div style={{ background: 'var(--ink-2)', border: '1px solid var(--signal)', padding: '24px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+                    <div style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--signal)' }}>Website Brief</div>
+                    <button onClick={() => { setStep('input'); setResult(null); setInput(''); }} style={{
+                      font: '400 11px var(--font-mono)', padding: '4px 10px', background: 'transparent',
+                      border: '1px solid var(--ink-3)', color: 'var(--muted)', cursor: 'pointer',
+                    }}>← Start over</button>
+                  </div>
+                  <div style={{ font: '400 14px/1.8 var(--font-sans)', color: 'var(--paper)', whiteSpace: 'pre-wrap' }}>{result}</div>
+                </div>
+                <div style={{ marginTop: 14, padding: '18px 22px', background: 'var(--ink-2)', border: '1px solid var(--ink-3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                  <span style={{ font: '400 14px var(--font-sans)', color: 'var(--muted)' }}>Ready to build this? We can have it live in days.</span>
+                  <Btn primary arrow href="#wd-contact">Start your project</Btn>
+                </div>
+              </>
+            )}
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+// ── AI Agents & Receptionist Page ────────────────────────────────
+const AA_STEPS = [
+  { num: '01', title: 'Discovery',  desc: 'We learn your business — your common calls, FAQs, booking process, and how you like to communicate. No two agents are the same.' },
+  { num: '02', title: 'Build',      desc: 'We configure your agent with your business info, custom scripts, and connect it to your calendar or booking system.' },
+  { num: '03', title: 'Test',       desc: 'We run through real-world scenarios until it sounds exactly right. You approve before anything goes live.' },
+  { num: '04', title: 'Deploy',     desc: 'Your agent goes live and starts working around the clock — answering, qualifying, and booking while you focus on the job.' },
+];
+
+const AA_INCLUDES = [
+  '24/7 call and message answering',
+  'Lead qualification and capture',
+  'Appointment booking synced to your calendar',
+  'Custom FAQ handling trained on your business',
+  'Call and message summaries sent to your email',
+  'Smart escalation for complex or sensitive issues',
+  'Monthly performance summary',
+];
+
+const AA_INDUSTRIES = [
+  'Contractors & Trades', 'Medical & Dental', 'Salons & Spas',
+  'Real Estate', 'Restaurants & Food', 'Law Offices',
+  'Home Services', 'Retail Shops',
+];
+
+const AA_TIERS = [
+  { name: 'Basic',    price: '$149', period: '/mo', setup: '$199 setup', desc: 'A smart text and chat agent that captures leads and answers questions around the clock.',         features: ['Chat & text agent', 'FAQ handling', 'Lead capture', 'Email summaries', '$199 one-time setup'],                                              featured: false },
+  { name: 'Standard', price: '$249', period: '/mo', setup: '$249 setup', desc: 'Voice and chat combined. Books appointments, qualifies leads — even at 2am.',                     features: ['Voice + chat agent', 'Appointment booking', 'Lead qualification', 'Calendar sync', 'Email summaries', '$249 one-time setup'],                featured: true  },
+  { name: 'Pro',      price: '$399', period: '/mo', setup: '$299 setup', desc: 'Fully custom agent built around your exact workflows, with CRM and advanced integrations.',       features: ['Fully custom build', 'CRM integration', 'Advanced workflows', 'Priority support', 'Quarterly tuning', '$299 one-time setup'],                featured: false },
+];
+
+const AA_FAQS = [
+  { q: 'Does it really sound like a real person?',          a: 'Modern AI voice agents are remarkably natural — most callers can\'t tell the difference. We tune the voice, tone, and pacing to match your brand before going live.' },
+  { q: 'What happens when it doesn\'t know the answer?',    a: 'The agent is trained to gracefully escalate — it takes a message, captures contact info, and notifies you immediately so you can follow up.' },
+  { q: 'Can it book appointments on my calendar?',          a: 'Yes. We connect it to your existing calendar (Google, Outlook, Calendly, etc.) so it can check availability and book in real time.' },
+  { q: 'How long does setup take?',                         a: 'Most agents are live within 3–5 business days of the discovery call. More complex integrations may take a bit longer.' },
+  { q: 'What do I need to provide to get started?',         a: 'Just your time for a discovery call. We\'ll gather everything we need — your FAQs, business hours, booking process, and how you want calls handled.' },
+  { q: 'Can I make changes after it\'s live?',              a: 'Absolutely. Your monthly plan includes ongoing updates. Business changes, new FAQs, seasonal hours — just let us know and we\'ll update the agent.' },
+];
+
+function AgentsPage() {
+  const [form, setForm] = React.useState({ name: '', company: '', message: '' });
+  const [status, setStatus] = React.useState('idle');
+  function handleChange(e) { setForm(f => ({ ...f, [e.target.name]: e.target.value })); }
+  function handleFocus(e) { e.target.style.borderColor = 'var(--signal)'; }
+  function handleBlur(e)  { e.target.style.borderColor = 'var(--ink-3)'; }
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setStatus('sending');
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, { method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, service: 'AI Agents & Receptionist' }) });
+      setStatus(res.ok ? 'success' : 'error');
+    } catch { setStatus('error'); }
+  }
+  return (
+    <div style={{ background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--font-sans)', minHeight: '100vh', position: 'relative', overflowX: 'hidden' }}>
+      <ScrollProgressBar />
+      <CourierGraph />
+      <Nav />
+      <main>
+        {/* Hero */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '160px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
+          <FadeIn>
+            <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', marginBottom: 32, transition: 'color .15s ease' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--paper)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}>← Back to home</a>
+          </FadeIn>
+          <FadeIn delay={40}><div style={{ marginBottom: 24 }}><Eyebrow>Service 02 · <span style={{ color: 'var(--signal)' }}>AI Agents & Receptionist</span></Eyebrow></div></FadeIn>
+          <FadeIn delay={80}>
+            <h1 style={{ font: '600 clamp(48px, 7vw, 96px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', margin: '0 0 24px', maxWidth: '16ch', textWrap: 'balance', color: 'var(--paper)' }}>
+              Never miss a <span style={{ background: 'var(--signal)', color: 'var(--ink)', padding: '0 6px', margin: '0 -2px' }}>lead</span> again.
+            </h1>
+          </FadeIn>
+          <FadeIn delay={160}>
+            <p style={{ font: '400 18px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 40px' }}>
+              AI agents that answer calls, qualify leads, and book appointments around the clock — so you never lose a customer to voicemail again.
+            </p>
+          </FadeIn>
+          <FadeIn delay={220}><Btn primary arrow href="#aa-contact">Get started</Btn></FadeIn>
+        </section>
+
+        <VoiceReceptionistDemo />
+
+        {/* Problem */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
+            <FadeIn><h2 style={{ font: '600 clamp(32px, 4vw, 48px)/1.05 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0, textWrap: 'balance' }}>Every missed call is a missed customer.</h2></FadeIn>
+            <FadeIn delay={100}>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>Most small businesses miss calls every single day — during jobs, after hours, on weekends. Each one is a potential customer who just called your competitor instead.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>Hiring a receptionist costs $1,200–$1,500/month and only covers business hours. An AI agent costs a fraction of that and never clocks out.</p>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Process */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="01" name="Process" theme="Up and running in days, not weeks." /></FadeIn>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }}>
+              {AA_STEPS.map((s, i) => (
+                <FadeIn key={s.num} delay={i * 80}>
+                  <div style={{ padding: '36px 28px', borderRight: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', minHeight: 220 }}>
+                    <div style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.2em', color: 'var(--signal)', marginBottom: 20 }}>{s.num}</div>
+                    <h3 style={{ font: '600 20px var(--font-sans)', letterSpacing: '-0.015em', color: 'var(--paper)', margin: '0 0 12px' }}>{s.title}</h3>
+                    <p style={{ font: '400 14px/1.65 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>{s.desc}</p>
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Included + Who it's for */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64 }}>
+            <FadeIn>
+              <SectionHead num="02" name="What's Included" theme="" />
+              <div>
+                {AA_INCLUDES.map((item, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '14px 0', borderBottom: '1px solid var(--ink-3)' }}>
+                    <span style={{ color: 'var(--signal)', font: '600 14px var(--font-mono)', flexShrink: 0, marginTop: 2 }}>✓</span>
+                    <span style={{ font: '400 15px var(--font-sans)', color: 'var(--paper)' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </FadeIn>
+            <FadeIn delay={120}>
+              <SectionHead num="03" name="Who It's For" theme="" />
+              <p style={{ font: '400 15px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 24px' }}>Any business that relies on calls, appointments, or lead inquiries — and can't afford to miss them:</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 36 }}>
+                {AA_INDUSTRIES.map(ind => (
+                  <span key={ind} style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--paper)', border: '1px solid var(--ink-3)', padding: '8px 14px' }}>{ind}</span>
+                ))}
+              </div>
+              <div style={{ padding: '24px', background: 'var(--ink-2)', borderLeft: '2px solid var(--signal)' }}>
+                <p style={{ font: '400 13px var(--font-sans)', color: 'var(--muted)', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 11 }}>Compare the cost</p>
+                <p style={{ font: '600 16px var(--font-sans)', color: 'var(--paper)', margin: 0 }}>A part-time receptionist in Lafayette runs <span style={{ textDecoration: 'line-through', opacity: 0.5 }}>$1,200–$1,500/mo</span>. Our agents start at <span style={{ color: 'var(--signal)' }}>$149/mo</span> — and never take a day off.</p>
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Pricing */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="04" name="Pricing" theme="Monthly plans. Cancel anytime." /></FadeIn>
+            <FadeIn delay={80}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+                {AA_TIERS.map(t => (
+                  <div key={t.name} style={{ padding: '40px 32px', background: t.featured ? 'var(--ink-2)' : 'transparent', border: `1px solid ${t.featured ? 'var(--signal)' : 'var(--ink-3)'}`, position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                    {t.featured && <span style={{ position: 'absolute', top: -1, left: 32, font: '500 10px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', background: 'var(--signal)', color: 'var(--ink)', padding: '4px 10px' }}>Most popular</span>}
+                    <div style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 12 }}>{t.name}</div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
+                      <span style={{ font: '600 clamp(36px, 4vw, 48px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', color: t.featured ? 'var(--signal)' : 'var(--paper)' }}>{t.price}</span>
+                      <span style={{ font: '400 16px var(--font-sans)', color: 'var(--muted)' }}>{t.period}</span>
+                    </div>
+                    <div style={{ font: '500 11px var(--font-mono)', color: 'var(--muted)', letterSpacing: '0.1em', marginBottom: 16 }}>{t.setup}</div>
+                    <p style={{ font: '400 14px/1.6 var(--font-sans)', color: 'var(--muted)', margin: '0 0 28px' }}>{t.desc}</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 'auto', marginBottom: 32 }}>
+                      {t.features.map(f => (
+                        <div key={f} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                          <span style={{ color: 'var(--signal)', font: '600 12px var(--font-mono)', flexShrink: 0, marginTop: 2 }}>✓</span>
+                          <span style={{ font: '400 13px var(--font-sans)', color: 'var(--paper)', opacity: 0.8 }}>{f}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Btn primary={t.featured} arrow href="#aa-contact">{t.featured ? 'Get started' : 'Choose plan'}</Btn>
+                  </div>
+                ))}
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 800, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="05" name="FAQ" theme="Common questions, straight answers." /></FadeIn>
+            <FadeIn delay={80}>
+              <div style={{ borderTop: '1px solid var(--ink-3)' }}>
+                {AA_FAQS.map((f, i) => <FAQItem key={i} {...f} />)}
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Contact */}
+        <section id="aa-contact" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 800, margin: '0 auto' }}>
+            <FadeIn>
+              <div style={{ textAlign: 'center', marginBottom: 56 }}>
+                <h2 style={{ font: '600 clamp(36px, 5vw, 64px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', margin: '0 0 16px', color: 'var(--paper)', textWrap: 'balance' }}>
+                  Ready to put your phones on <span style={{ background: 'var(--signal)', color: 'var(--ink)', padding: '0 6px', margin: '0 -2px' }}>autopilot</span>?
+                </h2>
+                <p style={{ font: '400 17px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>Tell us about your business and we'll build an agent around it.</p>
+              </div>
+            </FadeIn>
+            <FadeIn delay={80}>
+              {status === 'success' ? (
+                <div style={{ padding: '48px 0', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+                  <PixelBird size={72} fg="#f1f1ef" accent="#9bff5b" />
+                  <p style={{ font: '600 20px/1.3 var(--font-sans)', color: 'var(--paper)', margin: 0 }}>Pigeon sent.</p>
+                  <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>I'll be in touch quickly — typically within a few hours.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                    <FormField label="Name *"><input name="name" required value={form.name} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your name" style={inputStyle} /></FormField>
+                    <FormField label="Business Name"><input name="company" value={form.company} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your business" style={inputStyle} /></FormField>
+                  </div>
+                  <FormField label="Tell us about your business *">
+                    <textarea name="message" required value={form.message} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="What kind of calls or inquiries do you get most? How do you currently handle them?" rows={5} style={{ ...inputStyle, resize: 'vertical', minHeight: 120 }} />
+                  </FormField>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+                    <span style={{ font: '400 13px var(--font-sans)', color: 'var(--muted)' }}>Or email → <a href="mailto:andrew@carrierpigeonai.dev" style={{ color: 'var(--muted)' }}>andrew@carrierpigeonai.dev</a></span>
+                    <Btn primary arrow onClick={handleSubmit}>{status === 'sending' ? 'Sending…' : 'Send a Pigeon'}</Btn>
+                  </div>
+                  {status === 'error' && <span style={{ font: '400 13px var(--font-sans)', color: '#e55' }}>Something went wrong — try emailing andrew@carrierpigeonai.dev directly.</span>}
+                </form>
+              )}
+            </FadeIn>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+// ── Business Automation Page ──────────────────────────────────────
+const BA_STEPS = [
+  { num: '01', title: 'Assessment',   desc: 'We map your current workflows and find where time and money are leaking. Most businesses are surprised how much is automatable.' },
+  { num: '02', title: 'Identify',     desc: 'We prioritize the highest-impact opportunities — the tasks that eat the most hours and are easiest to hand off to AI.' },
+  { num: '03', title: 'Build',        desc: 'We deploy the right AI tools for each workflow and connect them to the software you already use.' },
+  { num: '04', title: 'Optimize',     desc: 'We monitor performance, tune as needed, and expand automation as your business grows.' },
+];
+
+const BA_INCLUDES = [
+  'Full workflow assessment and mapping',
+  'AI tool selection tailored to your business',
+  'Integration with your existing software',
+  'Staff onboarding and training',
+  '30-day monitoring and tuning after launch',
+  'Documentation of every automation built',
+  'Ongoing support and expansion available',
+];
+
+const BA_INDUSTRIES = [
+  'Contractors & Trades', 'Medical & Dental', 'Real Estate',
+  'Restaurants & Food', 'Retail Shops', 'Professional Services',
+  'Law Offices', 'Property Management',
+];
+
+const BA_TIERS = [
+  { name: 'Starter',        price: '$799',    period: '',     setup: 'One-time',   desc: 'Workflow assessment plus up to 2 automations implemented and ready to run.',          features: ['Workflow audit', 'Up to 2 automations', 'Software integration', 'Basic staff training', '30-day support'],                                    featured: false },
+  { name: 'Standard',       price: '$1,499',  period: '',     setup: 'One-time',   desc: 'The full build. Up to 5 automations with training so your team can use them confidently.', features: ['Full workflow mapping', 'Up to 5 automations', 'Software integration', 'Staff training session', '30-day support', 'Process documentation'], featured: true  },
+  { name: 'Growth Partner', price: '$299',    period: '/mo',  setup: 'Ongoing',    desc: 'Continuous automation expansion — new workflows monthly, monitoring, and priority support.', features: ['Monthly new automations', 'Performance monitoring', 'Priority support', 'Quarterly strategy review', 'Unlimited tweaks'],              featured: false },
+];
+
+const BA_FAQS = [
+  { q: 'What kinds of tasks can actually be automated?',      a: 'More than most people expect — appointment reminders, follow-up emails, invoice generation, data entry, report creation, social media scheduling, customer onboarding, and more. If it\'s repetitive, there\'s a good chance AI can handle it.' },
+  { q: 'Do I need to change the software I\'m already using?', a: 'Usually not. We work with what you have — Google Workspace, QuickBooks, Outlook, your CRM, your booking system. The goal is to make your existing tools smarter, not replace them.' },
+  { q: 'How long before we see results?',                     a: 'Most clients see time savings within the first week of go-live. Some automations pay for themselves in the first month.' },
+  { q: 'Will my staff need a lot of training?',               a: 'No. We design automations to be invisible where possible — they just run. Where staff interaction is needed, we keep it simple and include training in every package.' },
+  { q: 'What if an automation breaks or stops working?',      a: 'We monitor everything during the 30-day support window and fix any issues at no extra charge. Growth Partner clients get ongoing monitoring indefinitely.' },
+  { q: 'How do you decide which tasks to automate first?',    a: 'We prioritize by time saved versus complexity — the tasks that eat the most hours and are straightforward to automate go first. You see results fast while we build toward bigger wins.' },
+];
+
+function AutomationPage() {
+  const [form, setForm] = React.useState({ name: '', company: '', message: '' });
+  const [status, setStatus] = React.useState('idle');
+  function handleChange(e) { setForm(f => ({ ...f, [e.target.name]: e.target.value })); }
+  function handleFocus(e) { e.target.style.borderColor = 'var(--signal)'; }
+  function handleBlur(e)  { e.target.style.borderColor = 'var(--ink-3)'; }
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setStatus('sending');
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, { method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, service: 'Business Automation' }) });
+      setStatus(res.ok ? 'success' : 'error');
+    } catch { setStatus('error'); }
+  }
+  return (
+    <div style={{ background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--font-sans)', minHeight: '100vh', position: 'relative', overflowX: 'hidden' }}>
+      <ScrollProgressBar />
+      <CourierGraph />
+      <Nav />
+      <main>
+        {/* Hero */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '160px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
+          <FadeIn>
+            <a href="/" onClick={() => window.scrollTo(0,0)} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', marginBottom: 32, transition: 'color .15s ease' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--paper)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}>← Back to home</a>
+          </FadeIn>
+          <FadeIn delay={40}><div style={{ marginBottom: 24 }}><Eyebrow>Service 03 · <span style={{ color: 'var(--signal)' }}>Business Automation</span></Eyebrow></div></FadeIn>
+          <FadeIn delay={80}>
+            <h1 style={{ font: '600 clamp(48px, 7vw, 96px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', margin: '0 0 24px', maxWidth: '16ch', textWrap: 'balance', color: 'var(--paper)' }}>
+              Stop doing manually what AI can handle in <span style={{ background: 'var(--signal)', color: 'var(--ink)', padding: '0 6px', margin: '0 -2px' }}>seconds</span>.
+            </h1>
+          </FadeIn>
+          <FadeIn delay={160}>
+            <p style={{ font: '400 18px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 40px' }}>
+              We map your workflows, find the bottlenecks, and deploy AI tools that free your team to focus on what actually grows the business.
+            </p>
+          </FadeIn>
+          <FadeIn delay={220}><Btn primary arrow href="#ba-contact">Get started</Btn></FadeIn>
+        </section>
+
+        <AutomationAnalyzerDemo />
+
+        {/* Problem */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
+            <FadeIn><h2 style={{ font: '600 clamp(32px, 4vw, 48px)/1.05 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0, textWrap: 'balance' }}>Your team is spending hours on work that shouldn't require a human.</h2></FadeIn>
+            <FadeIn delay={100}>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>Follow-up emails, appointment reminders, data entry, report generation, scheduling — these tasks eat hours every week that could go toward serving customers and growing the business.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>AI doesn't replace your team — it removes the busywork so they can focus on what actually matters. Most businesses automate their first workflow within days of starting.</p>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Process */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="01" name="Process" theme="Find it. Build it. Let it run." /></FadeIn>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }}>
+              {BA_STEPS.map((s, i) => (
+                <FadeIn key={s.num} delay={i * 80}>
+                  <div style={{ padding: '36px 28px', borderRight: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', minHeight: 220 }}>
+                    <div style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.2em', color: 'var(--signal)', marginBottom: 20 }}>{s.num}</div>
+                    <h3 style={{ font: '600 20px var(--font-sans)', letterSpacing: '-0.015em', color: 'var(--paper)', margin: '0 0 12px' }}>{s.title}</h3>
+                    <p style={{ font: '400 14px/1.65 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>{s.desc}</p>
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Included + Who it's for */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64 }}>
+            <FadeIn>
+              <SectionHead num="02" name="What's Included" theme="" />
+              <div>
+                {BA_INCLUDES.map((item, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '14px 0', borderBottom: '1px solid var(--ink-3)' }}>
+                    <span style={{ color: 'var(--signal)', font: '600 14px var(--font-mono)', flexShrink: 0, marginTop: 2 }}>✓</span>
+                    <span style={{ font: '400 15px var(--font-sans)', color: 'var(--paper)' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </FadeIn>
+            <FadeIn delay={120}>
+              <SectionHead num="03" name="Who It's For" theme="" />
+              <p style={{ font: '400 15px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 24px' }}>Any business with repetitive internal tasks, manual follow-ups, or staff doing work that should be automatic:</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 36 }}>
+                {BA_INDUSTRIES.map(ind => (
+                  <span key={ind} style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--paper)', border: '1px solid var(--ink-3)', padding: '8px 14px' }}>{ind}</span>
+                ))}
+              </div>
+              <div style={{ padding: '24px', background: 'var(--ink-2)', borderLeft: '2px solid var(--signal)' }}>
+                <p style={{ font: '400 13px var(--font-sans)', color: 'var(--muted)', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 11 }}>The bottom line</p>
+                <p style={{ font: '600 16px var(--font-sans)', color: 'var(--paper)', margin: 0 }}>Most clients recover the cost of this service within the first month — just from hours saved.</p>
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Pricing */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="04" name="Pricing" theme="Start once. Grow from there." /></FadeIn>
+            <FadeIn delay={80}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+                {BA_TIERS.map(t => (
+                  <div key={t.name} style={{ padding: '40px 32px', background: t.featured ? 'var(--ink-2)' : 'transparent', border: `1px solid ${t.featured ? 'var(--signal)' : 'var(--ink-3)'}`, position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                    {t.featured && <span style={{ position: 'absolute', top: -1, left: 32, font: '500 10px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', background: 'var(--signal)', color: 'var(--ink)', padding: '4px 10px' }}>Most popular</span>}
+                    <div style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 12 }}>{t.name}</div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
+                      <span style={{ font: '600 clamp(36px, 4vw, 48px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', color: t.featured ? 'var(--signal)' : 'var(--paper)' }}>{t.price}</span>
+                      {t.period && <span style={{ font: '400 16px var(--font-sans)', color: 'var(--muted)' }}>{t.period}</span>}
+                    </div>
+                    <div style={{ font: '500 11px var(--font-mono)', color: 'var(--muted)', letterSpacing: '0.1em', marginBottom: 16 }}>{t.setup}</div>
+                    <p style={{ font: '400 14px/1.6 var(--font-sans)', color: 'var(--muted)', margin: '0 0 28px' }}>{t.desc}</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 'auto', marginBottom: 32 }}>
+                      {t.features.map(f => (
+                        <div key={f} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                          <span style={{ color: 'var(--signal)', font: '600 12px var(--font-mono)', flexShrink: 0, marginTop: 2 }}>✓</span>
+                          <span style={{ font: '400 13px var(--font-sans)', color: 'var(--paper)', opacity: 0.8 }}>{f}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Btn primary={t.featured} arrow href="#ba-contact">{t.featured ? 'Get started' : 'Choose plan'}</Btn>
+                  </div>
+                ))}
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 800, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="05" name="FAQ" theme="Common questions, straight answers." /></FadeIn>
+            <FadeIn delay={80}>
+              <div style={{ borderTop: '1px solid var(--ink-3)' }}>
+                {BA_FAQS.map((f, i) => <FAQItem key={i} {...f} />)}
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Contact */}
+        <section id="ba-contact" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 800, margin: '0 auto' }}>
+            <FadeIn>
+              <div style={{ textAlign: 'center', marginBottom: 56 }}>
+                <h2 style={{ font: '600 clamp(36px, 5vw, 64px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', margin: '0 0 16px', color: 'var(--paper)', textWrap: 'balance' }}>
+                  Ready to get your <span style={{ background: 'var(--signal)', color: 'var(--ink)', padding: '0 6px', margin: '0 -2px' }}>time back</span>?
+                </h2>
+                <p style={{ font: '400 17px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>Tell us what's eating your team's time and we'll show you what AI can take off your plate.</p>
+              </div>
+            </FadeIn>
+            <FadeIn delay={80}>
+              {status === 'success' ? (
+                <div style={{ padding: '48px 0', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+                  <PixelBird size={72} fg="#f1f1ef" accent="#9bff5b" />
+                  <p style={{ font: '600 20px/1.3 var(--font-sans)', color: 'var(--paper)', margin: 0 }}>Pigeon sent.</p>
+                  <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>I'll be in touch quickly — typically within a few hours.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                    <FormField label="Name *"><input name="name" required value={form.name} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your name" style={inputStyle} /></FormField>
+                    <FormField label="Business Name"><input name="company" value={form.company} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your business" style={inputStyle} /></FormField>
+                  </div>
+                  <FormField label="What's eating your team's time? *">
+                    <textarea name="message" required value={form.message} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Describe the tasks you'd love to hand off — anything repetitive, manual, or time-consuming..." rows={5} style={{ ...inputStyle, resize: 'vertical', minHeight: 120 }} />
+                  </FormField>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+                    <span style={{ font: '400 13px var(--font-sans)', color: 'var(--muted)' }}>Or email → <a href="mailto:andrew@carrierpigeonai.dev" style={{ color: 'var(--muted)' }}>andrew@carrierpigeonai.dev</a></span>
+                    <Btn primary arrow onClick={handleSubmit}>{status === 'sending' ? 'Sending…' : 'Send a Pigeon'}</Btn>
+                  </div>
+                  {status === 'error' && <span style={{ font: '400 13px var(--font-sans)', color: '#e55' }}>Something went wrong — try emailing andrew@carrierpigeonai.dev directly.</span>}
+                </form>
+              )}
+            </FadeIn>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+// ── Knowledge Base Page ───────────────────────────────────────────
+const KB_STEPS = [
+  { num: '01', title: 'Discovery',  desc: 'We learn what your team and customers ask most — the questions that get answered the same way a hundred times a week.' },
+  { num: '02', title: 'Gather',     desc: 'We collect your existing content — docs, PDFs, FAQs, policies, emails, manuals. If the answer exists somewhere, we find it.' },
+  { num: '03', title: 'Build',      desc: 'We train a private AI on your content and configure the interface — staff portal, customer widget, or both.' },
+  { num: '04', title: 'Deploy',     desc: 'Your knowledge base goes live. Staff get instant answers. Customers get instant answers. You stop fielding the same calls.' },
+];
+
+const KB_INCLUDES = [
+  'Private AI trained exclusively on your content',
+  'Custom knowledge ingestion — docs, PDFs, FAQs, emails',
+  'Staff-facing internal portal',
+  'Customer-facing web widget (Standard and above)',
+  'Secure — your data stays private, never used to train public models',
+  '30-day monitoring and accuracy tuning',
+  'Ongoing content updates available',
+];
+
+const KB_INDUSTRIES = [
+  'Medical & Dental', 'Law Offices', 'Contractors & Trades',
+  'Retail Shops', 'Property Management', 'Professional Services',
+  'HR & Internal Teams', 'Restaurants & Food',
+];
+
+const KB_TIERS = [
+  { name: 'Starter',  price: '$999',   period: '',    setup: 'One-time', desc: 'Staff-facing knowledge base trained on up to 50 documents. Perfect for internal FAQs and onboarding.',         features: ['Up to 50 documents', 'Staff-facing portal', 'Q&A interface', 'Basic analytics', '30-day support'],                                                    featured: false },
+  { name: 'Standard', price: '$1,999', period: '',    setup: 'One-time', desc: 'Full build — staff and customer-facing. Up to 200 documents with a branded widget for your website.',          features: ['Up to 200 documents', 'Staff + customer-facing', 'Branded web widget', 'Advanced analytics', '30-day support', 'Everything in Starter'],               featured: true  },
+  { name: 'Growth',   price: '$199',   period: '/mo', setup: 'Ongoing',  desc: 'Continuous updates as your content evolves — new docs added monthly, performance monitoring, and priority support.', features: ['Unlimited documents', 'Continuous content updates', 'Performance monitoring', 'Priority support', 'Monthly accuracy review'],                      featured: false },
+];
+
+const KB_FAQS = [
+  { q: 'Is my data secure and private?',                   a: 'Absolutely. Your knowledge base is trained on your content alone and hosted privately. Your data is never shared with or used to train any public AI model.' },
+  { q: 'What kinds of documents can it learn from?',       a: 'Almost anything — PDFs, Word docs, Google Docs, spreadsheets, emails, website pages, employee handbooks, product manuals, FAQs. If it\'s text, we can use it.' },
+  { q: 'How accurate are the answers?',                    a: 'Very accurate for content it\'s been trained on. It only answers from your documents — it won\'t make things up. If it doesn\'t know, it says so and suggests who to ask.' },
+  { q: 'Can customers use it on my website?',              a: 'Yes — Standard and Growth plans include a branded chat widget you can embed on any page of your website. Customers get instant answers without calling or emailing.' },
+  { q: 'What happens when my content changes?',            a: 'On the Growth plan, we update the knowledge base monthly as your content evolves. On one-time plans, updates are available at a flat hourly rate.' },
+  { q: 'How is this different from just using ChatGPT?',   a: 'ChatGPT knows everything — which means it can also make things up. Your knowledge base only knows what you\'ve trained it on, so answers are accurate, consistent, and specific to your business.' },
+];
+
+function KnowledgePage() {
+  const [form, setForm] = React.useState({ name: '', company: '', message: '' });
+  const [status, setStatus] = React.useState('idle');
+  function handleChange(e) { setForm(f => ({ ...f, [e.target.name]: e.target.value })); }
+  function handleFocus(e) { e.target.style.borderColor = 'var(--signal)'; }
+  function handleBlur(e)  { e.target.style.borderColor = 'var(--ink-3)'; }
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setStatus('sending');
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, { method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, service: 'Knowledge Base' }) });
+      setStatus(res.ok ? 'success' : 'error');
+    } catch { setStatus('error'); }
+  }
+  return (
+    <div style={{ background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--font-sans)', minHeight: '100vh', position: 'relative', overflowX: 'hidden' }}>
+      <ScrollProgressBar />
+      <CourierGraph />
+      <Nav />
+      <main>
+        {/* Hero */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '160px 48px 80px', maxWidth: 1200, margin: '0 auto' }}>
+          <FadeIn>
+            <a href="/" onClick={() => window.scrollTo(0,0)} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', marginBottom: 32, transition: 'color .15s ease' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--paper)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}>← Back to home</a>
+          </FadeIn>
+          <FadeIn delay={40}><div style={{ marginBottom: 24 }}><Eyebrow>Service 04 · <span style={{ color: 'var(--signal)' }}>Knowledge Base</span></Eyebrow></div></FadeIn>
+          <FadeIn delay={80}>
+            <h1 style={{ font: '600 clamp(48px, 7vw, 96px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', margin: '0 0 24px', maxWidth: '16ch', textWrap: 'balance', color: 'var(--paper)' }}>
+              Your answers, available <span style={{ background: 'var(--signal)', color: 'var(--ink)', padding: '0 6px', margin: '0 -2px' }}>instantly</span>.
+            </h1>
+          </FadeIn>
+          <FadeIn delay={160}>
+            <p style={{ font: '400 18px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '52ch', margin: '0 0 40px' }}>
+              A private AI trained on your business content — so staff and customers get instant, accurate answers around the clock without pulling anyone away from real work.
+            </p>
+          </FadeIn>
+          <FadeIn delay={220}><Btn primary arrow href="#kb-contact">Get started</Btn></FadeIn>
+        </section>
+
+        <KnowledgeBaseDemo />
+
+        {/* Problem */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '80px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 64, alignItems: 'center' }}>
+            <FadeIn><h2 style={{ font: '600 clamp(32px, 4vw, 48px)/1.05 var(--font-sans)', letterSpacing: '-0.03em', color: 'var(--paper)', margin: 0, textWrap: 'balance' }}>Your team already has the answers. They're just buried.</h2></FadeIn>
+            <FadeIn delay={100}>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 16px' }}>Every business accumulates knowledge over time — in employee handbooks, old emails, product docs, policy manuals. But that knowledge is scattered, hard to find, and usually lives in someone's head instead of somewhere useful.</p>
+              <p style={{ font: '400 17px/1.7 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>We take everything your business already knows and turn it into a private AI that gives instant, accurate answers — to your staff, your customers, or both.</p>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Process */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="01" name="Process" theme="Your knowledge. Made instantly accessible." /></FadeIn>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }}>
+              {KB_STEPS.map((s, i) => (
+                <FadeIn key={s.num} delay={i * 80}>
+                  <div style={{ padding: '36px 28px', borderRight: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', minHeight: 220 }}>
+                    <div style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.2em', color: 'var(--signal)', marginBottom: 20 }}>{s.num}</div>
+                    <h3 style={{ font: '600 20px var(--font-sans)', letterSpacing: '-0.015em', color: 'var(--paper)', margin: '0 0 12px' }}>{s.title}</h3>
+                    <p style={{ font: '400 14px/1.65 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>{s.desc}</p>
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Included + Who it's for */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64 }}>
+            <FadeIn>
+              <SectionHead num="02" name="What's Included" theme="" />
+              <div>
+                {KB_INCLUDES.map((item, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '14px 0', borderBottom: '1px solid var(--ink-3)' }}>
+                    <span style={{ color: 'var(--signal)', font: '600 14px var(--font-mono)', flexShrink: 0, marginTop: 2 }}>✓</span>
+                    <span style={{ font: '400 15px var(--font-sans)', color: 'var(--paper)' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </FadeIn>
+            <FadeIn delay={120}>
+              <SectionHead num="03" name="Who It's For" theme="" />
+              <p style={{ font: '400 15px/1.7 var(--font-sans)', color: 'var(--muted)', margin: '0 0 24px' }}>Any business where people spend time answering the same questions over and over — from customers, staff, or both:</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 36 }}>
+                {KB_INDUSTRIES.map(ind => (
+                  <span key={ind} style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--paper)', border: '1px solid var(--ink-3)', padding: '8px 14px' }}>{ind}</span>
+                ))}
+              </div>
+              <div style={{ padding: '24px', background: 'var(--ink-2)', borderLeft: '2px solid var(--signal)' }}>
+                <p style={{ font: '400 13px var(--font-sans)', color: 'var(--muted)', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 11 }}>Worth knowing</p>
+                <p style={{ font: '600 16px var(--font-sans)', color: 'var(--paper)', margin: 0 }}>Your data stays yours. We never use your content to train public AI models — ever.</p>
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Pricing */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="04" name="Pricing" theme="Built once. Updated as you grow." /></FadeIn>
+            <FadeIn delay={80}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+                {KB_TIERS.map(t => (
+                  <div key={t.name} style={{ padding: '40px 32px', background: t.featured ? 'var(--ink-2)' : 'transparent', border: `1px solid ${t.featured ? 'var(--signal)' : 'var(--ink-3)'}`, position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                    {t.featured && <span style={{ position: 'absolute', top: -1, left: 32, font: '500 10px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', background: 'var(--signal)', color: 'var(--ink)', padding: '4px 10px' }}>Most popular</span>}
+                    <div style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 12 }}>{t.name}</div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
+                      <span style={{ font: '600 clamp(36px, 4vw, 48px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', color: t.featured ? 'var(--signal)' : 'var(--paper)' }}>{t.price}</span>
+                      {t.period && <span style={{ font: '400 16px var(--font-sans)', color: 'var(--muted)' }}>{t.period}</span>}
+                    </div>
+                    <div style={{ font: '500 11px var(--font-mono)', color: 'var(--muted)', letterSpacing: '0.1em', marginBottom: 16 }}>{t.setup}</div>
+                    <p style={{ font: '400 14px/1.6 var(--font-sans)', color: 'var(--muted)', margin: '0 0 28px' }}>{t.desc}</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 'auto', marginBottom: 32 }}>
+                      {t.features.map(f => (
+                        <div key={f} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                          <span style={{ color: 'var(--signal)', font: '600 12px var(--font-mono)', flexShrink: 0, marginTop: 2 }}>✓</span>
+                          <span style={{ font: '400 13px var(--font-sans)', color: 'var(--paper)', opacity: 0.8 }}>{f}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Btn primary={t.featured} arrow href="#kb-contact">{t.featured ? 'Get started' : 'Choose plan'}</Btn>
+                  </div>
+                ))}
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 800, margin: '0 auto' }}>
+            <FadeIn><SectionHead num="05" name="FAQ" theme="Common questions, straight answers." /></FadeIn>
+            <FadeIn delay={80}>
+              <div style={{ borderTop: '1px solid var(--ink-3)' }}>
+                {KB_FAQS.map((f, i) => <FAQItem key={i} {...f} />)}
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* Contact */}
+        <section id="kb-contact" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', borderTop: '1px solid var(--ink-3)' }}>
+          <div style={{ maxWidth: 800, margin: '0 auto' }}>
+            <FadeIn>
+              <div style={{ textAlign: 'center', marginBottom: 56 }}>
+                <h2 style={{ font: '600 clamp(36px, 5vw, 64px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', margin: '0 0 16px', color: 'var(--paper)', textWrap: 'balance' }}>
+                  Ready to stop answering the same <span style={{ background: 'var(--signal)', color: 'var(--ink)', padding: '0 6px', margin: '0 -2px' }}>questions</span> twice?
+                </h2>
+                <p style={{ font: '400 17px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>Tell us what your team or customers ask most — we'll build the system that answers for you.</p>
+              </div>
+            </FadeIn>
+            <FadeIn delay={80}>
+              {status === 'success' ? (
+                <div style={{ padding: '48px 0', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+                  <PixelBird size={72} fg="#f1f1ef" accent="#9bff5b" />
+                  <p style={{ font: '600 20px/1.3 var(--font-sans)', color: 'var(--paper)', margin: 0 }}>Pigeon sent.</p>
+                  <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>I'll be in touch quickly — typically within a few hours.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                    <FormField label="Name *"><input name="name" required value={form.name} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your name" style={inputStyle} /></FormField>
+                    <FormField label="Business Name"><input name="company" value={form.company} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Your business" style={inputStyle} /></FormField>
+                  </div>
+                  <FormField label="What questions does your team or customers ask most? *">
+                    <textarea name="message" required value={form.message} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Describe the questions you're tired of answering, or the content you'd want your AI to know..." rows={5} style={{ ...inputStyle, resize: 'vertical', minHeight: 120 }} />
+                  </FormField>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+                    <span style={{ font: '400 13px var(--font-sans)', color: 'var(--muted)' }}>Or email → <a href="mailto:andrew@carrierpigeonai.dev" style={{ color: 'var(--muted)' }}>andrew@carrierpigeonai.dev</a></span>
+                    <Btn primary arrow onClick={handleSubmit}>{status === 'sending' ? 'Sending…' : 'Send a Pigeon'}</Btn>
+                  </div>
+                  {status === 'error' && <span style={{ font: '400 13px var(--font-sans)', color: '#e55' }}>Something went wrong — try emailing andrew@carrierpigeonai.dev directly.</span>}
+                </form>
+              )}
+            </FadeIn>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+// ── Router ────────────────────────────────────────────────────────
+function usePath() {
+  const [path, setPath] = useState(window.location.pathname);
+  useEffect(() => {
+    const onPop = () => setPath(window.location.pathname);
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+  return path;
+}
+
+function Root() {
+  const path = usePath();
+
+  // Scroll to top on every route change
+  useEffect(() => { window.scrollTo(0, 0); }, [path]);
+
+  // Update page title, meta description, and canonical URL for SEO
+  useEffect(() => {
+    const meta = PAGE_META[path] || PAGE_META['/'];
+    document.title = meta.title;
+    const descEl = document.querySelector('meta[name="description"]');
+    if (descEl) descEl.setAttribute('content', meta.description);
+    let canon = document.querySelector('link[rel="canonical"]');
+    if (!canon) {
+      canon = document.createElement('link');
+      canon.rel = 'canonical';
+      document.head.appendChild(canon);
+    }
+    canon.href = `https://carrierpigeonai.dev${path}`;
+  }, [path]);
+
+  if (path === '/services/web-design')          return <WebDesignPage />;
+  if (path === '/services/ai-agents')           return <AgentsPage />;
+  if (path === '/services/business-automation') return <AutomationPage />;
+  if (path === '/services/knowledge-base')      return <KnowledgePage />;
+  return <App />;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Root />);
