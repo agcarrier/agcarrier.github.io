@@ -608,32 +608,190 @@ function FormField({ label, children }) {
   );
 }
 
-function Contact() {
-  const [form, setForm] = React.useState({ name: '', company: '', service: '', message: '' });
-  const [status, setStatus] = React.useState('idle');
+// ── Contact Voice Agent ───────────────────────────────────────────
+function ContactVoiceAgent() {
+  const [msgs, setMsgs] = React.useState([
+    { role: 'assistant', content: "Hey! I'm the Carrier Pigeon intake agent. What brings you here today — are you looking to get a project started?" }
+  ]);
+  const [input, setInput] = React.useState('');
+  const [busy, setBusy] = React.useState(false);
+  const [listening, setListening] = React.useState(false);
+  const [err, setErr] = React.useState(null);
+  const [submitted, setSubmitted] = React.useState(false);
+  const [submitting, setSubmitting] = React.useState(false);
+  const [voices, setVoices] = React.useState([]);
+  const [selectedVoice, setSelectedVoice] = React.useState('');
+  const recRef = React.useRef(null);
+  const msgsRef = React.useRef(null);
 
-  function handleChange(e) {
-    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  React.useEffect(() => {
+    function loadVoices() {
+      const all = window.speechSynthesis?.getVoices() || [];
+      const eng = all.filter(v => v.lang.startsWith('en'));
+      setVoices(eng);
+      if (eng.length && !selectedVoice) {
+        const preferred = eng.find(v => /samantha|ava|karen|moira|zira|heather|allison/i.test(v.name))
+          || eng.find(v => v.lang === 'en-US') || eng[0];
+        if (preferred) setSelectedVoice(preferred.name);
+      }
+    }
+    loadVoices();
+    window.speechSynthesis?.addEventListener('voiceschanged', loadVoices);
+    return () => window.speechSynthesis?.removeEventListener('voiceschanged', loadVoices);
+  }, []);
+
+  React.useEffect(() => {
+    if (msgsRef.current) msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
+  }, [msgs, busy]);
+
+  function speak(text) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.92;
+    const pick = voices.find(v => v.name === selectedVoice)
+      || voices.find(v => v.lang === 'en-US') || voices[0];
+    if (pick) u.voice = pick;
+    window.speechSynthesis.speak(u);
   }
 
-  function handleFocus(e) { e.target.style.borderColor = 'var(--signal)'; }
-  function handleBlur(e)  { e.target.style.borderColor = 'var(--ink-3)'; }
+  async function send(text) {
+    const t = (text || input).trim();
+    if (!t || busy) return;
+    const next = [...msgs, { role: 'user', content: t }];
+    setMsgs(next);
+    setInput('');
+    setBusy(true);
+    setErr(null);
+    try {
+      const d = await callDemoAPI({ mode: 'contact', messages: next });
+      const reply = d.content;
+      setMsgs(prev => [...prev, { role: 'assistant', content: reply }]);
+      speak(reply);
+    } catch (e) {
+      setErr(e.message || 'Agent unavailable — email andrew@carrierpigeonai.dev directly.');
+    } finally {
+      setBusy(false);
+    }
+  }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setStatus('sending');
+  function toggleMic() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { setErr('Voice input requires Chrome or Edge — or just type below.'); return; }
+    if (listening) { recRef.current?.stop(); return; }
+    window.speechSynthesis?.cancel();
+    const r = new SR();
+    r.lang = 'en-US'; r.interimResults = false;
+    r.onresult = e => { send(e.results[0][0].transcript); setListening(false); };
+    r.onerror = r.onend = () => setListening(false);
+    recRef.current = r;
+    r.start();
+    setListening(true);
+  }
+
+  async function submitTranscript() {
+    if (!canSubmit || submitting) return;
+    setSubmitting(true);
+    const transcript = msgs
+      .map(m => `${m.role === 'assistant' ? 'Agent' : 'Visitor'}: ${m.content}`)
+      .join('\n\n');
     try {
       const res = await fetch(FORMSPREE_ENDPOINT, {
         method: 'POST',
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          _subject: 'New voice conversation — Carrier Pigeon AI',
+          source: 'Voice Agent (Contact Page)',
+          transcript,
+        }),
       });
-      setStatus(res.ok ? 'success' : 'error');
+      if (res.ok) setSubmitted(true);
+      else setErr('Failed to send — email andrew@carrierpigeonai.dev directly.');
     } catch {
-      setStatus('error');
+      setErr('Failed to send — email andrew@carrierpigeonai.dev directly.');
+    } finally {
+      setSubmitting(false);
     }
   }
 
+  const canSubmit = msgs.filter(m => m.role === 'user').length >= 2;
+
+  if (submitted) {
+    return (
+      <div style={{ padding: '48px 24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, background: 'var(--ink-2)', border: '1px solid var(--ink-3)' }}>
+        <PixelBird size={72} />
+        <p style={{ font: '600 20px/1.3 var(--font-sans)', color: 'var(--paper)', margin: 0 }}>Pigeon sent.</p>
+        <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0, maxWidth: '32ch' }}>Andrew has the full conversation — he'll be in touch within 24 hours.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ background: 'var(--ink-2)', border: '1px solid var(--ink-3)' }}>
+      {/* Header */}
+      <div style={{ padding: '12px 18px', borderBottom: '1px solid var(--ink-3)', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--signal)', animation: 'pulse 2s ease-in-out infinite', flexShrink: 0 }} />
+        <span style={{ font: '500 11px var(--font-mono)', color: 'var(--paper)', letterSpacing: '0.06em' }}>Carrier Pigeon · Project Intake</span>
+      </div>
+      {/* Messages */}
+      <div ref={msgsRef} style={{ height: 280, overflowY: 'auto', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {msgs.map((m, i) => (
+          <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
+            <div style={{
+              maxWidth: '82%', padding: '9px 13px',
+              background: m.role === 'user' ? 'var(--signal)' : 'var(--ink-3)',
+              color: m.role === 'user' ? 'var(--ink)' : 'var(--paper)',
+              font: '400 13px/1.5 var(--font-sans)',
+            }}>{m.content}</div>
+          </div>
+        ))}
+        {busy && <DemoTyping label="Typing…" />}
+      </div>
+      {err && <div style={{ padding: '6px 18px', font: '400 12px var(--font-sans)', color: '#e55', background: 'rgba(238,85,85,0.08)' }}>{err}</div>}
+      {/* Input */}
+      <div style={{ padding: '10px 14px', borderTop: '1px solid var(--ink-3)', display: 'flex', gap: 8, alignItems: 'center' }}>
+        <button onClick={toggleMic} title={listening ? 'Stop listening' : 'Use microphone'} style={{
+          width: 36, height: 36, flexShrink: 0, border: `1px solid ${listening ? 'var(--signal)' : 'var(--ink-3)'}`,
+          background: listening ? 'rgba(155,255,91,0.12)' : 'transparent', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all .15s',
+        }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <rect x="9" y="2" width="6" height="11" rx="3" fill={listening ? '#9bff5b' : '#7a7a76'}/>
+            <path d="M5 10a7 7 0 0 0 14 0" stroke={listening ? '#9bff5b' : '#7a7a76'} strokeWidth="2" strokeLinecap="round" fill="none"/>
+            <line x1="12" y1="19" x2="12" y2="23" stroke={listening ? '#9bff5b' : '#7a7a76'} strokeWidth="2" strokeLinecap="round"/>
+            <line x1="8" y1="23" x2="16" y2="23" stroke={listening ? '#9bff5b' : '#7a7a76'} strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </button>
+        <input
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
+          placeholder={listening ? 'Listening…' : 'Type a message or use the mic…'}
+          disabled={busy || listening}
+          style={{ flex: 1, background: 'var(--ink)', border: '1px solid var(--ink-3)', color: 'var(--paper)', padding: '8px 12px', font: '400 13px var(--font-sans)', outline: 'none' }}
+        />
+        <button onClick={() => send()} disabled={busy || !input.trim()} style={{
+          padding: '8px 16px', background: 'var(--signal)', color: 'var(--ink)', border: 'none',
+          font: '500 12px var(--font-mono)', letterSpacing: '0.1em', cursor: busy || !input.trim() ? 'default' : 'pointer',
+          opacity: busy || !input.trim() ? 0.4 : 1, transition: 'opacity .15s',
+        }}>Send</button>
+      </div>
+      {/* Submit */}
+      <div style={{ padding: '12px 18px', borderTop: '1px solid var(--ink-3)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+        <span style={{ font: '400 11px var(--font-sans)', color: 'var(--muted)' }}>
+          {canSubmit ? 'Ready to send your conversation to Andrew?' : 'Chat a bit, then submit when you\'re done.'}
+        </span>
+        <button onClick={submitTranscript} disabled={!canSubmit || submitting} style={{
+          padding: '7px 16px', background: 'transparent', border: `1px solid ${canSubmit ? 'var(--signal)' : 'var(--ink-3)'}`,
+          color: canSubmit ? 'var(--signal)' : 'var(--muted)', font: '500 11px var(--font-mono)', letterSpacing: '0.12em',
+          cursor: canSubmit ? 'pointer' : 'default', transition: 'all .15s', textTransform: 'uppercase',
+        }}>{submitting ? 'Sending…' : 'Send to Andrew →'}</button>
+      </div>
+    </div>
+  );
+}
+
+function Contact() {
   return (
     <section id="contact" data-screen-label="06 Contact" style={{ position: 'relative', zIndex: 2, padding: '120px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
@@ -645,56 +803,16 @@ function Contact() {
                 Have a project in{' '}
                 <span style={{ background: 'var(--signal)', color: 'var(--ink)', padding: '0 6px', margin: '0 -2px' }}>flight</span>?
               </h2>
-              <p style={{ font: '400 16px/1.65 var(--font-sans)', color: 'var(--muted)', margin: '0 0 12px', maxWidth: '46ch' }}>Tell me what you're building. Most projects start with a quick conversation to see if there's a fit — no commitment, no sales pitch.</p>
+              <p style={{ font: '400 16px/1.65 var(--font-sans)', color: 'var(--muted)', margin: '0 0 12px', maxWidth: '46ch' }}>Tell me about your project. The agent below will take notes and send everything to Andrew — no forms, no commitment.</p>
               <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', margin: '0 0 32px', maxWidth: '46ch' }}>
                 <span style={{ color: 'var(--signal)', fontFamily: 'var(--font-mono)', fontSize: 12, letterSpacing: '0.14em', textTransform: 'uppercase' }}>📍 Lafayette, LA</span>
                 {' '}— locally owned and operated, serving businesses in Acadiana and beyond.
               </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <a href="mailto:andrew@carrierpigeonai.dev" style={{ font: '500 13px var(--font-mono)', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none' }}>Or email directly → andrew@carrierpigeonai.dev</a>
-              </div>
+              <a href="mailto:andrew@carrierpigeonai.dev" style={{ font: '500 13px var(--font-mono)', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none' }}>Or email directly → andrew@carrierpigeonai.dev</a>
             </div>
           </FadeIn>
           <FadeIn delay={120}>
-            {status === 'success' ? (
-              <div style={{ padding: '48px 0', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-                <PixelBird size={72} fg="#f1f1ef" accent="#9bff5b" />
-                <p style={{ font: '600 20px/1.3 var(--font-sans)', color: 'var(--paper)', margin: 0 }}>Pigeon sent.</p>
-                <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0 }}>I'll be in touch quickly — typically within a few hours.</p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-                <div className="cp-form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <FormField label="Name *">
-                    <input name="name" required value={form.name} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Jane Smith" style={inputStyle} />
-                  </FormField>
-                  <FormField label="Company">
-                    <input name="company" value={form.company} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Acme Co." style={inputStyle} />
-                  </FormField>
-                </div>
-                <FormField label="What do you need? *">
-                  <select name="service" required value={form.service} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} style={{ ...inputStyle, backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center', paddingRight: 36 }}>
-                    <option value="">Select a service…</option>
-                    <option value="Web Design">Web Design</option>
-                    <option value="AI Agents & Receptionist">AI Agents & Receptionist</option>
-                    <option value="Business Automation">Business Automation</option>
-                    <option value="Knowledge Base">Knowledge Base</option>
-                    <option value="Something else">Something else</option>
-                  </select>
-                </FormField>
-                <FormField label="Message *">
-                  <textarea name="message" required value={form.message} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} placeholder="Tell me about the project — what's the problem you're trying to solve?" rows={5} style={{ ...inputStyle, resize: 'vertical', minHeight: 120 }} />
-                </FormField>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-start' }}>
-                  <Btn primary arrow type="submit" disabled={status === 'sending'}>
-                    {status === 'sending' ? 'Sending…' : 'Send a Pigeon'}
-                  </Btn>
-                  {status === 'error' && (
-                    <span style={{ font: '400 13px var(--font-sans)', color: '#e55' }}>Something went wrong — try emailing andrew@carrierpigeonai.dev directly.</span>
-                  )}
-                </div>
-              </form>
-            )}
+            <ContactVoiceAgent />
           </FadeIn>
         </div>
       </div>
