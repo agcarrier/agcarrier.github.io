@@ -485,6 +485,7 @@ const STACK = [
   { name: 'Vercel',    vendor: 'Hosting',   url: 'https://vercel.com' },
   { name: 'Hostinger', vendor: 'Hosting',   url: 'https://hostinger.com' },
   { name: 'Formspree', vendor: 'Forms',     url: 'https://formspree.io' },
+  { name: 'Figma',     vendor: 'Design',    url: 'https://figma.com' },
 ];
 
 function Stack() {
@@ -1359,6 +1360,83 @@ async function callDemoAPI(payload) {
   return r.json();
 }
 
+// ── Send to Andrew Panel ──────────────────────────────────────────
+// Reusable panel that appears after any demo output.
+// Starts as a single button, expands to optional name/email, collapses to success.
+function SendToAndrewPanel({ mode, output, input }) {
+  const [phase, setPhase]   = React.useState('idle');  // idle | form | sending | sent
+  const [name,  setName]    = React.useState('');
+  const [email, setEmail]   = React.useState('');
+  const [err,   setErr]     = React.useState(null);
+
+  async function send() {
+    setPhase('sending');
+    setErr(null);
+    try {
+      const r = await fetch(`${DEMO_API}/api/send-brief`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode, output, input: input || '', name, email }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+      setPhase('sent');
+    } catch (e) {
+      setErr(e.message || 'Something went wrong — try again.');
+      setPhase('form');
+    }
+  }
+
+  if (phase === 'sent') {
+    return (
+      <div style={{ marginTop: 14, padding: '14px 18px', background: 'rgba(155,255,91,0.07)', border: '1px solid rgba(155,255,91,0.25)', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <span style={{ font: '400 13px var(--font-sans)', color: 'var(--signal)' }}>✓</span>
+        <span style={{ font: '400 13px var(--font-sans)', color: 'var(--paper)' }}>Sent. Andrew will take a look.</span>
+      </div>
+    );
+  }
+
+  if (phase === 'idle') {
+    return (
+      <div style={{ marginTop: 14 }}>
+        <button onClick={() => setPhase('form')} style={{
+          padding: '9px 18px', background: 'transparent', border: '1px solid var(--ink-3)',
+          color: 'var(--muted)', font: '500 12px var(--font-sans)', cursor: 'pointer', transition: 'all .15s',
+        }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--signal)'; e.currentTarget.style.color = 'var(--paper)'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--ink-3)'; e.currentTarget.style.color = 'var(--muted)'; }}>
+          Send this to Andrew →
+        </button>
+      </div>
+    );
+  }
+
+  // form | sending
+  return (
+    <div style={{ marginTop: 14, padding: '18px 20px', background: 'var(--ink-2)', border: '1px solid var(--ink-3)' }}>
+      <div style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 14 }}>Send to Andrew — no strings attached</div>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
+        <input value={name} onChange={e => setName(e.target.value)} placeholder="Name (optional)"
+          style={{ flex: 1, minWidth: 140, padding: '9px 12px', background: 'var(--ink)', border: '1px solid var(--ink-3)', color: 'var(--paper)', font: '400 13px var(--font-sans)', outline: 'none' }} />
+        <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email (optional)"
+          type="email"
+          style={{ flex: 1, minWidth: 180, padding: '9px 12px', background: 'var(--ink)', border: '1px solid var(--ink-3)', color: 'var(--paper)', font: '400 13px var(--font-sans)', outline: 'none' }} />
+      </div>
+      {err && <div style={{ marginBottom: 10, font: '400 12px var(--font-sans)', color: '#e55' }}>{err}</div>}
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+        <button onClick={send} disabled={phase === 'sending'} style={{
+          padding: '9px 20px', background: 'var(--signal)', border: 'none', color: 'var(--ink)',
+          font: '600 12px var(--font-sans)', cursor: 'pointer', opacity: phase === 'sending' ? 0.6 : 1,
+        }}>{phase === 'sending' ? 'Sending…' : 'Send it →'}</button>
+        <button onClick={() => { setPhase('idle'); setErr(null); }} style={{
+          padding: '9px 14px', background: 'transparent', border: 'none', color: 'var(--muted)',
+          font: '400 12px var(--font-sans)', cursor: 'pointer',
+        }}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
 // ── Voice Receptionist Demo ───────────────────────────────────────
 function VoiceReceptionistDemo() {
   const [biz, setBiz] = React.useState(DEMO_BUSINESSES[0]);
@@ -1521,6 +1599,14 @@ function VoiceReceptionistDemo() {
             <span style={{ font: '400 11px var(--font-sans)', color: 'var(--muted)' }}>Try:</span>
             {starters.map(s => <DemoStarterBtn key={s} label={s} onClick={() => send(s)} />)}
           </div>
+
+          {msgs.length > 2 && (
+            <SendToAndrewPanel
+              mode="receptionist"
+              output={msgs.map(m => `${m.role === 'user' ? 'Visitor' : 'Ava'}: ${m.content}`).join('\n\n')}
+              input={`Business: ${biz.name} (${biz.type})`}
+            />
+          )}
         </FadeIn>
       </div>
     </section>
@@ -1612,10 +1698,18 @@ function KnowledgeBaseDemo() {
           </div>
 
           {tab === 'chat' && (
-            <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ font: '400 11px var(--font-sans)', color: 'var(--muted)' }}>Try:</span>
-              {starters.map(s => <DemoStarterBtn key={s} label={s} onClick={() => send(s)} />)}
-            </div>
+            <>
+              <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+                <span style={{ font: '400 11px var(--font-sans)', color: 'var(--muted)' }}>Try:</span>
+                {starters.map(s => <DemoStarterBtn key={s} label={s} onClick={() => send(s)} />)}
+              </div>
+              {msgs.length > 2 && (
+                <SendToAndrewPanel
+                  mode="knowledge"
+                  output={msgs.map(m => `${m.role === 'user' ? 'Visitor' : 'Knowledge Base'}: ${m.content}`).join('\n\n')}
+                />
+              )}
+            </>
           )}
         </FadeIn>
       </div>
@@ -1703,14 +1797,17 @@ function AutomationAnalyzerDemo() {
             )}
 
             {result && (
-              <div style={{ marginTop: 14, background: 'var(--ink-2)', border: '1px solid var(--signal)', padding: '22px' }}>
-                <div style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--signal)', marginBottom: 16 }}>Automation Analysis</div>
-                <div style={{ font: '400 14px/1.75 var(--font-sans)', color: 'var(--paper)', whiteSpace: 'pre-wrap' }}>{result}</div>
-                <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid var(--ink-3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                  <span style={{ font: '400 13px var(--font-sans)', color: 'var(--muted)' }}>Want us to build this for you?</span>
-                  <Btn primary arrow href="#ba-contact">Get started</Btn>
+              <>
+                <div style={{ marginTop: 14, background: 'var(--ink-2)', border: '1px solid var(--signal)', padding: '22px' }}>
+                  <div style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--signal)', marginBottom: 16 }}>Automation Analysis</div>
+                  <div style={{ font: '400 14px/1.75 var(--font-sans)', color: 'var(--paper)', whiteSpace: 'pre-wrap' }}>{result}</div>
+                  <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid var(--ink-3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                    <span style={{ font: '400 13px var(--font-sans)', color: 'var(--muted)' }}>Want us to build this for you?</span>
+                    <Btn primary arrow href="#ba-contact">Get started</Btn>
+                  </div>
                 </div>
-              </div>
+                <SendToAndrewPanel mode="automation" output={result} input={input} />
+              </>
             )}
           </div>
         </FadeIn>
@@ -1808,6 +1905,7 @@ function WebDesignBriefDemo() {
                   </div>
                   <div style={{ font: '400 14px/1.8 var(--font-sans)', color: 'var(--paper)', whiteSpace: 'pre-wrap' }}>{result}</div>
                 </div>
+                <SendToAndrewPanel mode="webdesign" output={result} input={input} />
                 <div style={{ marginTop: 14, padding: '18px 22px', background: 'var(--ink-2)', border: '1px solid var(--ink-3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
                   <span style={{ font: '400 14px var(--font-sans)', color: 'var(--muted)' }}>Ready to build this? We can have it live in days.</span>
                   <Btn primary arrow href="#wd-contact">Start your project</Btn>
