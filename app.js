@@ -494,7 +494,7 @@ function Stack() {
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <FadeIn><SectionHead num="04" name="Stack" theme="Tools of the trade." count={`${STACK.length} / Daily`} /></FadeIn>
         <FadeIn>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }} className="cp-stack-grid">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(10, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }} className="cp-stack-grid">
             {STACK.map((s, i) => (
               <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer"
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', gap: 32, padding: '32px 22px', minHeight: 160, borderRight: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', textDecoration: 'none', background: 'transparent', transition: 'background .2s ease', position: 'relative' }}
