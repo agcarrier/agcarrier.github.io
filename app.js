@@ -608,6 +608,30 @@ function FormField({ label, children }) {
   );
 }
 
+// ── Voice helpers ─────────────────────────────────────────────────
+function pickBestVoice(voices) {
+  const tests = [
+    v => /google us english/i.test(v.name),
+    v => /microsoft.*aria.*online/i.test(v.name),
+    v => /microsoft.*jenny.*online/i.test(v.name),
+    v => /microsoft.*guy.*online/i.test(v.name),
+    v => /microsoft.*online/i.test(v.name) && v.lang === 'en-US',
+    v => /samantha.*enhanced/i.test(v.name),
+    v => /ava.*premium/i.test(v.name),
+    v => /enhanced/i.test(v.name) && v.lang.startsWith('en'),
+    v => /premium/i.test(v.name) && v.lang.startsWith('en'),
+    v => /samantha/i.test(v.name),
+    v => /karen/i.test(v.name),
+    v => v.lang === 'en-US',
+    v => v.lang.startsWith('en'),
+  ];
+  for (const test of tests) {
+    const match = voices.find(test);
+    if (match) return match;
+  }
+  return voices[0] || null;
+}
+
 // ── Contact Voice Agent ───────────────────────────────────────────
 function ContactVoiceAgent() {
   const [msgs, setMsgs] = React.useState([
@@ -630,9 +654,8 @@ function ContactVoiceAgent() {
       const eng = all.filter(v => v.lang.startsWith('en'));
       setVoices(eng);
       if (eng.length && !selectedVoice) {
-        const preferred = eng.find(v => /samantha|ava|karen|moira|zira|heather|allison/i.test(v.name))
-          || eng.find(v => v.lang === 'en-US') || eng[0];
-        if (preferred) setSelectedVoice(preferred.name);
+        const best = pickBestVoice(eng);
+        if (best) setSelectedVoice(best.name);
       }
     }
     loadVoices();
@@ -648,9 +671,10 @@ function ContactVoiceAgent() {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.rate = 0.92;
-    const pick = voices.find(v => v.name === selectedVoice)
-      || voices.find(v => v.lang === 'en-US') || voices[0];
+    u.rate = 0.88;
+    u.pitch = 0.95;
+    u.volume = 1.0;
+    const pick = voices.find(v => v.name === selectedVoice) || pickBestVoice(voices);
     if (pick) u.voice = pick;
     window.speechSynthesis.speak(u);
   }
@@ -1355,10 +1379,8 @@ function VoiceReceptionistDemo() {
       const eng = all.filter(v => v.lang.startsWith('en'));
       setVoices(eng);
       if (eng.length && !selectedVoice) {
-        const preferred = eng.find(v => /samantha|ava|karen|moira|zira|heather|allison/i.test(v.name))
-          || eng.find(v => v.lang === 'en-US')
-          || eng[0];
-        if (preferred) setSelectedVoice(preferred.name);
+        const best = pickBestVoice(eng);
+        if (best) setSelectedVoice(best.name);
       }
     }
     loadVoices();
@@ -1380,10 +1402,10 @@ function VoiceReceptionistDemo() {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.rate = 0.92;
-    const pick = voices.find(v => v.name === selectedVoice)
-      || voices.find(v => v.lang === 'en-US')
-      || voices[0];
+    u.rate = 0.88;
+    u.pitch = 0.95;
+    u.volume = 1.0;
+    const pick = voices.find(v => v.name === selectedVoice) || pickBestVoice(voices);
     if (pick) u.voice = pick;
     window.speechSynthesis.speak(u);
   }
