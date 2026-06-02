@@ -508,6 +508,7 @@ const STACK_GROUPS = [
       { name: 'v0',      vendor: 'Vercel',  url: 'https://v0.dev' },
       { name: 'Framer',  vendor: 'Builder', url: 'https://framer.com' },
       { name: 'Webflow', vendor: 'Builder', url: 'https://webflow.com' },
+      { name: 'Stitch',  vendor: 'Google',  url: 'https://stitch.withgoogle.com' },
     ],
   },
   {
