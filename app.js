@@ -475,38 +475,75 @@ function Founder() {
 }
 
 // ── Stack ─────────────────────────────────────────────────────────
-const STACK = [
-  { name: 'Claude',    vendor: 'Anthropic', url: 'https://claude.ai' },
-  { name: 'ChatGPT',   vendor: 'OpenAI',    url: 'https://chatgpt.com' },
-  { name: 'Gemini',    vendor: 'Google',    url: 'https://gemini.google.com' },
-  { name: 'Cursor',    vendor: 'Editor',    url: 'https://cursor.com' },
-  { name: 'Lovable',   vendor: 'Builder',   url: 'https://lovable.dev' },
-  { name: 'GitHub',    vendor: 'Source',    url: 'https://github.com' },
-  { name: 'Vercel',    vendor: 'Hosting',   url: 'https://vercel.com' },
-  { name: 'Hostinger', vendor: 'Hosting',   url: 'https://hostinger.com' },
-  { name: 'Formspree', vendor: 'Forms',     url: 'https://formspree.io' },
-  { name: 'Figma',      vendor: 'Design',    url: 'https://figma.com' },
-  { name: 'Higgsfield', vendor: 'AI Video',  url: 'https://higgsfield.ai' },
-  { name: 'Dribbble',   vendor: 'Portfolio', url: 'https://dribbble.com' },
+const STACK_GROUPS = [
+  {
+    group: 'Models',
+    items: [
+      { name: 'Claude',  vendor: 'Anthropic', url: 'https://claude.ai' },
+      { name: 'ChatGPT', vendor: 'OpenAI',    url: 'https://chatgpt.com' },
+      { name: 'Gemini',  vendor: 'Google',    url: 'https://gemini.google.com' },
+      { name: 'Grok',    vendor: 'xAI',       url: 'https://grok.com' },
+    ],
+  },
+  {
+    group: 'Deploy',
+    items: [
+      { name: 'GitHub',    vendor: 'Source',  url: 'https://github.com' },
+      { name: 'Vercel',    vendor: 'Hosting', url: 'https://vercel.com' },
+      { name: 'Hostinger', vendor: 'Hosting', url: 'https://hostinger.com' },
+    ],
+  },
+  {
+    group: 'Tools',
+    items: [
+      { name: 'Cursor',      vendor: 'Editor',    url: 'https://cursor.com' },
+      { name: 'Lovable',     vendor: 'Builder',   url: 'https://lovable.dev' },
+      { name: 'Bolt',        vendor: 'Builder',   url: 'https://bolt.new' },
+      { name: 'v0',          vendor: 'Vercel',    url: 'https://v0.dev' },
+      { name: 'Relume',      vendor: 'Design',    url: 'https://relume.io' },
+      { name: 'Figma',       vendor: 'Design',    url: 'https://figma.com' },
+      { name: 'Formspree',   vendor: 'Forms',     url: 'https://formspree.io' },
+      { name: 'Higgsfield',  vendor: 'AI Video',  url: 'https://higgsfield.ai' },
+      { name: 'Midjourney',  vendor: 'AI Image',  url: 'https://midjourney.com' },
+      { name: 'Framer',      vendor: 'Builder',   url: 'https://framer.com' },
+      { name: 'Replit',      vendor: 'Editor',    url: 'https://replit.com' },
+      { name: 'Manus',       vendor: 'AI Agent',  url: 'https://manus.im' },
+      { name: 'Webflow',     vendor: 'Builder',   url: 'https://webflow.com' },
+    ],
+  },
 ];
+const STACK = STACK_GROUPS.flatMap(g => g.items);
 
 function Stack() {
+  let idx = 0;
   return (
     <section id="stack" data-screen-label="04 Stack" style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <FadeIn><SectionHead num="04" name="Stack" theme="Tools of the trade." count={`${STACK.length} / Daily`} /></FadeIn>
         <FadeIn>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 0, borderTop: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)' }} className="cp-stack-grid">
-            {STACK.map((s, i) => (
-              <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer"
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', gap: 32, padding: '32px 22px', minHeight: 160, borderRight: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', textDecoration: 'none', background: 'transparent', transition: 'background .2s ease', position: 'relative' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--ink-2)'; e.currentTarget.querySelector('.cp-stack-arr').style.color = 'var(--signal)'; e.currentTarget.querySelector('.cp-stack-arr').style.transform = 'translate(3px,-3px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.querySelector('.cp-stack-arr').style.color = 'var(--muted)'; e.currentTarget.querySelector('.cp-stack-arr').style.transform = 'translate(0,0)'; }}
-              >
-                <span className="cp-stack-arr" style={{ position: 'absolute', top: 14, right: 16, font: '500 12px var(--font-mono)', color: 'var(--muted)', transition: 'transform .2s ease, color .2s ease' }}>↗</span>
-                <span style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--muted)' }}>{String(i + 1).padStart(2, '0')} · {s.vendor}</span>
-                <span style={{ font: '600 15px var(--font-sans)', letterSpacing: '-0.02em', color: 'var(--paper)' }}>{s.name}</span>
-              </a>
+          <div style={{ borderTop: '1px solid var(--ink-3)' }}>
+            {STACK_GROUPS.map(g => (
+              <div key={g.group}>
+                <div style={{ padding: '10px 22px', borderBottom: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)', borderRight: '1px solid var(--ink-3)' }}>
+                  <span style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--muted)' }}>{g.group}</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 0, borderLeft: '1px solid var(--ink-3)' }} className="cp-stack-grid">
+                  {g.items.map(s => {
+                    const n = ++idx;
+                    return (
+                      <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer"
+                        style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', gap: 32, padding: '32px 22px', minHeight: 160, borderRight: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', textDecoration: 'none', background: 'transparent', transition: 'background .2s ease', position: 'relative' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ink-2)'; e.currentTarget.querySelector('.cp-stack-arr').style.color = 'var(--signal)'; e.currentTarget.querySelector('.cp-stack-arr').style.transform = 'translate(3px,-3px)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.querySelector('.cp-stack-arr').style.color = 'var(--muted)'; e.currentTarget.querySelector('.cp-stack-arr').style.transform = 'translate(0,0)'; }}
+                      >
+                        <span className="cp-stack-arr" style={{ position: 'absolute', top: 14, right: 16, font: '500 12px var(--font-mono)', color: 'var(--muted)', transition: 'transform .2s ease, color .2s ease' }}>↗</span>
+                        <span style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--muted)' }}>{String(n).padStart(2, '0')} · {s.vendor}</span>
+                        <span style={{ font: '600 15px var(--font-sans)', letterSpacing: '-0.02em', color: 'var(--paper)' }}>{s.name}</span>
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
             ))}
           </div>
         </FadeIn>
