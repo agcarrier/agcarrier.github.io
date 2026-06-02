@@ -494,21 +494,47 @@ const STACK_GROUPS = [
     ],
   },
   {
-    group: 'Tools',
+    group: 'Editors',
     items: [
-      { name: 'Cursor',      vendor: 'Editor',    url: 'https://cursor.com' },
-      { name: 'Lovable',     vendor: 'Builder',   url: 'https://lovable.dev' },
-      { name: 'Bolt',        vendor: 'Builder',   url: 'https://bolt.new' },
-      { name: 'v0',          vendor: 'Vercel',    url: 'https://v0.dev' },
-      { name: 'Relume',      vendor: 'Design',    url: 'https://relume.io' },
-      { name: 'Figma',       vendor: 'Design',    url: 'https://figma.com' },
-      { name: 'Formspree',   vendor: 'Forms',     url: 'https://formspree.io' },
-      { name: 'Higgsfield',  vendor: 'AI Video',  url: 'https://higgsfield.ai' },
-      { name: 'Midjourney',  vendor: 'AI Image',  url: 'https://midjourney.com' },
-      { name: 'Framer',      vendor: 'Builder',   url: 'https://framer.com' },
-      { name: 'Replit',      vendor: 'Editor',    url: 'https://replit.com' },
-      { name: 'Manus',       vendor: 'AI Agent',  url: 'https://manus.im' },
-      { name: 'Webflow',     vendor: 'Builder',   url: 'https://webflow.com' },
+      { name: 'Cursor', vendor: 'Editor', url: 'https://cursor.com' },
+      { name: 'Replit', vendor: 'Editor', url: 'https://replit.com' },
+    ],
+  },
+  {
+    group: 'Builders',
+    items: [
+      { name: 'Lovable', vendor: 'Builder', url: 'https://lovable.dev' },
+      { name: 'Bolt',    vendor: 'Builder', url: 'https://bolt.new' },
+      { name: 'v0',      vendor: 'Vercel',  url: 'https://v0.dev' },
+      { name: 'Framer',  vendor: 'Builder', url: 'https://framer.com' },
+      { name: 'Webflow', vendor: 'Builder', url: 'https://webflow.com' },
+    ],
+  },
+  {
+    group: 'Design',
+    items: [
+      { name: 'Figma',  vendor: 'Design', url: 'https://figma.com' },
+      { name: 'Relume', vendor: 'Design', url: 'https://relume.io' },
+    ],
+  },
+  {
+    group: 'Creative',
+    items: [
+      { name: 'Midjourney',  vendor: 'Image', url: 'https://midjourney.com' },
+      { name: 'Higgsfield',  vendor: 'Video', url: 'https://higgsfield.ai' },
+      { name: 'ElevenLabs',  vendor: 'Audio', url: 'https://elevenlabs.io' },
+    ],
+  },
+  {
+    group: 'Agents',
+    items: [
+      { name: 'Manus', vendor: 'Agent', url: 'https://manus.im' },
+    ],
+  },
+  {
+    group: 'Forms',
+    items: [
+      { name: 'Formspree', vendor: 'Forms', url: 'https://formspree.io' },
     ],
   },
 ];
