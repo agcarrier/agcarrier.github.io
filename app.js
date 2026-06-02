@@ -538,42 +538,49 @@ const STACK_GROUPS = [
     ],
   },
 ];
-const STACK = STACK_GROUPS.flatMap(g => g.items);
+const STACK = (() => {
+  const arr = [...STACK_GROUPS.flatMap(g => g.items)];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+})();
 
 function Stack() {
-  let idx = 0;
   return (
-    <section id="stack" data-screen-label="04 Stack" style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+    <section id="stack" data-screen-label="04 Stack" style={{ position: 'relative', zIndex: 2, padding: '64px 0' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', paddingLeft: 48, paddingRight: 48 }}>
         <FadeIn><SectionHead num="04" name="Stack" theme="Tools of the trade." count={`${STACK.length} / Daily`} /></FadeIn>
-        <FadeIn>
-          <div style={{ borderTop: '1px solid var(--ink-3)' }}>
-            {STACK_GROUPS.map(g => (
-              <div key={g.group}>
-                <div style={{ padding: '10px 22px', borderBottom: '1px solid var(--ink-3)', borderLeft: '1px solid var(--ink-3)', borderRight: '1px solid var(--ink-3)' }}>
-                  <span style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--muted)' }}>{g.group}</span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 0, borderLeft: '1px solid var(--ink-3)' }} className="cp-stack-grid">
-                  {g.items.map(s => {
-                    const n = ++idx;
-                    return (
-                      <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer"
-                        style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', gap: 32, padding: '32px 22px', minHeight: 160, borderRight: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)', textDecoration: 'none', background: 'transparent', transition: 'background .2s ease', position: 'relative' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ink-2)'; e.currentTarget.querySelector('.cp-stack-arr').style.color = 'var(--signal)'; e.currentTarget.querySelector('.cp-stack-arr').style.transform = 'translate(3px,-3px)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.querySelector('.cp-stack-arr').style.color = 'var(--muted)'; e.currentTarget.querySelector('.cp-stack-arr').style.transform = 'translate(0,0)'; }}
-                      >
-                        <span className="cp-stack-arr" style={{ position: 'absolute', top: 14, right: 16, font: '500 12px var(--font-mono)', color: 'var(--muted)', transition: 'transform .2s ease, color .2s ease' }}>↗</span>
-                        <span style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--muted)' }}>{String(n).padStart(2, '0')} · {s.vendor}</span>
-                        <span style={{ font: '600 15px var(--font-sans)', letterSpacing: '-0.02em', color: 'var(--paper)' }}>{s.name}</span>
-                      </a>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-        </FadeIn>
       </div>
+      <FadeIn>
+        <div style={{ position: 'relative', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
+          <div style={{ overflow: 'hidden' }}>
+            <div style={{ display: 'flex', animation: 'cp-marquee 45s linear infinite' }} className="cp-marquee-track"
+              onMouseEnter={e => e.currentTarget.style.animationPlayState = 'paused'}
+              onMouseLeave={e => e.currentTarget.style.animationPlayState = 'running'}
+            >
+              {[...STACK, ...STACK].map((s, i) => (
+                <a key={i} href={s.url} target="_blank" rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '20px 32px', borderRight: '1px solid var(--ink-3)', textDecoration: 'none', whiteSpace: 'nowrap', flexShrink: 0, transition: 'background .2s ease' }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'var(--ink-2)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                >
+                  <span style={{ font: '600 13px var(--font-sans)', letterSpacing: '-0.01em', color: 'var(--paper)' }}>{s.name}</span>
+                  <span style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>{s.vendor}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'linear-gradient(to right, var(--ink-1) 0%, transparent 8%, transparent 92%, var(--ink-1) 100%)' }} />
+        </div>
+      </FadeIn>
+      <style>{`
+        @keyframes cp-marquee {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+      `}</style>
     </section>
   );
 }
