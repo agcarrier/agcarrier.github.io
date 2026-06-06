@@ -563,6 +563,55 @@ const STACK = (() => {
 })();
 
 function Stack() {
+  const trackRef = useRef(null);
+  const drag = useRef({ active: false, startX: 0, startOffset: 0, offset: 0, halfWidth: 0 });
+
+  function getClientX(e) {
+    return e.touches ? e.touches[0].clientX : e.clientX;
+  }
+
+  function startDrag(e) {
+    const track = trackRef.current;
+    if (!track) return;
+    // Grab current animated position
+    const matrix = window.getComputedStyle(track).transform;
+    const currentX = matrix && matrix !== 'none' ? parseFloat(matrix.split(',')[4]) : 0;
+    track.style.animation = 'none';
+    track.style.transform = `translateX(${currentX}px)`;
+    drag.current = { active: true, startX: getClientX(e), startOffset: currentX, offset: currentX, halfWidth: track.scrollWidth / 2 };
+    track.style.cursor = 'grabbing';
+    e.preventDefault();
+  }
+
+  function onDrag(e) {
+    if (!drag.current.active) return;
+    const d = drag.current;
+    let x = d.startOffset + (getClientX(e) - d.startX);
+    // Wrap around seamlessly
+    const half = d.halfWidth;
+    if (x > 0) x -= half;
+    if (x < -half) x += half;
+    d.offset = x;
+    trackRef.current.style.transform = `translateX(${x}px)`;
+  }
+
+  function endDrag(e) {
+    if (!drag.current.active) return;
+    drag.current.active = false;
+    const track = trackRef.current;
+    if (!track) return;
+    track.style.cursor = 'grab';
+    // Resume CSS animation from current offset
+    const half = drag.current.halfWidth;
+    const pct = (Math.abs(drag.current.offset) % half) / half;
+    const remaining = (1 - pct) * 45;
+    track.style.transform = '';
+    track.style.animation = `cp-marquee ${remaining}s linear 1 forwards`;
+    track.addEventListener('animationend', () => {
+      track.style.animation = 'cp-marquee 45s linear infinite';
+    }, { once: true });
+  }
+
   return (
     <section id="stack" data-screen-label="04 Stack" style={{ position: 'relative', zIndex: 2, padding: '64px 0' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto', paddingLeft: 48, paddingRight: 48 }}>
@@ -570,16 +619,22 @@ function Stack() {
       </div>
       <FadeIn>
         <div style={{ position: 'relative', borderTop: '1px solid var(--ink-3)', borderBottom: '1px solid var(--ink-3)' }}>
-          <div style={{ overflow: 'hidden' }}>
-            <div style={{ display: 'flex', animation: 'cp-marquee 45s linear infinite' }} className="cp-marquee-track"
-              onMouseEnter={e => e.currentTarget.style.animationPlayState = 'paused'}
-              onMouseLeave={e => e.currentTarget.style.animationPlayState = 'running'}
-            >
+          <div style={{ overflow: 'hidden', cursor: 'grab' }}
+            onMouseDown={startDrag}
+            onMouseMove={onDrag}
+            onMouseUp={endDrag}
+            onMouseLeave={endDrag}
+            onTouchStart={startDrag}
+            onTouchMove={onDrag}
+            onTouchEnd={endDrag}
+          >
+            <div ref={trackRef} style={{ display: 'flex', animation: 'cp-marquee 45s linear infinite', willChange: 'transform' }} className="cp-marquee-track">
               {[...STACK, ...STACK].map((s, i) => (
                 <a key={i} href={s.url} target="_blank" rel="noopener noreferrer"
-                  style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '20px 32px', borderRight: '1px solid var(--ink-3)', textDecoration: 'none', whiteSpace: 'nowrap', flexShrink: 0, transition: 'background .2s ease' }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'var(--ink-2)'}
+                  style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '20px 32px', borderRight: '1px solid var(--ink-3)', textDecoration: 'none', whiteSpace: 'nowrap', flexShrink: 0, transition: 'background .2s ease', userSelect: 'none' }}
+                  onMouseEnter={e => { if (!drag.current.active) e.currentTarget.style.background = 'var(--ink-2)'; }}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                  onClick={e => { if (drag.current.active) e.preventDefault(); }}
                 >
                   <span style={{ font: '600 13px var(--font-sans)', letterSpacing: '-0.01em', color: 'var(--paper)' }}>{s.name}</span>
                   <span style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>{s.vendor}</span>
