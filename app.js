@@ -144,6 +144,20 @@ function CourierGraph({ nodeCount = 110, speed = 0.16, threshold = 160, lineAlph
   return <canvas ref={canvasRef} style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', display: 'block', pointerEvents: 'none', zIndex: 0 }} />;
 }
 
+// ── Hero Video Background ─────────────────────────────────────────
+function HeroVideo() {
+  return (
+    <>
+      <video
+        autoPlay muted loop playsInline
+        style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none', zIndex: 0 }}
+        src="/hero-bg.mp4"
+      />
+      <div style={{ position: 'fixed', inset: 0, background: 'rgba(12,12,13,0.55)', pointerEvents: 'none', zIndex: 1 }} />
+    </>
+  );
+}
+
 // ── Shared atoms ──────────────────────────────────────────────────
 function FadeIn({ children, delay = 0 }) {
   const ref = useRef(null);
@@ -1322,7 +1336,7 @@ function App() {
   return (
     <div style={{ background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--font-sans)', minHeight: '100vh', position: 'relative', overflowX: 'hidden' }}>
       <ScrollProgressBar />
-      <CourierGraph />
+      <HeroVideo />
       <Nav />
       <main>
         <Hero />
