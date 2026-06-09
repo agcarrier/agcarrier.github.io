@@ -387,6 +387,7 @@ function Services() {
 // ── Work ──────────────────────────────────────────────────────────
 const PROJECTS = [
   { id: '001', name: 'AAVA Rescue',  role: 'Website',  desc: 'Marketing site and donation flow for an animal rescue org. Built in a day, live the same week.',  href: 'https://aavarescue.com', preview: 'https://image.thum.io/get/width/600/crop/380/https://aavarescue.com' },
+  { id: '002', name: 'Roux',         role: 'Mockup',   desc: 'Concept site for a modern Cajun fine-dining restaurant. Full hero treatment, editorial typography, dark and rich.',  href: 'https://roux.carrierpigeonai.dev', preview: 'https://image.thum.io/get/width/600/crop/380/https://roux.carrierpigeonai.dev' },
 ];
 
 function WorkCard({ id, name, role, desc, href, preview }) {
@@ -416,7 +417,7 @@ function Work() {
   return (
     <section id="work" data-screen-label="03 Work" style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <FadeIn><SectionHead num="03" name="Work" theme="Built and shipped." count="1 / Active" /></FadeIn>
+        <FadeIn><SectionHead num="03" name="Work" theme="Built and shipped." count="2 / Active" /></FadeIn>
         <FadeIn>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
             {PROJECTS.map(p => <WorkCard key={p.id} {...p} />)}
