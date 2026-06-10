@@ -388,30 +388,43 @@ function Services() {
 const PROJECTS = [
   { id: '001', name: 'AAVA Rescue',  role: 'Website',  desc: 'Marketing site and donation flow for an animal rescue org. Built in a day, live the same week.',  href: 'https://aavarescue.com', preview: 'https://image.thum.io/get/width/600/crop/380/https://aavarescue.com' },
   { id: '002', name: 'Roux',         role: 'Mockup',   desc: 'Concept site for a modern Cajun fine-dining restaurant. Full hero treatment, editorial typography, dark and rich.',  href: 'https://roux.carrierpigeonai.dev', preview: 'https://image.thum.io/get/width/600/crop/380/https://roux.carrierpigeonai.dev' },
-  { id: '003', name: 'Demo Gallery', role: 'Live demos', desc: 'A growing collection of working prototypes — booking, invoicing, and marketing tools built for local businesses.', href: 'https://demos.carrierpigeonai.dev', preview: 'https://image.thum.io/get/width/600/crop/380/https://demos.carrierpigeonai.dev' },
 ];
 
 function WorkCard({ id, name, role, desc, href, preview }) {
   const [hov, setHov] = useState(false);
   const inner = (
     <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
-      className="cp-work-card" style={{ position: 'relative', border: `1px solid ${hov ? 'var(--signal)' : 'var(--ink-3)'}`, background: 'var(--ink)', display: 'grid', gridTemplateColumns: '1fr 1fr', color: 'var(--paper)', transition: 'border-color .2s ease', cursor: 'pointer' }}>
-      <div style={{ height: 2, background: hov ? 'var(--signal)' : 'var(--ink-3)', transition: 'background .2s ease', position: 'absolute', top: 0, left: 0, right: 0 }} />
+      className="cp-work-card" style={{ position: 'relative', border: `1px solid ${hov ? 'var(--signal)' : 'var(--ink-3)'}`, background: 'var(--ink)', color: 'var(--paper)', transition: 'border-color .2s ease', cursor: 'pointer', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ height: 2, background: hov ? 'var(--signal)' : 'var(--ink-3)', transition: 'background .2s ease' }} />
       <div style={{ aspectRatio: '16 / 10', overflow: 'hidden', background: 'var(--ink-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
         {preview && <img src={preview} alt={`${name} preview`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: hov ? 'none' : 'grayscale(0.2)', transition: 'filter .3s ease, transform .4s ease', transform: hov ? 'scale(1.02)' : 'scale(1)' }} />}
-        <span style={{ position: 'absolute', top: 12, left: 12, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', color: 'var(--paper)', mixBlendMode: 'difference' }}>{id}</span>
+        <span style={{ position: 'absolute', top: 10, left: 10, font: '500 10px var(--font-mono)', letterSpacing: '0.16em', color: 'var(--paper)', mixBlendMode: 'difference' }}>{id}</span>
       </div>
-      <div style={{ padding: '32px 36px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 10 }}>
+      <div style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
         <span style={{ font: '500 10px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--signal)' }}>{role}</span>
-        <h3 style={{ font: '600 28px/1.1 var(--font-sans)', letterSpacing: '-0.02em', margin: 0, color: 'var(--paper)' }}>{name}</h3>
-        <p style={{ font: '400 15px/1.6 var(--font-sans)', color: 'var(--muted)', margin: '4px 0 0', maxWidth: '36ch' }}>{desc}</p>
-        <div style={{ marginTop: 8 }}>
-          <span style={{ font: '500 12px var(--font-mono)', letterSpacing: '0.1em', color: hov ? 'var(--signal)' : 'var(--muted)', transition: 'color .2s ease' }}>VIEW SITE →</span>
+        <h3 style={{ font: '600 19px/1.2 var(--font-sans)', letterSpacing: '-0.02em', margin: 0, color: 'var(--paper)' }}>{name}</h3>
+        <p style={{ font: '400 13px/1.55 var(--font-sans)', color: 'var(--muted)', margin: '2px 0 0' }}>{desc}</p>
+        <div style={{ marginTop: 'auto', paddingTop: 8 }}>
+          <span style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.1em', color: hov ? 'var(--signal)' : 'var(--muted)', transition: 'color .2s ease' }}>VIEW SITE →</span>
         </div>
       </div>
     </div>
   );
-  return <a href={href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block' }}>{inner}</a>;
+  return <a href={href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block', height: '100%' }}>{inner}</a>;
+}
+
+function DemoGalleryBanner() {
+  const [hov, setHov] = useState(false);
+  return (
+    <a href="https://demos.carrierpigeonai.dev" target="_blank" rel="noopener noreferrer"
+      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', textDecoration: 'none', color: 'var(--paper)', border: `1px solid ${hov ? 'var(--signal)' : 'var(--ink-3)'}`, background: 'var(--ink)', padding: '20px 28px', transition: 'border-color .2s ease' }}>
+      <span style={{ font: '400 15px/1.5 var(--font-sans)', color: 'var(--muted)' }}>
+        Looking for something smaller? <span style={{ color: 'var(--paper)' }}>Browse the live demo gallery</span> — booking, invoicing, and marketing tools for local businesses.
+      </span>
+      <span style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: hov ? 'var(--signal)' : 'var(--muted)', transition: 'color .2s ease', flexShrink: 0 }}>View demos →</span>
+    </a>
+  );
 }
 
 function Work() {
@@ -420,11 +433,14 @@ function Work() {
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <FadeIn><SectionHead num="03" name="Work" theme="Built and shipped." count="2 / Active" /></FadeIn>
         <FadeIn>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <div className="cp-work-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 18 }}>
             {PROJECTS.map(p => <WorkCard key={p.id} {...p} />)}
           </div>
         </FadeIn>
-        <FadeIn delay={120}>
+        <FadeIn delay={100}>
+          <div style={{ marginTop: 18 }}><DemoGalleryBanner /></div>
+        </FadeIn>
+        <FadeIn delay={160}>
           <p style={{ font: '400 13px/1.5 var(--font-sans)', color: 'var(--muted)', marginTop: 20, textAlign: 'right' }}>More case studies in progress — check back soon.</p>
         </FadeIn>
       </div>
