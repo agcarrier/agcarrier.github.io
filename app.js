@@ -1057,7 +1057,7 @@ function Nav() {
 
   const isHome = window.location.pathname === '/';
   const anchor = id => isHome ? `#${id}` : `/#${id}`;
-  const otherLinks = ['Work', 'Stack', 'Founder', 'Contact'];
+  const otherLinks = ['Work', 'Stack', 'Contact'];
 
   const linkStyle = { font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', transition: 'color .15s ease' };
 
