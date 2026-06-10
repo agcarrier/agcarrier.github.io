@@ -1102,6 +1102,12 @@ function Nav() {
             )}
           </div>
 
+          {/* Demos (external) */}
+          <a href="https://demos.carrierpigeonai.dev" target="_blank" rel="noopener noreferrer" style={linkStyle}
+            onMouseEnter={e => e.target.style.color = 'var(--paper)'}
+            onMouseLeave={e => e.target.style.color = 'var(--muted)'}
+          >Demos</a>
+
           {/* Other nav links */}
           {otherLinks.map(l => (
             <a key={l} href={anchor(l.toLowerCase())} style={linkStyle}
@@ -1109,12 +1115,6 @@ function Nav() {
               onMouseLeave={e => e.target.style.color = 'var(--muted)'}
             >{l}</a>
           ))}
-
-          {/* Demos (external) */}
-          <a href="https://demos.carrierpigeonai.dev" target="_blank" rel="noopener noreferrer" style={linkStyle}
-            onMouseEnter={e => e.target.style.color = 'var(--paper)'}
-            onMouseLeave={e => e.target.style.color = 'var(--muted)'}
-          >Demos</a>
         </div>
 
         {/* CTA + hamburger */}
@@ -1152,17 +1152,17 @@ function Nav() {
           </div>
         )}
 
+        {/* Demos (external) */}
+        <a href="https://demos.carrierpigeonai.dev" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)}
+          style={{ font: '500 13px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)', textDecoration: 'none', padding: '18px 0', borderBottom: '1px solid var(--ink-3)' }}
+        >Demos</a>
+
         {/* Other mobile links */}
         {otherLinks.map(l => (
           <a key={l} href={anchor(l.toLowerCase())} onClick={() => setOpen(false)}
             style={{ font: '500 13px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)', textDecoration: 'none', padding: '18px 0', borderBottom: '1px solid var(--ink-3)' }}
           >{l}</a>
         ))}
-
-        {/* Demos (external) */}
-        <a href="https://demos.carrierpigeonai.dev" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)}
-          style={{ font: '500 13px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)', textDecoration: 'none', padding: '18px 0', borderBottom: '1px solid var(--ink-3)' }}
-        >Demos</a>
         <div style={{ marginTop: 24 }}><Btn primary arrow href={anchor('contact')} onClick={() => setOpen(false)}>Send a Pigeon</Btn></div>
       </div>
     </>
