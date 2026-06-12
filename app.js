@@ -570,6 +570,12 @@ const STACK_GROUPS = [
       { name: 'Formspree', vendor: 'Forms', url: 'https://formspree.io' },
     ],
   },
+  {
+    group: 'Database',
+    items: [
+      { name: 'Supabase', vendor: 'Database', url: 'https://supabase.com' },
+    ],
+  },
 ];
 const STACK = (() => {
   const arr = [...STACK_GROUPS.flatMap(g => g.items)];
