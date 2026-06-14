@@ -704,6 +704,10 @@ const PAGE_META = {
     title: 'Private AI Knowledge Base for Small Business | Carrier Pigeon AI',
     description: 'A private AI trained on your business content — so staff and customers get instant, accurate answers around the clock without pulling anyone away.',
   },
+  '/field-notes': {
+    title: 'Field Notes — AI, automation & building | Carrier Pigeon AI',
+    description: 'Notes from the field on AI, automation, and building practical tools — what Andrew Carrier is learning, testing, and shipping.',
+  },
 };
 
 // ── Demo API ──────────────────────────────────────────────────────
@@ -1063,7 +1067,7 @@ function Nav() {
 
   const isHome = window.location.pathname === '/';
   const anchor = id => isHome ? `#${id}` : `/#${id}`;
-  const otherLinks = ['Work', 'Stack', 'Contact'];
+  const otherLinks = [{ label: 'Gallery', id: 'work' }];
 
   const linkStyle = { font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', transition: 'color .15s ease' };
 
@@ -1114,13 +1118,25 @@ function Nav() {
             onMouseLeave={e => e.target.style.color = 'var(--muted)'}
           >Demos</a>
 
-          {/* Other nav links */}
+          {/* Gallery (anchor to home work section) */}
           {otherLinks.map(l => (
-            <a key={l} href={anchor(l.toLowerCase())} style={linkStyle}
+            <a key={l.id} href={anchor(l.id)} style={linkStyle}
               onMouseEnter={e => e.target.style.color = 'var(--paper)'}
               onMouseLeave={e => e.target.style.color = 'var(--muted)'}
-            >{l}</a>
+            >{l.label}</a>
           ))}
+
+          {/* Field Notes (internal page) */}
+          <a href="/field-notes" style={linkStyle}
+            onMouseEnter={e => e.target.style.color = 'var(--paper)'}
+            onMouseLeave={e => e.target.style.color = 'var(--muted)'}
+          >Field Notes</a>
+
+          {/* The Roux Report (external — news subdomain) */}
+          <a href="https://news.carrierpigeonai.dev" target="_blank" rel="noopener noreferrer" style={linkStyle}
+            onMouseEnter={e => e.target.style.color = 'var(--paper)'}
+            onMouseLeave={e => e.target.style.color = 'var(--muted)'}
+          >The Roux Report</a>
         </div>
 
         {/* CTA + hamburger */}
@@ -1163,12 +1179,22 @@ function Nav() {
           style={{ font: '500 13px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)', textDecoration: 'none', padding: '18px 0', borderBottom: '1px solid var(--ink-3)' }}
         >Demos</a>
 
-        {/* Other mobile links */}
+        {/* Gallery (anchor to home work section) */}
         {otherLinks.map(l => (
-          <a key={l} href={anchor(l.toLowerCase())} onClick={() => setOpen(false)}
+          <a key={l.id} href={anchor(l.id)} onClick={() => setOpen(false)}
             style={{ font: '500 13px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)', textDecoration: 'none', padding: '18px 0', borderBottom: '1px solid var(--ink-3)' }}
-          >{l}</a>
+          >{l.label}</a>
         ))}
+
+        {/* Field Notes (internal page) */}
+        <a href="/field-notes" onClick={() => setOpen(false)}
+          style={{ font: '500 13px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)', textDecoration: 'none', padding: '18px 0', borderBottom: '1px solid var(--ink-3)' }}
+        >Field Notes</a>
+
+        {/* The Roux Report (external — news subdomain) */}
+        <a href="https://news.carrierpigeonai.dev" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)}
+          style={{ font: '500 13px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)', textDecoration: 'none', padding: '18px 0', borderBottom: '1px solid var(--ink-3)' }}
+        >The Roux Report</a>
         <div style={{ marginTop: 24 }}><Btn primary arrow href={anchor('contact')} onClick={() => setOpen(false)}>Send a Pigeon</Btn></div>
       </div>
     </>
@@ -2673,6 +2699,79 @@ function KnowledgePage() {
   );
 }
 
+// ── Field Notes ───────────────────────────────────────────────────
+// Each entry links to its own page. Self-contained HTML pieces (like the
+// AI infographic) live as static files under /field-notes/ — Vercel serves
+// real files before the SPA rewrite, so their own styling stays intact.
+const FIELD_NOTES = [
+  {
+    title: 'The Spellcaster Economy',
+    date: '2026-06-01',
+    tag: 'No. 001 · Infographic',
+    excerpt: 'AI is a new layer of leverage — a powerful imitator and compressor with no wants of its own. It rewards structured thinkers and narrow excellence, and in any contest its edge cancels out, leaving the advantage human.',
+    href: '/field-notes/the-spellcaster-economy.html',
+  },
+];
+
+function fmtDate(iso) {
+  return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+}
+
+function FieldNotesPage() {
+  return (
+    <div style={{ background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--font-sans)', minHeight: '100vh', position: 'relative', overflowX: 'hidden' }}>
+      <ScrollProgressBar />
+      <CourierGraph />
+      <Nav />
+      <main>
+        {/* Hero */}
+        <section className="cp-service-hero" style={{ position: 'relative', zIndex: 2, padding: '160px 48px 64px', maxWidth: 1200, margin: '0 auto' }}>
+          <FadeIn>
+            <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, font: '500 11px var(--font-mono)', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', marginBottom: 32, transition: 'color .15s ease' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--paper)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}>← Back to home</a>
+          </FadeIn>
+          <FadeIn delay={40}><div style={{ marginBottom: 24 }}><Eyebrow>Field Notes</Eyebrow></div></FadeIn>
+          <FadeIn delay={80}>
+            <h1 style={{ font: '600 clamp(48px, 7vw, 96px)/1.0 var(--font-sans)', letterSpacing: '-0.04em', margin: '0 0 24px', maxWidth: '14ch', textWrap: 'balance', color: 'var(--paper)' }}>
+              Field <span style={{ background: 'var(--signal)', color: 'var(--ink)', padding: '0 6px', margin: '0 -2px' }}>Notes</span>
+            </h1>
+          </FadeIn>
+          <FadeIn delay={160}>
+            <p style={{ font: '400 18px/1.6 var(--font-sans)', color: 'var(--muted)', maxWidth: '54ch', margin: 0 }}>
+              Notes from the field on AI, automation, and building practical tools — what I'm learning, testing, and shipping.
+            </p>
+          </FadeIn>
+        </section>
+
+        {/* Entries */}
+        <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '32px 48px 120px' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', borderTop: '1px solid var(--ink-3)' }}>
+            {FIELD_NOTES.map((n, i) => (
+              <FadeIn key={n.href} delay={i * 80}>
+                <a href={n.href}
+                  style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24, alignItems: 'center', padding: '32px 0', borderBottom: '1px solid var(--ink-3)', textDecoration: 'none', transition: 'opacity .15s ease' }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = 0.7}
+                  onMouseLeave={e => e.currentTarget.style.opacity = 1}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 12 }}>
+                      <span style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--signal)', border: '1px solid var(--ink-3)', padding: '4px 10px' }}>{n.tag}</span>
+                      <span style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.12em', color: 'var(--muted)' }}>{fmtDate(n.date)}</span>
+                    </div>
+                    <h2 style={{ font: '600 clamp(24px, 3vw, 34px)/1.1 var(--font-sans)', letterSpacing: '-0.025em', color: 'var(--paper)', margin: '0 0 10px', textWrap: 'balance' }}>{n.title}</h2>
+                    <p style={{ font: '400 16px/1.6 var(--font-sans)', color: 'var(--muted)', margin: 0, maxWidth: '60ch' }}>{n.excerpt}</p>
+                  </div>
+                  <span aria-hidden="true" style={{ font: '300 28px var(--font-sans)', color: 'var(--muted)' }}>→</span>
+                </a>
+              </FadeIn>
+            ))}
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
 // ── Router ────────────────────────────────────────────────────────
 function usePath() {
   const [path, setPath] = useState(window.location.pathname);
@@ -2709,6 +2808,7 @@ function Root() {
   if (path === '/services/ai-agents')           return <AgentsPage />;
   if (path === '/services/business-automation') return <AutomationPage />;
   if (path === '/services/knowledge-base')      return <KnowledgePage />;
+  if (path === '/field-notes')                  return <FieldNotesPage />;
   return <App />;
 }
 

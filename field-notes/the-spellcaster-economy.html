@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Spellcaster Economy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#122029;
+    --ink-2:#0c161c;
+    --panel:#1a2f39;
+    --panel-2:#23434f;
+    --line:#33545f;
+    --parch:#eae0cc;
+    --dim:#aeb9b8;
+    --copper:#db8a4f;
+    --verd:#6bb3a6;
+    --brass:#cda64b;
+    --maxw:980px;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 15% -5%, #1a2f39 0%, transparent 55%),
+      radial-gradient(900px 500px at 100% 8%, #19333a 0%, transparent 50%),
+      var(--ink);
+    color:var(--parch);
+    font-family:"Newsreader",Georgia,serif;
+    font-size:17px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px 90px;}
+
+  /* ---- type roles ---- */
+  .mono{font-family:"Space Mono",monospace;}
+  .display{font-family:"Space Grotesk",system-ui,sans-serif;}
+  .eyebrow{
+    font-family:"Space Mono",monospace;
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--verd);
+  }
+  h1,h2,h3{font-family:"Space Grotesk",system-ui,sans-serif;font-weight:700;line-height:1.05;}
+
+  /* ---- hero ---- */
+  header.hero{padding:84px 0 36px;position:relative;}
+  .kicker{
+    font-family:"Space Mono",monospace;font-size:12.5px;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--dim);margin-bottom:26px;
+    display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+  }
+  .kicker b{color:var(--copper);font-weight:700;}
+  .kicker .dot{width:5px;height:5px;border-radius:50%;background:var(--line);display:inline-block;}
+  h1{
+    font-size:clamp(44px,8.2vw,92px);
+    letter-spacing:-.02em;margin:0 0 22px;
+  }
+  h1 .em{color:var(--copper);font-style:normal;}
+  .lede{
+    font-size:clamp(19px,2.4vw,23px);max-width:680px;color:var(--parch);
+    line-height:1.5;
+  }
+  .lede em{color:var(--brass);font-style:italic;}
+  .rule{height:1px;background:linear-gradient(90deg,var(--copper),var(--line) 60%,transparent);margin:30px 0 0;}
+  .meta{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;margin-top:22px;
+    font-family:"Space Mono",monospace;font-size:13px;color:var(--dim);letter-spacing:.04em;}
+  .meta .who{color:var(--parch);}
+  .meta .sep{color:var(--line);}
+  .meta a{color:var(--verd);text-decoration:none;border-bottom:1px solid rgba(107,179,166,.4);}
+  .meta a:hover{color:var(--copper);border-color:var(--copper);}
+  .source-card{margin-top:30px;padding:22px 24px;border:1px solid var(--line);border-radius:9px;
+    background:var(--ink-2);font-size:14.5px;color:var(--dim);line-height:1.6;}
+  .source-card .lab{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--verd);display:block;margin-bottom:9px;}
+  .source-card a{color:var(--parch);text-decoration:none;border-bottom:1px solid var(--line);}
+  .source-card a:hover{color:var(--copper);border-color:var(--copper);}
+  .source-card em{font-style:italic;color:var(--parch);}
+
+  /* ---- section scaffold ---- */
+  section{padding:62px 0 0;}
+  .sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:8px;}
+  .sec-num{
+    font-family:"Space Mono",monospace;font-size:13px;color:var(--verd);
+    border:1px solid var(--line);border-radius:3px;padding:3px 8px;letter-spacing:.1em;
+    flex:none;
+  }
+  h2{font-size:clamp(27px,4vw,38px);letter-spacing:-.01em;margin:0;}
+  .sec-sub{color:var(--dim);max-width:620px;margin:14px 0 26px;font-size:17px;}
+
+  /* ---- the strata signature ---- */
+  .strata-block{display:grid;grid-template-columns:1fr 230px;gap:34px;align-items:center;}
+  .strata{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--ink-2);}
+  .layer{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:0 18px;border-top:1px solid rgba(255,255,255,.05);
+    font-family:"Space Grotesk",sans-serif;letter-spacing:.04em;position:relative;
+  }
+  .layer:first-child{border-top:0;}
+  .layer .lname{font-weight:600;}
+  .layer .ltag{font-family:"Space Mono",monospace;font-size:11px;color:var(--dim);letter-spacing:.06em;}
+  /* compression: lower layers shorter/darker, top layer tallest & lit */
+  .l1{height:34px;background:#0e1a20;color:#7f8e92;font-size:13px;}
+  .l2{height:36px;background:#10202a;color:#8c9ba0;font-size:13.5px;}
+  .l3{height:39px;background:#13283340;color:#9fb0b3;font-size:14px;}
+  .l4{height:43px;background:#16323e;color:#c4d0cf;font-size:15px;}
+  .l5{height:48px;background:#1c4350;color:var(--parch);font-size:16px;}
+  .l6{height:54px;background:#235263;color:var(--parch);font-size:17px;}
+  .ltop{
+    height:64px;background:linear-gradient(90deg,#b96f38,#db8a4f);
+    color:#1a120a;font-size:20px;font-weight:700;
+  }
+  .ltop .ltag{color:#2a1a0c;}
+  .strata-note{font-size:16px;color:var(--dim);line-height:1.55;}
+  .strata-note b{color:var(--copper);font-weight:600;font-family:"Space Grotesk",sans-serif;}
+  .arrow-press{
+    font-family:"Space Mono",monospace;font-size:11px;color:var(--verd);
+    letter-spacing:.2em;text-transform:uppercase;display:block;margin-bottom:12px;
+  }
+
+  /* ---- generic cards ---- */
+  .cards{display:grid;gap:18px;}
+  .c2{grid-template-columns:1fr 1fr;}
+  .c3{grid-template-columns:repeat(3,1fr);}
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:24px 24px 26px;
+  }
+  .card h3{font-size:19px;margin:0 0 10px;letter-spacing:0;}
+  .card p{margin:0;color:var(--dim);font-size:16px;line-height:1.55;}
+  .card p + p{margin-top:10px;}
+  .tag{
+    font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    display:inline-block;margin-bottom:14px;
+  }
+  .tag.warm{color:var(--copper);} .tag.cool{color:var(--verd);} .tag.gold{color:var(--brass);}
+
+  /* ---- is / is not ---- */
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .duo .card{position:relative;}
+  .is{border-top:3px solid var(--verd);}
+  .isnt{border-top:3px solid var(--copper);}
+  ul.clean{list-style:none;margin:0;padding:0;}
+  ul.clean li{padding:9px 0 9px 24px;position:relative;color:var(--parch);font-size:16px;border-top:1px solid rgba(255,255,255,.05);}
+  ul.clean li:first-child{border-top:0;}
+  ul.clean li::before{position:absolute;left:0;top:9px;font-family:"Space Mono",monospace;font-size:14px;}
+  .is li::before{content:"+";color:var(--verd);}
+  .isnt li::before{content:"\2212";color:var(--copper);}
+  ul.clean li span{color:var(--dim);font-size:14.5px;display:block;}
+
+  /* ---- leverage ladder ---- */
+  .ladder{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:end;margin-top:8px;}
+  .rung{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px 16px;text-align:left;}
+  .rung .x{font-family:"Space Grotesk",sans-serif;font-weight:700;letter-spacing:-.02em;line-height:1;}
+  .rung small{color:var(--dim);font-size:14px;display:block;margin-top:8px;line-height:1.4;}
+  .r1 .x{font-size:30px;color:#7f8e92;} .r1{padding-top:18px;}
+  .r2 .x{font-size:38px;color:var(--dim);} .r2{padding-top:26px;}
+  .r3 .x{font-size:48px;color:var(--verd);} .r3{padding-top:36px;}
+  .r4 .x{font-size:60px;color:var(--copper);} .r4{padding-top:48px;border-color:#6b4a2c;background:#1d2c2c;}
+
+  /* ---- market barbell ---- */
+  .market{display:grid;grid-template-columns:1.1fr 1fr;gap:30px;align-items:center;}
+  .bars{display:flex;align-items:flex-end;gap:5px;height:170px;border-bottom:1px solid var(--line);padding-bottom:0;}
+  .bar{background:var(--panel-2);border-radius:3px 3px 0 0;flex:1;}
+  .bar.giant{flex:1.7;background:linear-gradient(180deg,var(--copper),#9c5f30);}
+  .bar.mid{background:#1c333d;}
+  .bar.tail{flex:.7;}
+  .market-key{font-size:16px;color:var(--dim);line-height:1.55;}
+  .market-key b{font-family:"Space Grotesk",sans-serif;font-weight:600;}
+  .market-key .g{color:var(--copper);} .market-key .m{color:#7f8e92;} .market-key .t{color:var(--verd);}
+
+  /* ---- pull quote ---- */
+  .pull{
+    border-left:3px solid var(--brass);padding:6px 0 6px 26px;margin:30px 0 4px;
+    font-size:clamp(21px,3vw,28px);line-height:1.35;color:var(--parch);font-style:italic;
+    font-family:"Newsreader",serif;
+  }
+  .pull .by{
+    display:block;font-style:normal;font-size:13px;letter-spacing:.18em;text-transform:uppercase;
+    font-family:"Space Mono",monospace;color:var(--dim);margin-top:16px;
+  }
+
+  /* ---- playbook list ---- */
+  .play{display:grid;gap:0;border:1px solid var(--line);border-radius:9px;overflow:hidden;}
+  .step{display:grid;grid-template-columns:54px 1fr;gap:0;border-top:1px solid var(--line);background:var(--panel);}
+  .step:first-child{border-top:0;}
+  .step .n{
+    font-family:"Space Mono",monospace;color:var(--verd);display:flex;align-items:center;justify-content:center;
+    border-right:1px solid var(--line);font-size:14px;background:var(--ink-2);
+  }
+  .step .b{padding:18px 22px;}
+  .step .b strong{font-family:"Space Grotesk",sans-serif;font-weight:600;color:var(--parch);display:block;margin-bottom:4px;font-size:17px;}
+  .step .b span{color:var(--dim);font-size:15.5px;}
+
+  /* ---- closing ---- */
+  .close{
+    margin-top:64px;padding:46px 40px;border:1px solid var(--line);border-radius:12px;
+    background:linear-gradient(135deg,#16313b,#0f2027);text-align:center;
+  }
+  .close .eyebrow{justify-content:center;display:block;margin-bottom:18px;}
+  .close p{font-size:clamp(20px,2.7vw,26px);line-height:1.45;max-width:720px;margin:0 auto;color:var(--parch);}
+  .close p b{color:var(--copper);font-family:"Space Grotesk",sans-serif;font-weight:600;}
+
+  footer{margin-top:46px;text-align:center;color:#6f7e82;font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.12em;}
+
+  /* reveal */
+  .rv{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease;}
+  .rv.in{opacity:1;transform:none;}
+  @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none;}}
+
+  /* responsive */
+  @media (max-width:760px){
+    body{font-size:16px;}
+    .wrap{padding:0 18px 70px;}
+    .strata-block{grid-template-columns:1fr;gap:24px;}
+    .c2,.c3,.duo,.market{grid-template-columns:1fr;}
+    .ladder{grid-template-columns:repeat(2,1fr);}
+    .r1,.r2,.r3,.r4{padding-top:18px;}
+    .close{padding:34px 22px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">
+      <span><b>Field Notes</b></span><span class="dot"></span>
+      <span>No. 001</span><span class="dot"></span>
+      <span>June 2026</span>
+    </div>
+    <h1>The <span class="em">Spellcaster</span><br>Economy</h1>
+    <p class="lede">AI is a new <em>layer of leverage</em> &mdash; a powerful imitator and compressor with no wants of its own. It rewards structured thinkers and narrow excellence, and in any contest its edge cancels out, leaving the advantage human.</p>
+    <div class="rule"></div>
+    <div class="meta">
+      <span class="who">By Andrew Carrier</span><span class="sep">/</span>
+      <span>A summary of the Naval Podcast</span><span class="sep">&mdash;</span>
+      <span><a href="https://pod.wave.co/podcast/naval-277c2236-5ac0-42c8-8994-e49b919dfac4/a-motorcycle-for-the-mind" target="_blank" rel="noopener">&ldquo;A Motorcycle for the Mind&rdquo;</a></span>
+    </div>
+  </header>
+
+  <!-- 01 STACK -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <h2>Coding became a new layer of abstraction</h2>
+    </div>
+    <p class="sec-sub">Computing has always stacked layers so you never look at the one below &mdash; until it leaks. Natural-language &ldquo;vibe coding&rdquo; is a genuine new stratum on top of that tower, not a minor convenience.</p>
+
+    <div class="strata-block">
+      <div>
+        <span class="arrow-press">&darr; pressure &amp; abstraction increase downward</span>
+        <div class="strata">
+          <div class="layer ltop"><span class="lname">English</span><span class="ltag">the newest layer &mdash; you speak, it builds</span></div>
+          <div class="layer l6"><span class="lname">Libraries &amp; frameworks</span><span class="ltag">prebuilt blocks</span></div>
+          <div class="layer l5"><span class="lname">High-level languages</span><span class="ltag">python, etc.</span></div>
+          <div class="layer l4"><span class="lname">C</span><span class="ltag">structured control</span></div>
+          <div class="layer l3"><span class="lname">Assembly</span><span class="ltag">close to metal</span></div>
+          <div class="layer l2"><span class="lname">Computer chip</span><span class="ltag">logic gates</span></div>
+          <div class="layer l1"><span class="lname">Transistor</span><span class="ltag">the physical floor</span></div>
+        </div>
+      </div>
+      <p class="strata-note"><b>Vibe coding is the new product management.</b> Describe an app in plain English; the model plans, scaffolds, builds and tests it. But <b>every abstraction leaks</b> &mdash; engineers who see the layer below still catch the bugs, bad architecture, and out-of-distribution problems the AI can't.</p>
+    </div>
+  </section>
+
+  <!-- 02 MARKET -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num">02</span>
+      <h2>No demand for average</h2>
+    </div>
+    <p class="sec-sub">When anyone can build software, the best tool in a category takes nearly the whole market. The shape that emerges: giant aggregators, a vast niche tail, and a hollowed-out middle.</p>
+
+    <div class="market">
+      <div class="bars" aria-hidden="true">
+        <div class="bar giant" style="height:100%"></div>
+        <div class="bar mid" style="height:46%"></div>
+        <div class="bar mid" style="height:30%"></div>
+        <div class="bar mid" style="height:20%"></div>
+        <div class="bar tail" style="height:13%"></div>
+        <div class="bar tail" style="height:11%"></div>
+        <div class="bar tail" style="height:10%"></div>
+        <div class="bar tail" style="height:9%"></div>
+        <div class="bar tail" style="height:9%"></div>
+        <div class="bar tail" style="height:8%"></div>
+      </div>
+      <div class="market-key">
+        <p><b class="g">The head:</b> one or two aggregators get even bigger &mdash; more use cases, more polish.</p>
+        <p><b class="m">The middle:</b> 5&ndash;20-person companies serving a mid-size niche get vibe-coded away or absorbed.</p>
+        <p><b class="t">The long tail:</b> apps that never justified a year of engineering now exist for every niche.</p>
+        <p style="margin-top:16px;color:var(--parch);">First place gets a Cadillac; second place gets steak knives. So <b>become the best in the world at what you do &mdash; and keep redefining what you do until that's true.</b></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 LEVERAGE -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num">03</span>
+      <h2>Leverage is not normally distributed</h2>
+    </div>
+    <p class="sec-sub">A programmer directing a fleet of AI agents isn't merely &ldquo;10&times;.&rdquo; Output depends on what you choose to work on &mdash; so the gap between people goes super-normal. &ldquo;Programmer&rdquo; now just means a structured thinker who can clearly say what they want.</p>
+    <div class="ladder">
+      <div class="rung r1"><div class="x">1&times;</div><small>does the task by hand</small></div>
+      <div class="rung r2"><div class="x">10&times;</div><small>good with the tools</small></div>
+      <div class="rung r3"><div class="x">100&times;</div><small>picks the right thing</small></div>
+      <div class="rung r4"><div class="x">1000&times;</div><small>rewrites how an industry works</small></div>
+    </div>
+    <p class="pull">Every human is a spellcaster now. AI is the wand &mdash; and English is the spell.<span class="by">paraphrasing Naval</span></p>
+  </section>
+
+  <!-- 04 WHAT AI IS -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num">04</span>
+      <h2>What AI is &mdash; and why it isn't alive</h2>
+    </div>
+    <p class="sec-sub">A superb imitator that also genuinely learns: compressing huge datasets into few parameters forces it to find patterns rather than memorize. Shown billions of circles with limited memory, it discovers something like &pi; instead of storing each one.</p>
+    <div class="duo">
+      <div class="card is">
+        <span class="tag cool">What it can do</span>
+        <ul class="clean">
+          <li>Reproduce anything humanity has done at scale<span>if it's in the data, it's now automatable</span></li>
+          <li>Compress data into higher abstractions<span>real learning, not just lookup</span></li>
+          <li>Combine latent answers across domains<span>how it cracks some open problems</span></li>
+        </ul>
+      </div>
+      <div class="card isnt">
+        <span class="tag warm">What it lacks</span>
+        <ul class="clean">
+          <li>Agency, desires, fear of being switched off<span>its wants are borrowed from a human</span></li>
+          <li>Single-shot learning &amp; out-of-distribution leaps<span>the rare, genuine creativity</span></li>
+          <li>Embodiment<span>it lives in language &mdash; far narrower than reality</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 INTELLIGENCE TEST -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num">05</span>
+      <h2>The only test of intelligence</h2>
+    </div>
+    <p class="sec-sub">Naval's provocation: real intelligence is getting what you want out of life &mdash; not credentials. By that measure AI fails instantly, because it wants nothing. At best it's a proxy for a human's goal.</p>
+    <div class="cards c2">
+      <div class="card">
+        <span class="tag warm">Zero-sum domains &mdash; the edge cancels</span>
+        <p>Most things people want are adversarial: a partner, an edge in markets, attention. Once everyone holds the same AI, its advantage competes itself away. If both people on a date wear an earpiece, the help nets out &mdash; and the remaining <b style="color:var(--copper);font-family:'Space Grotesk',sans-serif;font-weight:600;">alpha is human</b>.</p>
+      </div>
+      <div class="card">
+        <span class="tag cool">Non-adversarial domains &mdash; pure win</span>
+        <p>Math, science, technical learning have no opponent. Here AI is close to a correct-answer machine and an unmatched tutor &mdash; one that meets you at the exact edge of what you already understand, then explains it a hundred different ways until it clicks.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 PLAYBOOK -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num">06</span>
+      <h2>The working playbook</h2>
+    </div>
+    <p class="sec-sub">Don't invest in prompt tricks &mdash; they last weeks, and the model adapts to you faster than you adapt to it. Let the AI learn to be useful to you.</p>
+    <div class="play">
+      <div class="step"><div class="n">A</div><div class="b"><strong>Always use the best model</strong><span>A model right 92% of the time beats one right 88% &mdash; being wrong in the real world is expensive. Worth waiting a minute.</span></div></div>
+      <div class="step"><div class="n">B</div><div class="b"><strong>Just talk plainly</strong><span>Skip the esoteric prompt engineering. Ramble the whole question; the system is built to meet you.</span></div></div>
+      <div class="step"><div class="n">C</div><div class="b"><strong>Run several in parallel</strong><span>Fire one query into multiple models, compare later, sometimes have them cross-examine each other.</span></div></div>
+      <div class="step"><div class="n">D</div><div class="b"><strong>Keep your own skepticism</strong><span>They hallucinate and hedge. Ask for the underlying evidence; trust the technical domains more than the political ones.</span></div></div>
+    </div>
+  </section>
+
+  <!-- CLOSE -->
+  <div class="close rv">
+    <span class="eyebrow">The cure for AI anxiety</span>
+    <p>Anxiety is a non-specific fear that something will go wrong. The fix is <b>action</b> &mdash; open the hood, learn what it's actually good and bad at. Don't fill a slot someone else defined; bring your own hard problem, and let the AI be the ally that levels you up.</p>
+  </div>
+
+  <div class="source-card rv">
+    <span class="lab">Source &amp; credit</span>
+    Ideas summarized and paraphrased from the Naval Podcast, <em>&ldquo;A Motorcycle for the Mind&rdquo;</em> with Naval Ravikant and Nivi (Babak Nivi), February&nbsp;18,&nbsp;2026. All concepts belong to the speakers; this is one reader's distillation, not a transcript. Listen to the full conversation here:
+    <a href="https://pod.wave.co/podcast/naval-277c2236-5ac0-42c8-8994-e49b919dfac4/a-motorcycle-for-the-mind" target="_blank" rel="noopener">pod.wave.co &mdash; A Motorcycle for the Mind</a>.
+  </div>
+
+  <footer>FIELD NOTES &mdash; SUMMARY &amp; DESIGN BY ANDREW CARRIER</footer>
+
+</div>
+
+<script>
+  (function(){
+    var els = document.querySelectorAll('.rv');
+    if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in');});return;}
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);} });
+    },{threshold:.12});
+    els.forEach(function(e){io.observe(e);});
+  })();
+</script>
+</body>
+</html>
