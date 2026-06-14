@@ -429,9 +429,9 @@ function DemoGalleryBanner() {
 
 function Work() {
   return (
-    <section id="work" data-screen-label="03 Work" style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
+    <section id="work" data-screen-label="03 Gallery" style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <FadeIn><SectionHead num="03" name="Work" theme="Built and shipped." count="2 / Active" /></FadeIn>
+        <FadeIn><SectionHead num="03" name="Gallery" theme="Built and shipped." count="2 / Active" /></FadeIn>
         <FadeIn>
           <div className="cp-work-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 18 }}>
             {PROJECTS.map(p => <WorkCard key={p.id} {...p} />)}
