@@ -311,7 +311,7 @@ function PainPointCard({ icon, text, service, href }) {
 
 function PainPoints() {
   return (
-    <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px', borderTop: '1px solid var(--ink-3)' }}>
+    <section className="cp-section-pad" style={{ position: 'relative', zIndex: 2, padding: '96px 48px', background: 'rgba(12,12,13,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', borderTop: '1px solid var(--ink-3)' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <FadeIn>
           <div style={{ marginBottom: 48, textAlign: 'center' }}>
