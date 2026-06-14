@@ -387,7 +387,7 @@ function Services() {
 // ── Work ──────────────────────────────────────────────────────────
 const PROJECTS = [
   { id: '001', name: 'AAVA Rescue',  role: 'Website',  desc: 'Marketing site and donation flow for an animal rescue org. Built in a day, live the same week.',  href: 'https://aavarescue.com', preview: 'https://image.thum.io/get/width/600/crop/380/https://aavarescue.com' },
-  { id: '002', name: 'Roux',         role: 'Mockup',   desc: 'Concept site for a modern Cajun fine-dining restaurant. Full hero treatment, editorial typography, dark and rich.',  href: 'https://roux.carrierpigeonai.dev', preview: 'https://image.thum.io/get/width/600/crop/380/https://roux.carrierpigeonai.dev' },
+  { id: '002', name: 'Cocodrie',      role: 'Mockup',   desc: 'Concept site for a modern Cajun fine-dining restaurant. Full hero treatment, editorial typography, dark and rich.',  href: 'https://cocodrie.carrierpigeonai.dev', preview: 'https://image.thum.io/get/width/600/crop/380/https://cocodrie.carrierpigeonai.dev' },
 ];
 
 function WorkCard({ id, name, role, desc, href, preview }) {
