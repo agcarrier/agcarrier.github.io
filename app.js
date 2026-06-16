@@ -386,9 +386,9 @@ function Services() {
 
 // ── Work ──────────────────────────────────────────────────────────
 const PROJECTS = [
-  { id: '001', name: 'AAVA Rescue',  role: 'Website',  desc: 'Marketing site and donation flow for an animal rescue org. Built in a day, live the same week.',  href: 'https://aavarescue.com', preview: 'https://image.thum.io/get/width/600/crop/380/https://aavarescue.com' },
-  { id: '002', name: 'Cocodrie',      role: 'Mockup',   desc: 'Concept site for a modern Cajun fine-dining restaurant. Full hero treatment, editorial typography, dark and rich.',  href: 'https://cocodrie.carrierpigeonai.dev', preview: 'https://image.thum.io/get/width/600/crop/380/https://cocodrie.carrierpigeonai.dev' },
-  { id: '003', name: 'Vermilion Athletics', role: 'Mockup', desc: 'Concept site for a Lafayette personal-training studio. Angular industrial design, a sunrise-run hero, and a built-in member-app mockup.', href: 'https://vermilion.carrierpigeonai.dev', preview: 'https://image.thum.io/get/width/600/crop/380/https://vermilion.carrierpigeonai.dev' },
+  { id: '001', name: 'AAVA Rescue',  role: 'Website',  desc: 'Marketing site and donation flow for an animal rescue org. Built in a day, live the same week.',  href: 'https://aavarescue.com', preview: '/aava-preview.jpg' },
+  { id: '002', name: 'Cocodrie',      role: 'Mockup',   desc: 'Concept site for a modern Cajun fine-dining restaurant. Full hero treatment, editorial typography, dark and rich.',  href: 'https://cocodrie.carrierpigeonai.dev', preview: '/cocodrie-preview.jpg' },
+  { id: '003', name: 'Vermilion Athletics', role: 'Mockup', desc: 'Concept site for a Lafayette personal-training studio. Angular industrial design, a sunrise-run hero, and a built-in member-app mockup.', href: 'https://vermilion.carrierpigeonai.dev', preview: '/vermilion-preview.jpg' },
   { id: '004', name: 'SOU ZERO', role: 'Mockup', desc: 'Concept landing page for a fictional cyberpunk action game. A cinematic full-screen video hero, oversized type, angled panels, and a sharp, motion-led dark-blue design.', href: 'https://sz.carrierpigeonai.dev', preview: '/sou-zero-preview.jpg' },
 ];
 
