@@ -1133,16 +1133,15 @@ function Nav() {
             onMouseEnter={e => e.target.style.color = 'var(--paper)'}
             onMouseLeave={e => e.target.style.color = 'var(--muted)'}
           >Field Notes</a>
+        </div>
 
-          {/* The Roux Report (external — news subdomain) */}
-          <a href="https://news.carrierpigeonai.dev" target="_blank" rel="noopener noreferrer" style={linkStyle}
+        {/* Roux Report + CTA + hamburger */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          {/* The Roux Report (external — news subdomain) — pinned to the right, by the CTA */}
+          <a className="cp-nav-links" href="https://news.carrierpigeonai.dev" target="_blank" rel="noopener noreferrer" style={linkStyle}
             onMouseEnter={e => e.target.style.color = 'var(--paper)'}
             onMouseLeave={e => e.target.style.color = 'var(--muted)'}
           >The Roux Report</a>
-        </div>
-
-        {/* CTA + hamburger */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div className="cp-nav-cta"><Btn arrow href={anchor('contact')}>Send a Pigeon</Btn></div>
           <button className="cp-hamburger" onClick={() => setOpen(o => !o)} aria-label="Toggle menu"
             style={{ display: 'none', background: 'none', border: 0, cursor: 'pointer', padding: 6, color: 'var(--paper)', lineHeight: 0 }}>
