@@ -389,7 +389,7 @@ const PROJECTS = [
   { id: '001', name: 'AAVA Rescue',  role: 'Website',  desc: 'Marketing site and donation flow for an animal rescue org. Built in a day, live the same week.',  href: 'https://aavarescue.com', preview: '/aava-preview.jpg' },
   { id: '002', name: 'Cocodrie',      role: 'Mockup',   desc: 'Concept site for a modern Cajun fine-dining restaurant. Full hero treatment, editorial typography, dark and rich.',  href: 'https://cocodrie.carrierpigeonai.dev', preview: '/cocodrie-preview.jpg' },
   { id: '003', name: 'Vermilion Athletics', role: 'Mockup', desc: 'Concept site for a Lafayette personal-training studio. Angular industrial design, a sunrise-run hero, and a built-in member-app mockup.', href: 'https://vermilion.carrierpigeonai.dev', preview: '/vermilion-preview.jpg' },
-  { id: '004', name: 'SOU ZERO', role: 'Mockup', desc: 'Concept landing page for a fictional cyberpunk action game. A cinematic full-screen video hero, oversized type, angled panels, and a sharp, motion-led dark-blue design.', href: 'https://sz.carrierpigeonai.dev', preview: '/sou-zero-preview.jpg' },
+  { id: '004', name: 'AKAI ZERO', role: 'Mockup', desc: 'Concept landing page for a fictional cyberpunk action game. A cinematic full-screen video hero, oversized type, angled panels, and a sharp, motion-led red design.', href: 'https://sz.carrierpigeonai.dev', preview: '/akai-zero-preview.jpg' },
 ];
 
 function WorkCard({ id, name, role, desc, href, preview }) {
