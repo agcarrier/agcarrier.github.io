@@ -2219,7 +2219,7 @@ function AgentsPage() {
               </div>
               <div style={{ padding: '24px', background: 'var(--ink-2)', borderLeft: '2px solid var(--signal)' }}>
                 <p style={{ font: '400 13px var(--font-sans)', color: 'var(--muted)', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 11 }}>Compare the cost</p>
-                <p style={{ font: '600 16px var(--font-sans)', color: 'var(--paper)', margin: 0 }}>A part-time receptionist in Lafayette runs <span style={{ textDecoration: 'line-through', opacity: 0.5 }}>$1,200–$1,500/mo</span>. Our agents start at <span style={{ color: 'var(--signal)' }}>$149/mo</span> — and never take a day off.</p>
+                <p style={{ font: '600 16px var(--font-sans)', color: 'var(--paper)', margin: 0 }}>A full-time receptionist in Lafayette runs <span style={{ textDecoration: 'line-through', opacity: 0.5 }}>$1,200–$1,500/mo</span>. Our agents start at <span style={{ color: 'var(--signal)' }}>$149/mo</span> — and never take a day off.</p>
               </div>
             </FadeIn>
           </div>
