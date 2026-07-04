@@ -2706,6 +2706,13 @@ function KnowledgePage() {
 // real files before the SPA rewrite, so their own styling stays intact.
 const FIELD_NOTES = [
   {
+    title: 'The Load-Bearing Noun',
+    date: '2026-07-04',
+    tag: 'No. 002 · Essay',
+    excerpt: '"Make me a clone of Minecraft" — the proper noun is doing all the work. Scott Hanselman on why AI can write the code but can’t supply the reason it should exist, and what that means for trust, review, and the collapsing junior-engineer pipeline.',
+    href: '/field-notes/the-load-bearing-noun.html',
+  },
+  {
     title: 'The Spellcaster Economy',
     date: '2026-06-01',
     tag: 'No. 001 · Infographic',
