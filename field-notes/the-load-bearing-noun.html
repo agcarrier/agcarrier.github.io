@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Load-Bearing Noun</title>
+<meta name="description" content="Scott Hanselman on AI coding agents: the model can write the code, but it can't want the thing. A field note on trust-but-verify, the collapsing junior pipeline, and why 'a clone of Minecraft' is a spec with no spine.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0c0c0d;
+    --ink-2:#1a1a1c;
+    --ink-3:#2a2a2d;
+    --line:#2a2a2d;
+    --panel:#141416;
+    --panel-2:#1a1a1c;
+    --paper:#f1f1ef;
+    --parch:#f1f1ef;
+    --paper-3:#cdcbc3;
+    --dim:#7a7a76;
+    --muted:#7a7a76;
+    --signal:#9bff5b;
+    --copper:#9bff5b;
+    --verd:#9bff5b;
+    --brass:#9bff5b;
+    --font-sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --font-mono:"JetBrains Mono",ui-monospace,"SF Mono",monospace;
+    --maxw:980px;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1100px 560px at 50% -10%, #141416 0%, transparent 60%),
+      var(--ink);
+    color:var(--paper);
+    font-family:var(--font-sans);
+    font-size:17px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px 90px;}
+
+  /* ---- type roles ---- */
+  .mono{font-family:var(--font-mono);}
+  .display{font-family:var(--font-sans);}
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--signal);
+  }
+  h1,h2,h3{font-family:var(--font-sans);font-weight:600;line-height:1.05;letter-spacing:-.02em;}
+
+  /* ---- hero ---- */
+  header.hero{padding:96px 0 36px;position:relative;}
+  .kicker{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--dim);margin-bottom:26px;
+    display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+  }
+  .kicker b{color:var(--signal);font-weight:600;}
+  .kicker .dot{width:4px;height:4px;background:var(--ink-3);display:inline-block;}
+  h1{
+    font-size:clamp(40px,7.6vw,84px);
+    letter-spacing:-.04em;margin:0 0 22px;
+  }
+  h1 .em{color:var(--ink);background:var(--signal);padding:0 8px;margin:0 -2px;font-style:normal;}
+  .lede{
+    font-size:clamp(19px,2.4vw,23px);max-width:680px;color:var(--paper);
+    line-height:1.5;
+  }
+  .lede em{color:var(--signal);font-style:italic;}
+  .rule{height:1px;background:var(--ink-3);margin:30px 0 0;}
+  .meta{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;margin-top:22px;
+    font-family:var(--font-mono);font-size:12px;color:var(--dim);letter-spacing:.04em;}
+  .meta .who{color:var(--paper);}
+  .meta .sep{color:var(--ink-3);}
+  .meta a{color:var(--signal);text-decoration:none;border-bottom:1px solid rgba(155,255,91,.4);}
+  .meta a:hover{color:var(--paper);border-color:var(--paper);}
+  .source-card{margin-top:30px;padding:22px 24px;border:1px solid var(--ink-3);
+    background:var(--ink-2);font-size:14.5px;color:var(--dim);line-height:1.6;}
+  .source-card .lab{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--signal);display:block;margin-bottom:9px;}
+  .source-card a{color:var(--paper);text-decoration:none;border-bottom:1px solid var(--ink-3);}
+  .source-card a:hover{color:var(--signal);border-color:var(--signal);}
+  .source-card em{font-style:italic;color:var(--paper);}
+
+  /* ---- section scaffold ---- */
+  section{padding:62px 0 0;}
+  .sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:8px;}
+  .sec-num{
+    font-family:var(--font-mono);font-size:12px;color:var(--signal);
+    border:1px solid var(--ink-3);padding:3px 8px;letter-spacing:.1em;
+    flex:none;
+  }
+  h2{font-size:clamp(27px,4vw,38px);letter-spacing:-.025em;margin:0;}
+  .sec-sub{color:var(--dim);max-width:660px;margin:14px 0 26px;font-size:17px;}
+  .prose{max-width:700px;font-size:17px;line-height:1.7;color:var(--paper-3);}
+  .prose p{margin:0 0 20px;}
+  .prose p:last-child{margin-bottom:0;}
+  .prose b{color:var(--paper);font-weight:600;}
+  .prose a{color:var(--signal);text-decoration:none;border-bottom:1px solid rgba(155,255,91,.4);}
+
+  /* ---- pull quote ---- */
+  .pull{
+    border-left:3px solid var(--signal);padding:6px 0 6px 26px;margin:30px 0 4px;
+    font-size:clamp(21px,3vw,28px);line-height:1.35;color:var(--paper);font-style:italic;
+    font-family:var(--font-sans);
+  }
+  .pull .by{
+    display:block;font-style:normal;font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    font-family:var(--font-mono);color:var(--dim);margin-top:16px;
+  }
+
+  /* ---- ingress ledger (trust chain) ---- */
+  .ledger{border:1px solid var(--ink-3);overflow:hidden;background:var(--ink-2);margin-top:8px;}
+  .row{display:grid;grid-template-columns:170px 1fr;gap:0;border-top:1px solid var(--ink-3);}
+  .row:first-child{border-top:0;}
+  .row .who{padding:18px 20px;font-family:var(--font-mono);font-size:13px;color:var(--signal);
+    border-right:1px solid var(--ink-3);display:flex;align-items:center;letter-spacing:.02em;}
+  .row .what{padding:18px 22px;font-size:15.5px;color:var(--dim);line-height:1.55;}
+  .row .what b{color:var(--paper);font-family:var(--font-sans);font-weight:600;}
+  .row.same{background:#14160f;}
+  .row.same .who{color:var(--signal);}
+
+  /* ---- is / is not (spec collapse) ---- */
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .card{
+    background:var(--ink-2);border:1px solid var(--ink-3);padding:24px 24px 26px;
+  }
+  .card h3{font-size:19px;margin:0 0 10px;letter-spacing:-.01em;}
+  .card p{margin:0;color:var(--dim);font-size:16px;line-height:1.55;}
+  .card p + p{margin-top:10px;}
+  .tag{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    display:inline-block;margin-bottom:14px;
+  }
+  .tag.warm{color:var(--dim);} .tag.cool{color:var(--signal);}
+  .is{border-top:3px solid var(--signal);}
+  .isnt{border-top:3px solid var(--dim);}
+  ul.clean{list-style:none;margin:0;padding:0;}
+  ul.clean li{padding:9px 0 9px 24px;position:relative;color:var(--paper);font-size:16px;border-top:1px solid rgba(255,255,255,.05);}
+  ul.clean li:first-child{border-top:0;}
+  ul.clean li::before{position:absolute;left:0;top:9px;font-family:var(--font-mono);font-size:14px;}
+  .is li::before{content:"+";color:var(--signal);}
+  .isnt li::before{content:"\2212";color:var(--dim);}
+  ul.clean li span{color:var(--dim);font-size:14.5px;display:block;}
+
+  /* ---- word-swap demo ---- */
+  .swap{border:1px solid var(--ink-3);background:var(--ink-2);padding:26px 28px;margin-top:8px;}
+  .swap .line{font-family:var(--font-mono);font-size:15.5px;color:var(--dim);line-height:1.9;}
+  .swap .line b{color:var(--paper);font-weight:600;}
+  .swap .strike{color:var(--dim);text-decoration:line-through;text-decoration-color:var(--signal);}
+  .swap .result{margin-top:16px;padding-top:16px;border-top:1px dashed var(--ink-3);
+    font-family:var(--font-sans);font-size:16px;color:var(--paper);}
+  .swap .result b{color:var(--signal);}
+
+  /* ---- closing ---- */
+  .close{
+    margin-top:64px;padding:46px 40px;border:1px solid var(--ink-3);
+    background:var(--ink-2);text-align:center;
+  }
+  .close .eyebrow{justify-content:center;display:block;margin-bottom:18px;}
+  .close p{font-size:clamp(20px,2.7vw,26px);line-height:1.45;max-width:720px;margin:0 auto;color:var(--paper);}
+  .close p b{color:var(--signal);font-family:var(--font-sans);font-weight:600;}
+
+  footer{margin-top:46px;text-align:center;color:var(--dim);font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;}
+
+  /* reveal */
+  .rv{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease;}
+  .rv.in{opacity:1;transform:none;}
+  @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none;}}
+
+  /* responsive */
+  @media (max-width:760px){
+    body{font-size:16px;}
+    .wrap{padding:0 18px 70px;}
+    .duo{grid-template-columns:1fr;}
+    .row{grid-template-columns:1fr;}
+    .row .who{border-right:0;border-bottom:1px solid var(--ink-3);}
+    .close{padding:34px 22px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">
+      <span><b>Field Notes</b></span><span class="dot"></span>
+      <span>No. 002</span><span class="dot"></span>
+      <span>July 2026</span>
+    </div>
+    <h1>The <span class="em">Load-Bearing</span><br>Noun</h1>
+    <p class="lede">A kid told Scott Hanselman he &ldquo;one-shotted Minecraft.&rdquo; The prompt was <em>make me a clone of Minecraft</em> &mdash; and the word doing all the work in that sentence isn't a verb. It's the proper noun. Take it out and the spec collapses, and so does most of the panic about AI writing our code.</p>
+    <div class="rule"></div>
+    <div class="meta">
+      <span class="who">By Andrew Carrier</span><span class="sep">/</span>
+      <span>A summary of an interview with</span>
+      <span><b style="color:var(--paper);">Scott Hanselman</b></span>
+      <span class="sep">&mdash;</span>
+      <span>VP &amp; Member of Technical Staff, Microsoft &amp; GitHub</span>
+    </div>
+  </header>
+
+  <!-- 01 FOURTH DECADE OF PANIC -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <h2>The fourth decade of panic</h2>
+    </div>
+    <div class="prose">
+      <p>Hanselman has been coding since 1984. In 1990 someone told him he wasn't a real programmer because he wasn't writing assembler. Then syntax highlighting showed up and the elders said color would rot your brain. Then autocomplete. Then Stack Overflow, and the whole profession was supposedly over &mdash; just copy-paste now. <b>&ldquo;So now we're in the fourth decade of panic,&rdquo;</b> he says. &ldquo;The craft hasn't changed. Just because power tools got made doesn't mean bespoke, really cool furniture can't be created by craftspeople.&rdquo;</p>
+      <p>It's a good line to sit with before the rest of this, because the temptation with any new tool &mdash; color, autocomplete, Copilot &mdash; is to ask whether it replaces the craftsperson. It never has. What it's actually done, every time, is move the line of what counts as the craft. And the place that line keeps landing is the same place: <b>can you say, clearly, what you actually want?</b></p>
+    </div>
+  </section>
+
+  <!-- 02 TRUST CHAIN -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num">02</span>
+      <h2>AI is just a very fast anonymous contributor</h2>
+    </div>
+    <p class="sec-sub">Hanselman puts roughly 70% of his current code through AI assistance. His model for trusting it isn't new &mdash; it's the same one open source forced on everyone twenty years ago.</p>
+    <div class="ledger">
+      <div class="row">
+        <div class="who">Random PR</div>
+        <div class="what">An anonymous contributor sends code. You don't trust them by default &mdash; you trust your <b>ingress point</b>: review, CI, tests.</div>
+      </div>
+      <div class="row">
+        <div class="who">Your own hands</div>
+        <div class="what">Written by you doesn't mean correct. <b>&ldquo;I barely trust myself,&rdquo;</b> Hanselman says &mdash; the same pipeline catches your mistakes too.</div>
+      </div>
+      <div class="row same">
+        <div class="who">AI agent</div>
+        <div class="what">Same ingress, same suspicion. <b>&ldquo;If I treat the AI like a random anonymous person giving me code, I'm not going to trust the rando on the internet, so I'm not going to trust the AI.&rdquo;</b> The code doesn't get a pass because a model wrote it &mdash; it goes through dependabot, agentic review, adversarial checks across three or more models, the same SDLC as everything else.</div>
+      </div>
+    </div>
+    <p class="pull">Was it their fault, or your fault for clicking squash merge? <span class="by">on merging an AI or anonymous PR that breaks something</span></p>
+    <div class="prose" style="margin-top:8px;">
+      <p>That's the part that doesn't get automated: <b>&ldquo;AI does not generate architecture &mdash; it will create god objects, large and messy.&rdquo;</b> The slider from slop cannon to AI-augmented engineering isn't about how much AI you use. It's about whether a human still owns the shape of the thing before any of it starts generating code. Human agency, human in the loop, human responsibility &mdash; his words &mdash; matter <em style="color:var(--signal);">more</em> now, not less, because the volume of code arriving at your door went up and the excuse for not reviewing it went down.</p>
+    </div>
+  </section>
+
+  <!-- 03 THE LOAD-BEARING NOUN -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num">03</span>
+      <h2>&ldquo;Make me a clone of Minecraft&rdquo;</h2>
+    </div>
+    <p class="sec-sub">Same idea, aimed at a portfolio instead of a codebase. Hanselman sees a lot of junior engineers show up with a tic-tac-toe clone or a one-shot Minecraft demo. He asks one question that ends the conversation every time.</p>
+    <div class="swap">
+      <div class="line"><b>The prompt:</b> &ldquo;make me a <span class="strike">clone of Minecraft</span>&rdquo;</div>
+      <div class="line"><b>Hanselman's question:</b> &ldquo;Could you make the same thing without using the word Minecraft?&rdquo;</div>
+      <div class="result">He couldn't. <b>Remove the load-bearing proper noun and the spec collapses</b> &mdash; there was never a design in that sentence, just a name the model already had a thousand implementations of.</div>
+    </div>
+    <div class="prose" style="margin-top:26px;">
+      <p>This is the same failure as skipping code review on an AI PR, just earlier in the pipeline. In both cases a person is letting the model's fluency stand in for their own judgment. The code compiles either way. The Minecraft clone runs either way. What's missing isn't output &mdash; it's a decision only a human was in a position to make: <em>what is this for, and why does it need to exist?</em></p>
+    </div>
+  </section>
+
+  <!-- 04 WHAT GETS ATTENTION -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num">04</span>
+      <h2>What actually gets attention</h2>
+    </div>
+    <div class="duo">
+      <div class="card isnt">
+        <span class="tag warm">Doesn't land</span>
+        <ul class="clean">
+          <li>A clone of something famous<span>the proper noun did the thinking</span></li>
+          <li>Tic-tac-toe, todo app, portfolio-site-about-a-portfolio-site<span>zero context, infinite training data</span></li>
+          <li>&ldquo;I one-shotted it&rdquo;<span>as if that's the achievement, not the giveaway</span></li>
+        </ul>
+      </div>
+      <div class="card is">
+        <span class="tag cool">Lands</span>
+        <ul class="clean">
+          <li>A site for your church, your kid's little league team<span>a real constraint, a real audience of one</span></li>
+          <li>A Pokémon collection tracker, whatever you actually care about<span>specificity the model couldn't have supplied</span></li>
+          <li>High agency<span>&ldquo;someone excited to solve problems for humans &mdash; that's what gets our attention&rdquo;</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 THE PIPELINE -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num">05</span>
+      <h2>Where do the seniors come from?</h2>
+    </div>
+    <div class="prose">
+      <p>Hanselman wrote an ACM paper making an argument that sounds almost like an accounting problem: <b>&ldquo;the software engineering profession will collapse if we don't keep hiring early-in-career developers &mdash; because where are the seniors coming from?&rdquo;</b> If AI makes it easy to skip junior hires and go straight to senior ones, the only source of seniors is your competitor's junior program. Whoever trains people better keeps them, and everyone else runs dry a decade out.</p>
+      <p>The fix he's building at Microsoft borrows a word from nursing. Calling someone an intern or apprentice quietly files them as &ldquo;less than.&rdquo; Nursing renamed the senior instead: a <b>preceptor</b> &mdash; a safe person you go to with questions without the power dynamic of feeling stupid. The junior isn't lesser, they're just missing context, and the org's job is to hand context over on purpose instead of hoping it leaks through osmosis.</p>
+      <p>It connects back to the same throughline. If juniors lean on AI to skip the parts where they'd normally struggle and learn, they arrive at seniority having practiced fluency with a tool instead of judgment about a system &mdash; the same gap as the Minecraft clone, just compounding over a career instead of a weekend. Which is why his advice to someone with twelve months to land a job is almost defiantly unglamorous: <b>&ldquo;the basics&rdquo;</b> &mdash; HTTP, DNS, distributed systems, deadlocks. Knowing how to drive stick, in case the automatic transmission breaks down on the highway and somebody has to change the tire.</p>
+    </div>
+  </section>
+
+  <!-- CLOSE -->
+  <div class="close rv">
+    <span class="eyebrow">The thread</span>
+    <p>The model can write the function, ship the PR, clone the game. What it can't do is <b>want</b> the thing enough to know why it should exist &mdash; that's still the load-bearing part, and it's still entirely on us.</p>
+  </div>
+
+  <div class="source-card rv">
+    <span class="lab">Source &amp; credit</span>
+    Ideas summarized and paraphrased from an interview with Scott Hanselman, VP and Member of Technical Staff at Microsoft and GitHub, on AI coding agents and what it means to become a software engineer in 2026. All ideas and quotes belong to Hanselman; this is one reader's distillation of the conversation, not a full transcript.
+  </div>
+
+  <footer>FIELD NOTES &mdash; SUMMARY &amp; DESIGN BY ANDREW CARRIER</footer>
+
+</div>
+
+<script>
+  (function(){
+    var els = document.querySelectorAll('.rv');
+    if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in');});return;}
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);} });
+    },{threshold:.12});
+    els.forEach(function(e){io.observe(e);});
+  })();
+</script>
+</body>
+</html>
