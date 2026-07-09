@@ -2703,6 +2703,13 @@ function KnowledgePage() {
 // real files before the SPA rewrite, so their own styling stays intact.
 const FIELD_NOTES = [
   {
+    title: 'The Adjective Problem',
+    date: '2026-07-09',
+    tag: 'No. 003 · Essay',
+    excerpt: 'A client says "make it clean." The next wants a "wow factor." Both are useless as briefs until you can name what they point at. Web designer Chris argues there are only six web design styles — each nicknamed after a famous person — and once you can name them, a vague adjective becomes something you can actually build.',
+    href: '/field-notes/the-adjective-problem.html',
+  },
+  {
     title: 'The Load-Bearing Noun',
     date: '2026-07-04',
     tag: 'No. 002 · Essay',

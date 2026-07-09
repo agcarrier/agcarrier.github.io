@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Adjective Problem</title>
+<meta name="description" content="A client says 'make it clean.' Another wants a 'wow factor.' Web designer Chris argues there are only six web design styles — each named after a famous person — and once you can name them, a vague adjective turns into a buildable brief.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0c0c0d;
+    --ink-2:#1a1a1c;
+    --ink-3:#2a2a2d;
+    --line:#2a2a2d;
+    --panel:#141416;
+    --panel-2:#1a1a1c;
+    --paper:#f1f1ef;
+    --parch:#f1f1ef;
+    --paper-3:#cdcbc3;
+    --dim:#7a7a76;
+    --muted:#7a7a76;
+    --signal:#9bff5b;
+    --copper:#9bff5b;
+    --verd:#9bff5b;
+    --brass:#9bff5b;
+    --font-sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --font-mono:"JetBrains Mono",ui-monospace,"SF Mono",monospace;
+    --maxw:980px;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1100px 560px at 50% -10%, #141416 0%, transparent 60%),
+      var(--ink);
+    color:var(--paper);
+    font-family:var(--font-sans);
+    font-size:17px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px 90px;}
+
+  /* ---- type roles ---- */
+  .mono{font-family:var(--font-mono);}
+  .display{font-family:var(--font-sans);}
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--signal);
+  }
+  h1,h2,h3{font-family:var(--font-sans);font-weight:600;line-height:1.05;letter-spacing:-.02em;}
+
+  /* ---- hero ---- */
+  header.hero{padding:96px 0 36px;position:relative;}
+  .kicker{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--dim);margin-bottom:26px;
+    display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+  }
+  .kicker b{color:var(--signal);font-weight:600;}
+  .kicker .dot{width:4px;height:4px;background:var(--ink-3);display:inline-block;}
+  h1{
+    font-size:clamp(40px,7.6vw,84px);
+    letter-spacing:-.04em;margin:0 0 22px;
+  }
+  h1 .em{color:var(--ink);background:var(--signal);padding:0 8px;margin:0 -2px;font-style:normal;}
+  .lede{
+    font-size:clamp(19px,2.4vw,23px);max-width:680px;color:var(--paper);
+    line-height:1.5;
+  }
+  .lede em{color:var(--signal);font-style:italic;}
+  .rule{height:1px;background:var(--ink-3);margin:30px 0 0;}
+  .meta{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;margin-top:22px;
+    font-family:var(--font-mono);font-size:12px;color:var(--dim);letter-spacing:.04em;}
+  .meta .who{color:var(--paper);}
+  .meta .sep{color:var(--ink-3);}
+  .meta a{color:var(--signal);text-decoration:none;border-bottom:1px solid rgba(155,255,91,.4);}
+  .meta a:hover{color:var(--paper);border-color:var(--paper);}
+  .source-card{margin-top:30px;padding:22px 24px;border:1px solid var(--ink-3);
+    background:var(--ink-2);font-size:14.5px;color:var(--dim);line-height:1.6;}
+  .source-card .lab{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--signal);display:block;margin-bottom:9px;}
+  .source-card a{color:var(--paper);text-decoration:none;border-bottom:1px solid var(--ink-3);}
+  .source-card a:hover{color:var(--signal);border-color:var(--signal);}
+  .source-card em{font-style:italic;color:var(--paper);}
+
+  /* ---- section scaffold ---- */
+  section{padding:62px 0 0;}
+  .sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:8px;}
+  .sec-num{
+    font-family:var(--font-mono);font-size:12px;color:var(--signal);
+    border:1px solid var(--ink-3);padding:3px 8px;letter-spacing:.1em;
+    flex:none;
+  }
+  .sec-num.warm{color:var(--dim);}
+  h2{font-size:clamp(27px,4vw,38px);letter-spacing:-.025em;margin:0;}
+  .who-tag{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--dim);margin:10px 0 0;}
+  .sec-sub{color:var(--dim);max-width:660px;margin:14px 0 26px;font-size:17px;}
+  .prose{max-width:700px;font-size:17px;line-height:1.7;color:var(--paper-3);}
+  .prose p{margin:0 0 20px;}
+  .prose p:last-child{margin-bottom:0;}
+  .prose b{color:var(--paper);font-weight:600;}
+  .prose a{color:var(--signal);text-decoration:none;border-bottom:1px solid rgba(155,255,91,.4);}
+
+  /* ---- pull quote ---- */
+  .pull{
+    border-left:3px solid var(--signal);padding:6px 0 6px 26px;margin:30px 0 4px;
+    font-size:clamp(21px,3vw,28px);line-height:1.35;color:var(--paper);font-style:italic;
+    font-family:var(--font-sans);
+  }
+  .pull .by{
+    display:block;font-style:normal;font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    font-family:var(--font-mono);color:var(--dim);margin-top:16px;
+  }
+
+  /* ---- the map (restraint <-> spectacle) ---- */
+  .map{margin-top:8px;}
+  .axis-labels{display:flex;justify-content:space-between;font-family:var(--font-mono);
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--signal);margin-bottom:16px;}
+  .axis-labels .arw{color:var(--dim);}
+  .track{position:relative;border-top:1px solid var(--ink-3);display:grid;grid-template-columns:repeat(4,1fr);
+    background:var(--ink-2);}
+  .node{padding:24px 12px 20px;text-align:center;position:relative;border-left:1px solid rgba(255,255,255,.04);}
+  .node:first-child{border-left:0;}
+  .node::before{content:"";position:absolute;top:-5px;left:50%;transform:translateX(-50%);
+    width:9px;height:9px;background:var(--signal);border-radius:50%;}
+  .node b{display:block;font-family:var(--font-sans);font-weight:600;font-size:15px;color:var(--paper);letter-spacing:-.01em;}
+  .node small{display:block;color:var(--dim);font-size:13px;margin-top:6px;line-height:1.4;}
+  .ortho{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px;}
+  .opin{border:1px solid var(--ink-3);border-left:3px solid var(--dim);background:var(--ink-2);padding:16px 20px;}
+  .opin span{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--dim);display:block;margin-bottom:9px;}
+  .opin b{font-family:var(--font-sans);font-weight:600;color:var(--paper);font-size:16px;}
+  .opin p{margin:6px 0 0;color:var(--dim);font-size:14.5px;line-height:1.5;}
+
+  /* ---- tell / build strip ---- */
+  .tell{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--ink-3);
+    background:var(--ink-2);margin-top:24px;}
+  .tell .cell{padding:18px 22px;}
+  .tell .cell + .cell{border-left:1px solid var(--ink-3);}
+  .tell .lab{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--signal);display:block;margin-bottom:9px;}
+  .tell .cell p{margin:0;color:var(--paper-3);font-size:15.5px;line-height:1.55;}
+  .tell .cell p b{color:var(--paper);font-weight:600;}
+  .tell .cell em{font-style:italic;color:var(--paper);}
+
+  /* ---- example chip ---- */
+  .exmpl{display:inline-flex;align-items:baseline;gap:8px;margin-top:20px;
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.05em;color:var(--dim);}
+  .exmpl b{color:var(--paper);font-weight:500;font-family:var(--font-sans);letter-spacing:0;}
+
+  /* ---- closing ---- */
+  .close{
+    margin-top:64px;padding:46px 40px;border:1px solid var(--ink-3);
+    background:var(--ink-2);text-align:center;
+  }
+  .close .eyebrow{justify-content:center;display:block;margin-bottom:18px;}
+  .close p{font-size:clamp(20px,2.7vw,26px);line-height:1.45;max-width:720px;margin:0 auto;color:var(--paper);}
+  .close p b{color:var(--signal);font-family:var(--font-sans);font-weight:600;}
+
+  footer{margin-top:46px;text-align:center;color:var(--dim);font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;}
+
+  /* reveal */
+  .rv{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease;}
+  .rv.in{opacity:1;transform:none;}
+  @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none;}}
+
+  /* responsive */
+  @media (max-width:760px){
+    body{font-size:16px;}
+    .wrap{padding:0 18px 70px;}
+    .tell{grid-template-columns:1fr;}
+    .tell .cell + .cell{border-left:0;border-top:1px solid var(--ink-3);}
+    .ortho{grid-template-columns:1fr;}
+    .track{grid-template-columns:1fr;border-top:0;}
+    .node{text-align:left;padding:16px 0 16px 22px;border-left:0;border-top:1px solid var(--ink-3);}
+    .node:first-child{border-top:0;}
+    .node::before{top:22px;left:0;transform:none;}
+    .close{padding:34px 22px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">
+      <span><b>Field Notes</b></span><span class="dot"></span>
+      <span>No. 003</span><span class="dot"></span>
+      <span>July 2026</span>
+    </div>
+    <h1>The <span class="em">Adjective</span><br>Problem</h1>
+    <p class="lede">A client says &ldquo;make it clean.&rdquo; The next one wants a &ldquo;wow factor.&rdquo; Both are useless as briefs &mdash; until you can name the thing they're pointing at. A web designer named Chris argues there are only <em>six</em> web design styles out there, each nicknamed after a famous person, and once you can name them, a vague adjective turns into something you can actually build.</p>
+    <div class="rule"></div>
+    <div class="meta">
+      <span class="who">By Andrew Carrier</span><span class="sep">/</span>
+      <span>A distillation of</span>
+      <span><a href="https://www.youtube.com/watch?v=N1Cl5cYmegE" target="_blank" rel="noopener">&ldquo;Six Web Design Styles&rdquo;</a></span>
+      <span class="sep">&mdash;</span>
+      <span>by Chris, web designer</span>
+    </div>
+  </header>
+
+  <!-- 01 THE FRAME -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <h2>Taste is a short vocabulary</h2>
+    </div>
+    <div class="prose">
+      <p>You've looked at a genuinely great website and thought <em>I could never make that &mdash; I think I might actually suck.</em> Chris has too, and he's been running a web design business for over a decade. His way out of that feeling is almost deflating in how simple it is: great design isn't a mystery you either have taste for or don't. It's a <b>small vocabulary of recognizable patterns</b>. He counts six. Once you start seeing them, recreating them stops feeling like magic and starts feeling like picking the right one off a shelf.</p>
+      <p>To make them stick, he pinned each style to a famous person &mdash; a mnemonic, and honestly the whole trick of the piece. Naming a pattern does two jobs at once. It lets you <b>reproduce</b> it, because now you have a reference to build toward instead of a vibe to chase. And it lets you <b>diagnose</b>, which matters more: when a client hands you a mushy adjective, you can translate it into one of six names and know exactly what they mean before you've drawn a single box.</p>
+      <p>The six aren't a flat glossary, though. They're a map. Run a line from <b>restraint</b> on one end to <b>spectacle</b> on the other and four of them fall neatly along it. The other two sit off to the side on their own axes &mdash; one is about <b>warmth</b>, one is about <b>taste</b> &mdash; and pretending they're just &ldquo;more&rdquo; or &ldquo;less&rdquo; of something misses the point of them entirely.</p>
+    </div>
+
+    <div class="map" style="margin-top:34px;">
+      <div class="axis-labels">
+        <span>Restraint</span>
+        <span class="arw">&larr; the main axis &rarr;</span>
+        <span>Spectacle</span>
+      </div>
+      <div class="track">
+        <div class="node"><b>The Jensen Huang</b><small>most controlled</small></div>
+        <div class="node"><b>The Steve Jobs</b><small>clean, systematic</small></div>
+        <div class="node"><b>The Virgil Abloh</b><small>one loud note</small></div>
+        <div class="node"><b>The Christopher Nolan</b><small>maximal wow</small></div>
+      </div>
+      <div class="ortho">
+        <div class="opin"><span>Off-axis &middot; Warmth</span><b>The Drew Barrymore</b><p>Not louder or quieter &mdash; friendlier. Approachable, candid, down to earth.</p></div>
+        <div class="opin"><span>Off-axis &middot; Taste</span><b>The Zendaya</b><p>Value proven by taste, not volume. Editorial, effortless, two steps ahead.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 STEVE JOBS -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num">02</span>
+      <h2>The Steve Jobs</h2>
+    </div>
+    <p class="who-tag">Restraint &mdash; clean, minimal, systematic</p>
+    <div class="prose" style="margin-top:22px;">
+      <p>You already know this one even if you've never named it, because Apple perfected it. Skinny sans-serifs. Spacing and type that follow an obvious system, so everything feels organized without feeling stiff. The kind of site where, scrolling it, you sort of wish your whole life looked this composed.</p>
+      <p>The mechanism is subtraction. It's why spaceship doors in movies read as advanced &mdash; no knobs, no handles, you just think <em>open</em> and it opens. Removing stuff is what makes something feel like the future. Which means the whole style rests on one nerve you can't lose: you cannot be afraid of white space. A section with little going on isn't an underdesigned section. As the French writer Antoine de Saint-Exup&eacute;ry put it, and Jobs may as well have &mdash;</p>
+    </div>
+    <p class="pull">Perfection is achieved not when there is nothing more to add, but when there is nothing left to take away.<span class="by">the whole style, in one line</span></p>
+    <div class="tell">
+      <div class="cell"><span class="lab">The tell</span><p>The client says <em>&ldquo;I just want something clean.&rdquo;</em> This is exactly, precisely what they mean.</p></div>
+      <div class="cell"><span class="lab">How you build it</span><p>Pick one type system and hold the line. Let the whitespace breathe. When in doubt, take something out.</p></div>
+    </div>
+    <div class="exmpl"><span>REFERENCE</span> <b>Apple</b></div>
+  </section>
+
+  <!-- 03 JENSEN HUANG -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num">03</span>
+      <h2>The Jensen Huang</h2>
+    </div>
+    <p class="who-tag">Restraint, dialed up &mdash; precise, calculated, buttoned-up</p>
+    <div class="prose" style="margin-top:22px;">
+      <p>Some projects want the Steve Jobs made even more exact. Jensen is Nvidia's CEO: clean-cut, put together in every interview, same leather jacket every time because he doesn't have spare cycles to spend on outfit variations &mdash; he's busy trying to change the world with tech. That's the whole message of this style. It's almost always a SaaS company, usually AI, and its real audience is investors. So it communicates no-fuss stability: <em>we mean business.</em></p>
+      <p>In practice that reads as tight control. No section runs full width, edge to edge; everything sits inside a disciplined grid. Function over form. But &mdash; and this is the part people miss &mdash; it isn't styleless. Jensen still wears the leather jacket. He could show up in a badly fitted blazer like his counterparts; he wants a little coolness, it's just not the point. So keep the grid clean and pull attention back to the product, but don't sand off every trace of personality.</p>
+    </div>
+    <div class="tell">
+      <div class="cell"><span class="lab">The tell</span><p>The client cares more about looking <b>put together</b> than standing out. Building the future of tech &gt; being the best-looking brand.</p></div>
+      <div class="cell"><span class="lab">How you build it</span><p>Contain everything in a grid. Be careful with loud choices. You're not trying to be cool &mdash; you're trying to be the next big breakthrough.</p></div>
+    </div>
+    <div class="exmpl"><span>REFERENCE</span> <b>Melrose AI</b></div>
+  </section>
+
+  <!-- 04 DREW BARRYMORE -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num warm">04</span>
+      <h2>The Drew Barrymore</h2>
+    </div>
+    <p class="who-tag">Off-axis: warmth &mdash; inviting, candid, down to earth</p>
+    <div class="prose" style="margin-top:22px;">
+      <p>If Jensen is on-mission and calculated, this one is the opposite temperature. Drew is everyone's girl next door, the friend you call to vent to who won't be judgy. Sites in this style have a candid feel &mdash; like you walked in on a private moment and instead of shooing you off they said <em>no, come in, glad you're here.</em> Nothing takes itself too seriously. Nothing's super bold. The animations have a little bounce.</p>
+      <p>Look at Fruitful: the explainer video is filmed from somebody's apartment, a guy in a hat and a T-shirt &mdash; for an <em>automated money-management system.</em> Click anywhere and little leaves animate out. That's the register. The one thing this style genuinely needs is photography that splits the difference between highly produced and highly authentic, and clients rarely hand you that. So you subsidize it: round the corners of cards and images, lean on a warm, natural palette, and the imagery you do have carries further.</p>
+    </div>
+    <div class="tell">
+      <div class="cell"><span class="lab">The tell</span><p>The client wants to feel <b>approachable</b> &mdash; a real person you'd actually want to talk to, not a faceless brand.</p></div>
+      <div class="cell"><span class="lab">How you build it</span><p>Rounded corners, warm tones, a playful bounce in the motion. Photography that feels caught, not staged.</p></div>
+    </div>
+    <div class="exmpl"><span>REFERENCE</span> <b>Fruitful</b></div>
+  </section>
+
+  <!-- 05 ZENDAYA -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num warm">05</span>
+      <h2>The Zendaya</h2>
+    </div>
+    <p class="who-tag">Off-axis: taste &mdash; cool, editorial, effortless</p>
+    <div class="prose" style="margin-top:22px;">
+      <p>If Drew is the friend who feels like a warm blanket, Zendaya is the cool one who makes sure your outfit isn't something your grandpa would wear. Two steps ahead of trends, sometimes setting them, comfortable with attention without visibly trying &mdash; occasionally looking like she isn't trying at all, on purpose. Sites in this style turn up in any industry but they all carry a high-fashion, editorial feel. The imagery, if there is any, has that cinematic cologne-commercial gloss.</p>
+      <p>The design is ultra-minimal, and the layouts don't necessarily obey the usual rules. Yes, your eye has to bounce around to figure out the reading order &mdash; and this style is too busy being cool to care. The Still Agency homepage is essentially one video that looks like an ad for Paris Fashion Week. Clients who need this don't sell you with <em>hire us and you'll get XYZ.</em> They communicate value by showing their taste; what you'd get is understood innately from who they obviously are. To build it, get familiar with Swiss and editorial design, reach for modular layouts, and let a few normal principles take a back seat &mdash; scale the font down, try the unconventional grid.</p>
+    </div>
+    <div class="tell">
+      <div class="cell"><span class="lab">The tell</span><p>The client proves value through <b>taste</b>, not promises. You should get who they are without them spelling it out.</p></div>
+      <div class="cell"><span class="lab">How you build it</span><p>Editorial and Swiss references, modular grids, generous negative space. Don't fear an unconventional layout or a smaller type size.</p></div>
+    </div>
+    <div class="exmpl"><span>REFERENCE</span> <b>Still Agency</b></div>
+  </section>
+
+  <!-- 06 VIRGIL ABLOH -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num">06</span>
+      <h2>The Virgil Abloh</h2>
+    </div>
+    <p class="who-tag">Spectacle, focused &mdash; one unignorable element</p>
+    <div class="prose" style="margin-top:22px;">
+      <p>Where Zendaya pulls you in with coolness, this one grabs you with a single visual element you can't stop thinking about. Virgil founded Off-White and designed album covers, and his thing was never minimalism or maximalism &mdash; both show up depending on the job. It's about being something you cannot ignore, one way or another. A site in this style wants you to see one element and go <em>that's sick,</em> then quietly wish you'd thought of it first.</p>
+      <p>It doesn't have to be an image. It can be a font that really stands out, a high-contrast palette, or a piece of imagery that obviously took real skill. On the Obsidian Assembly site, the moment it loads your eye gets yanked to a unique, slightly oversized font and a shiny 3D-looking rock &mdash; and it keeps paying off as you scroll, each interaction steering attention back to that one visual idea. The discipline here is restraint about your spectacle: you don't need a stunning visual in every section. Pick one and repeat it tastefully.</p>
+    </div>
+    <p class="pull">The point is contrast, not bigness.<span class="by">why this style isn't just &ldquo;make it huge&rdquo;</span></p>
+    <div class="tell">
+      <div class="cell"><span class="lab">The tell</span><p>The client wants to be <b>memorable</b> &mdash; one thing people screenshot and remember, not a whole fireworks show.</p></div>
+      <div class="cell"><span class="lab">How you build it</span><p>Choose a single standout &mdash; a display font, a high-contrast palette, a 3D object &mdash; and repeat it. Draw attention because it stands out, not because it's shouting.</p></div>
+    </div>
+    <div class="exmpl"><span>REFERENCE</span> <b>Obsidian Assembly</b></div>
+  </section>
+
+  <!-- 07 CHRISTOPHER NOLAN -->
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-num">07</span>
+      <h2>The Christopher Nolan</h2>
+    </div>
+    <p class="who-tag">Spectacle, maxed &mdash; the wow factor</p>
+    <div class="prose" style="margin-top:22px;">
+      <p>If Virgil wants you thinking about one element, this one wants to blow your mind outright. Nolan made Inception, Interstellar, the Dark Knight films &mdash; each less a movie than a roller-coaster. You can tell within three seconds you've landed on a Nolan-style site: something moves, something morphs, the hero scrolls in a way you've never quite seen. These aren't trying to be clean or cool. They're trying to impress you, and they are not subtle about it &mdash; some interaction almost every inch of the way. Load Active Theory and the type is already doing something weird; scroll and the sections react with you; by the bottom you wish you could've watched over the developer's shoulder.</p>
+      <p>Fair warning, because this is where designers get themselves in trouble: it takes real time and real range &mdash; design, UX, and serious coding chops layered together, usually a team. A one-person shop can pull it off with patience and skills added steadily, and tools like <b>Unicorn Studio</b> or <b>Spline</b> help any level of designer punch above their weight. But quote it accordingly. This is the expensive end of the map for a reason.</p>
+    </div>
+    <div class="tell">
+      <div class="cell"><span class="lab">The tell</span><p>The client says it outright: <em>&ldquo;I want a wow factor.&rdquo;</em> That's the flag for this one, and no other.</p></div>
+      <div class="cell"><span class="lab">How you build it</span><p>Scroll-reactive heroes, motion layered on motion. Lean on Unicorn Studio or Spline. Scope it honestly &mdash; this is a project, not a weekend.</p></div>
+    </div>
+    <div class="exmpl"><span>REFERENCE</span> <b>Active Theory</b></div>
+  </section>
+
+  <!-- CLOSE -->
+  <div class="close rv">
+    <span class="eyebrow">How to actually use it</span>
+    <p>Next time a client hands you an adjective, don't nod and start guessing. Ask which of the six they mean, pull up the reference, and build to that. &ldquo;Clean&rdquo; becomes <b>the Steve Jobs</b>; &ldquo;wow factor&rdquo; becomes <b>the Christopher Nolan</b>. The adjective was never the brief &mdash; the reference is.</p>
+  </div>
+
+  <div class="source-card rv">
+    <span class="lab">Source &amp; credit</span>
+    Framework and the celebrity-mnemonic device are Chris's, from his video <em>&ldquo;Six Web Design Styles.&rdquo;</em> Chris has run a web design business for 11+ years and teaches his &ldquo;High Profit Process&rdquo; program on the business side of the craft. The six styles, their tells, and the named references all belong to him; this is one designer's distillation of the idea, not a transcript. Watch the original here:
+    <a href="https://www.youtube.com/watch?v=N1Cl5cYmegE" target="_blank" rel="noopener">youtube.com &mdash; Six Web Design Styles</a>.
+  </div>
+
+  <footer>FIELD NOTES &mdash; SUMMARY &amp; DESIGN BY ANDREW CARRIER</footer>
+
+</div>
+
+<script>
+  (function(){
+    var els = document.querySelectorAll('.rv');
+    if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in');});return;}
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);} });
+    },{threshold:.12});
+    els.forEach(function(e){io.observe(e);});
+  })();
+</script>
+</body>
+</html>
