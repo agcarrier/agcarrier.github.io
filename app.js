@@ -277,7 +277,7 @@ function SpeedCallout() {
 const PAIN_POINTS = [
   { icon: '📞', text: 'I keep missing calls and losing leads after hours.',                    service: 'AI Agents & Receptionist', href: '/services/ai-agents' },
   { icon: '🌐', text: 'My website looks outdated — or I don\'t have one at all.',             service: 'Web Design',               href: '/services/web-design' },
-  { icon: '🔁', text: 'My staff answers the same questions a hundred times a week.',          service: 'Knowledge Base',           href: '/services/knowledge-base' },
+  { icon: '🔁', text: 'My staff answers the same questions a hundred times a week.',          service: 'AI Agents & Receptionist', href: '/services/ai-agents' },
   { icon: '⏱️', text: 'I\'m drowning in tasks that should just handle themselves.',           service: 'Business Automation',      href: '/services/business-automation' },
   { icon: '💸', text: 'I can\'t afford to hire, but I\'m running out of hours.',              service: 'AI Agents & Receptionist', href: '/services/ai-agents' },
   { icon: '🤷', text: 'I know AI could help my business — I just don\'t know where to start.', service: 'Business Automation',    href: '/services/business-automation' },
@@ -337,7 +337,6 @@ const SERVICES = [
   { id: '001', name: 'Web Design',             desc: 'A local agency might quote you $4,000–$10,000 and a 6-week timeline. We use AI to undercut both without cutting corners. Fast, modern, built to convert — and optimized for search from day one.',             tags: ['Fast Delivery', 'Modern Design', 'AI-Built', 'SEO'], href: '/services/web-design' },
   { id: '002', name: 'AI Agents & Receptionist', desc: 'AI agents work around the clock so you don\'t have to. They answer calls, qualify leads, book appointments, and handle FAQs automatically — at 3am or during your busiest hour. Never lose a customer to voicemail again.', tags: ['Voice AI', '24/7', 'Lead Capture'], href: '/services/ai-agents' },
   { id: '003', name: 'Business Automation',    desc: 'Most small businesses are still doing manually what AI can handle in seconds. I map your workflows, find the bottlenecks, and deploy AI tools that free your team to focus on what actually grows the business.',             tags: ['Workflow', 'Implementation', 'Strategy'], href: '/services/business-automation' },
-  { id: '004', name: 'Knowledge Base',         desc: 'Your business already has the answers — they\'re just buried in emails, docs, and your team\'s heads. I build private AI systems trained on your content so staff and customers get instant, accurate answers around the clock.', tags: ['Private AI', 'Instant Answers', 'RAG'], href: '/services/knowledge-base' },
 ];
 
 function ServiceCard({ id, name, desc, tags, href }) {
@@ -692,7 +691,7 @@ const PAGE_META = {
   },
   '/services/web-design': {
     title: 'AI Web Design for Small Businesses | Carrier Pigeon AI',
-    description: 'Professional, modern websites built with AI — launched faster than traditional agencies and priced for small businesses. Starting at $799.',
+    description: 'Professional, modern websites built with AI — launched faster than traditional agencies and priced for small businesses. Starting at $999.',
   },
   '/services/ai-agents': {
     title: 'AI Receptionist & Voice Agents for Small Business | Carrier Pigeon AI',
@@ -1044,9 +1043,8 @@ function ScrollProgressBar() {
 
 const NAV_SERVICES = [
   { name: 'Web Design',           sub: 'Fast, modern sites built to convert',           href: '/services/web-design' },
-  { name: 'AI Agents',            sub: '24/7 voice & chat — never miss a lead',         href: '/services/ai-agents' },
+  { name: 'AI Agents',            sub: '24/7 voice & chat — trained on your content',   href: '/services/ai-agents' },
   { name: 'Business Automation',  sub: 'Cut busywork, free your team',                  href: '/services/business-automation' },
-  { name: 'Knowledge Base',       sub: 'Private AI trained on your content',            href: '/services/knowledge-base' },
 ];
 
 function Nav() {
@@ -1228,16 +1226,16 @@ const WD_INDUSTRIES = [
 ];
 
 const WD_TIERS = [
-  { name: 'Starter',  price: '$799',    desc: 'Everything you need to exist and look professional online.',  features: ['1–3 pages', 'Mobile-friendly', 'Contact form', 'Basic SEO', 'Domain connection'],                                                                   featured: false },
-  { name: 'Standard', price: '$1,499',  desc: 'The full package. Most clients choose this.',                  features: ['Up to 6 pages', 'Full SEO optimization', 'Google Analytics', 'Content assistance', '30 days support', 'Everything in Starter'],                  featured: true  },
-  { name: 'Premium',  price: '$2,499+', desc: 'For bigger projects that need more.',                          features: ['Unlimited pages', 'E-commerce ready', 'Content writing included', 'Priority support', 'Custom integrations', 'Everything in Standard'], featured: false },
+  { name: 'Starter',  price: '$999',    desc: 'Everything you need to exist and look professional online.',  features: ['1–3 pages', 'Mobile-friendly', 'Contact form', 'Basic SEO', 'Domain connection'],                                                                   featured: false },
+  { name: 'Standard', price: '$1,799',  desc: 'The full package. Most clients choose this.',                  features: ['Up to 6 pages', 'Full SEO optimization', 'Google Analytics', 'Content assistance', '30 days support', 'Everything in Starter'],                  featured: true  },
+  { name: 'Premium',  price: '$2,800+', desc: 'For bigger projects that need more.',                          features: ['Unlimited pages', 'E-commerce ready', 'Content writing included', 'Priority support', 'Custom integrations', 'Everything in Standard'], featured: false },
 ];
 
 const WD_FAQS = [
   { q: 'How long does it take?',                    a: 'Most sites launch within a day or two of the discovery call. Complex projects with e-commerce or many pages may take a bit longer — but never weeks. Traditional agencies take 4–8 weeks for the same work.' },
   { q: 'Do I need to provide content?',             a: 'Nope. We can write your page copy with you, or draft it entirely based on what you tell us in the discovery call. You review and approve everything before it goes live.' },
   { q: 'What if I already have a domain?',          a: 'No problem at all. We\'ll connect your existing domain to the new site. If you don\'t have one yet, we\'ll help you pick and register one — usually $12–15/year.' },
-  { q: 'Can you make updates after launch?',        a: 'Yes — the 30-day support window covers any tweaks after launch. After that, ongoing maintenance packages start at $99/month and include updates, security patches, and priority support.' },
+  { q: 'Can you make updates after launch?',        a: 'Yes — the 30-day support window covers any tweaks after launch. After that, maintenance plans start at $99/month (updates, security patches, backups) with a $249/month tier that adds regular content updates and priority support.' },
   { q: 'Do you build online stores?',               a: 'Yes, e-commerce is available on the Premium tier. Tell us about your products and volume and we\'ll give you an accurate quote.' },
   { q: 'Will my site show up on Google?',           a: 'Every site we build includes SEO from day one — proper page titles, meta descriptions, fast load times, mobile optimization, and sitemap submission to Google Search Console. You\'ll also get a Google Business Profile walkthrough so you show up in local searches.' },
   { q: 'What platform do you build on?',            a: 'We choose the right tool for your needs. Most small business sites are built as fast, modern static sites. Larger or content-heavy sites may use WordPress. Either way, you own the site and hosting outright.' },
@@ -1261,10 +1259,9 @@ function FAQItem({ q, a }) {
 
 // ── Related Services ─────────────────────────────────────────────
 const ALL_SERVICES = [
-  { name: 'Web Design',              short: 'Fast, modern websites built to convert — SEO-optimized from day one.',                  href: '/services/web-design',            tag: 'From $799' },
+  { name: 'Web Design',              short: 'Fast, modern websites built to convert — SEO-optimized from day one.',                  href: '/services/web-design',            tag: 'From $999' },
   { name: 'AI Agents',               short: '24/7 voice and chat agents that answer calls, capture leads, and book appointments.',    href: '/services/ai-agents',             tag: 'From $149/mo' },
-  { name: 'Business Automation',     short: 'Map your workflows, cut the busywork, and deploy AI tools that free your team.',        href: '/services/business-automation',   tag: 'From $799' },
-  { name: 'Knowledge Base',          short: 'A private AI trained on your content — instant answers for staff and customers.',       href: '/services/knowledge-base',        tag: 'From $999' },
+  { name: 'Business Automation',     short: 'Map your workflows, cut the busywork, and deploy AI tools that free your team.',        href: '/services/business-automation',   tag: 'From $1,200' },
 ];
 
 function RelatedServices({ current }) {
@@ -2118,9 +2115,9 @@ const AA_INDUSTRIES = [
 ];
 
 const AA_TIERS = [
-  { name: 'Basic',    price: '$149', period: '/mo', setup: '$199 setup', desc: 'A smart text and chat agent that captures leads and answers questions around the clock.',         features: ['Chat & text agent', 'FAQ handling', 'Lead capture', 'Email summaries', '$199 one-time setup'],                                              featured: false },
-  { name: 'Standard', price: '$249', period: '/mo', setup: '$249 setup', desc: 'Voice and chat combined. Books appointments, qualifies leads — even at 2am.',                     features: ['Voice + chat agent', 'Appointment booking', 'Lead qualification', 'Calendar sync', 'Email summaries', '$249 one-time setup'],                featured: true  },
-  { name: 'Pro',      price: '$399', period: '/mo', setup: '$299 setup', desc: 'Fully custom agent built around your exact workflows, with CRM and advanced integrations.',       features: ['Fully custom build', 'CRM integration', 'Advanced workflows', 'Priority support', 'Quarterly tuning', '$299 one-time setup'],                featured: false },
+  { name: 'Basic',    price: '$149', period: '/mo', setup: '$500 setup', desc: 'A smart text and chat agent that captures leads and answers questions around the clock.',         features: ['Chat & text agent', 'FAQ handling', 'Lead capture', 'Email summaries', '$500 one-time setup'],                                              featured: false },
+  { name: 'Standard', price: '$299', period: '/mo', setup: '$750 setup', desc: 'Voice and chat combined. Books appointments, qualifies leads — even at 2am.',                     features: ['Voice + chat agent', 'Appointment booking', 'Lead qualification', 'Calendar sync', 'Email summaries', '$750 one-time setup'],                featured: true  },
+  { name: 'Pro',      price: '$499', period: '/mo', setup: '$1,000 setup', desc: 'Fully custom agent built around your exact workflows, trained on your business content, with CRM and advanced integrations.', features: ['Fully custom build', 'Private knowledge base included', 'CRM integration', 'Advanced workflows', 'Priority support', 'Quarterly tuning', '$1,000 one-time setup'],                featured: false },
 ];
 
 const AA_FAQS = [
@@ -2321,9 +2318,9 @@ const BA_INDUSTRIES = [
 ];
 
 const BA_TIERS = [
-  { name: 'Starter',        price: '$799',    period: '',     setup: 'One-time',   desc: 'Workflow assessment plus up to 2 automations implemented and ready to run.',          features: ['Workflow audit', 'Up to 2 automations', 'Software integration', 'Basic staff training', '30-day support'],                                    featured: false },
-  { name: 'Standard',       price: '$1,499',  period: '',     setup: 'One-time',   desc: 'The full build. Up to 5 automations with training so your team can use them confidently.', features: ['Full workflow mapping', 'Up to 5 automations', 'Software integration', 'Staff training session', '30-day support', 'Process documentation'], featured: true  },
-  { name: 'Growth Partner', price: '$299',    period: '/mo',  setup: 'Ongoing',    desc: 'Continuous automation expansion — new workflows monthly, monitoring, and priority support.', features: ['Monthly new automations', 'Performance monitoring', 'Priority support', 'Quarterly strategy review', 'Unlimited tweaks'],              featured: false },
+  { name: 'Starter',        price: '$1,200',  period: '',     setup: 'One-time',   desc: 'Workflow assessment plus up to 2 automations implemented and ready to run.',          features: ['Workflow audit', 'Up to 2 automations', 'Software integration', 'Basic staff training', '30-day support'],                                    featured: false },
+  { name: 'Standard',       price: '$2,500',  period: '',     setup: 'One-time',   desc: 'The full build. Up to 5 automations with training so your team can use them confidently.', features: ['Full workflow mapping', 'Up to 5 automations', 'Software integration', 'Staff training session', '30-day support', 'Process documentation'], featured: true  },
+  { name: 'Growth Partner', price: '$499',    period: '/mo',  setup: 'Ongoing',    desc: 'Continuous automation expansion — new workflows monthly, monitoring, and priority support.', features: ['Monthly new automations', 'Performance monitoring', 'Priority support', 'Quarterly strategy review', 'Unlimited tweaks'],              featured: false },
 ];
 
 const BA_FAQS = [
