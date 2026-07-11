@@ -389,6 +389,7 @@ const PROJECTS = [
   { id: '002', name: 'Cocodrie',      role: 'Mockup',   desc: 'Concept site for a modern Cajun fine-dining restaurant. Full hero treatment, editorial typography, dark and rich.',  href: 'https://cocodrie.carrierpigeonai.dev', preview: '/cocodrie-preview.jpg' },
   { id: '003', name: 'Vermilion Athletics', role: 'Mockup', desc: 'Concept site for a Lafayette personal-training studio. Angular industrial design, a sunrise-run hero, and a built-in member-app mockup.', href: 'https://vermilion.carrierpigeonai.dev', preview: '/vermilion-preview.jpg' },
   { id: '004', name: 'AKAI ZERO', role: 'Mockup', desc: 'Concept landing page for a fictional cyberpunk action game. A cinematic full-screen hero, oversized type, angled panels, and a sharp, motion-led red design.', href: 'https://akai.carrierpigeonai.dev', preview: '/akai-zero-preview.jpg' },
+  { id: '005', name: 'Trionda', role: 'WebGL Showcase', desc: 'Interactive showcase for the FIFA World Cup 2026 official match ball. A single real-time 3D ball drives the whole scroll — deconstructing, then turning to face each host nation as the page color follows.', href: 'https://trionda.carrierpigeonai.dev', preview: '/trionda-preview.jpg' },
 ];
 
 function WorkCard({ id, name, role, desc, href, preview }) {
