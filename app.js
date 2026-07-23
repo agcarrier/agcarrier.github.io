@@ -385,11 +385,12 @@ function Services() {
 
 // ── Work ──────────────────────────────────────────────────────────
 const PROJECTS = [
-  { id: '001', name: 'AAVA Rescue',  role: 'Website',  desc: 'Marketing site and donation flow for an animal rescue org. Built in a day, live the same week.',  href: 'https://aavarescue.com', preview: '/aava-preview.jpg' },
-  { id: '002', name: 'Trionda', role: 'WebGL Showcase', desc: 'Interactive showcase for the FIFA World Cup 2026 official match ball. A single real-time 3D ball drives the whole scroll — deconstructing, then turning to face each host nation as the page color follows.', href: 'https://trionda.carrierpigeonai.dev', preview: '/trionda-preview.jpg' },
-  { id: '003', name: 'Cocodrie',      role: 'Mockup',   desc: 'Concept site for a modern Cajun fine-dining restaurant. Full hero treatment, editorial typography, dark and rich.',  href: 'https://cocodrie.carrierpigeonai.dev', preview: '/cocodrie-preview.jpg' },
-  { id: '004', name: 'Vermilion Athletics', role: 'Mockup', desc: 'Concept site for a Lafayette personal-training studio. Angular industrial design, a sunrise-run hero, and a built-in member-app mockup.', href: 'https://vermilion.carrierpigeonai.dev', preview: '/vermilion-preview.jpg' },
-  { id: '005', name: 'AKAI ZERO', role: 'Mockup', desc: 'Concept landing page for a fictional cyberpunk action game. A cinematic full-screen hero, oversized type, angled panels, and a sharp, motion-led red design.', href: 'https://akai.carrierpigeonai.dev', preview: '/akai-zero-preview.jpg' },
+  { id: '001', name: 'The Pigeon Coop', role: 'News', desc: 'AI and local-business news, dispatched under the Carrier Pigeon AI banner.', href: 'https://news.carrierpigeonai.dev' },
+  { id: '002', name: 'AAVA Rescue',  role: 'Website',  desc: 'Marketing site and donation flow for an animal rescue org. Built in a day, live the same week.',  href: 'https://aavarescue.com', preview: '/aava-preview.jpg' },
+  { id: '003', name: 'Trionda', role: 'WebGL Showcase', desc: 'Interactive showcase for the FIFA World Cup 2026 official match ball. A single real-time 3D ball drives the whole scroll — deconstructing, then turning to face each host nation as the page color follows.', href: 'https://trionda.carrierpigeonai.dev', preview: '/trionda-preview.jpg' },
+  { id: '004', name: 'Cocodrie',      role: 'Mockup',   desc: 'Concept site for a modern Cajun fine-dining restaurant. Full hero treatment, editorial typography, dark and rich.',  href: 'https://cocodrie.carrierpigeonai.dev', preview: '/cocodrie-preview.jpg' },
+  { id: '005', name: 'Vermilion Athletics', role: 'Mockup', desc: 'Concept site for a Lafayette personal-training studio. Angular industrial design, a sunrise-run hero, and a built-in member-app mockup.', href: 'https://vermilion.carrierpigeonai.dev', preview: '/vermilion-preview.jpg' },
+  { id: '006', name: 'AKAI ZERO', role: 'Mockup', desc: 'Concept landing page for a fictional cyberpunk action game. A cinematic full-screen hero, oversized type, angled panels, and a sharp, motion-led red design.', href: 'https://akai.carrierpigeonai.dev', preview: '/akai-zero-preview.jpg' },
 ];
 
 function WorkCard({ id, name, role, desc, href, preview }) {
@@ -433,7 +434,7 @@ function Work() {
   return (
     <section id="work" data-screen-label="03 Gallery" style={{ position: 'relative', zIndex: 2, padding: '96px 48px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <FadeIn><SectionHead num="03" name="Gallery" theme="Built and shipped." count="4 / Active" /></FadeIn>
+        <FadeIn><SectionHead num="03" name="Gallery" theme="Built and shipped." count="5 / Active" /></FadeIn>
         <FadeIn>
           <div className="cp-work-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 18 }}>
             {PROJECTS.map(p => <WorkCard key={p.id} {...p} />)}
@@ -1134,13 +1135,8 @@ function Nav() {
           >Field Notes</a>
         </div>
 
-        {/* The Pigeon Coop + CTA + hamburger */}
+        {/* CTA + hamburger */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          {/* The Pigeon Coop (external — news subdomain) — pinned to the right, by the CTA */}
-          <a className="cp-nav-links" href="https://news.carrierpigeonai.dev" target="_blank" rel="noopener noreferrer" style={linkStyle}
-            onMouseEnter={e => e.target.style.color = 'var(--paper)'}
-            onMouseLeave={e => e.target.style.color = 'var(--muted)'}
-          >The Pigeon Coop</a>
           <div className="cp-nav-cta"><Btn arrow href={anchor('contact')}>Send a Pigeon</Btn></div>
           <button className="cp-hamburger" onClick={() => setOpen(o => !o)} aria-label="Toggle menu"
             style={{ display: 'none', background: 'none', border: 0, cursor: 'pointer', padding: 6, color: 'var(--paper)', lineHeight: 0 }}>
@@ -1191,10 +1187,6 @@ function Nav() {
           style={{ font: '500 13px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)', textDecoration: 'none', padding: '18px 0', borderBottom: '1px solid var(--ink-3)' }}
         >Field Notes</a>
 
-        {/* The Pigeon Coop (external — news subdomain) */}
-        <a href="https://news.carrierpigeonai.dev" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)}
-          style={{ font: '500 13px var(--font-mono)', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--paper)', textDecoration: 'none', padding: '18px 0', borderBottom: '1px solid var(--ink-3)' }}
-        >The Pigeon Coop</a>
         <div style={{ marginTop: 24 }}><Btn primary arrow href={anchor('contact')} onClick={() => setOpen(false)}>Send a Pigeon</Btn></div>
       </div>
     </>
