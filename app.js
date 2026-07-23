@@ -385,7 +385,7 @@ function Services() {
 
 // ── Work ──────────────────────────────────────────────────────────
 const PROJECTS = [
-  { id: '001', name: 'The Pigeon Coop', role: 'News', desc: 'AI and local-business news, dispatched under the Carrier Pigeon AI banner.', href: 'https://news.carrierpigeonai.dev' },
+  { id: '001', name: 'The Pigeon Coop', role: 'News', desc: 'AI and local-business news, dispatched under the Carrier Pigeon AI banner.', href: 'https://news.carrierpigeonai.dev', preview: '/pigeon-coop-preview.jpg' },
   { id: '002', name: 'AAVA Rescue',  role: 'Website',  desc: 'Marketing site and donation flow for an animal rescue org. Built in a day, live the same week.',  href: 'https://aavarescue.com', preview: '/aava-preview.jpg' },
   { id: '003', name: 'Trionda', role: 'WebGL Showcase', desc: 'Interactive showcase for the FIFA World Cup 2026 official match ball. A single real-time 3D ball drives the whole scroll — deconstructing, then turning to face each host nation as the page color follows.', href: 'https://trionda.carrierpigeonai.dev', preview: '/trionda-preview.jpg' },
   { id: '004', name: 'Cocodrie',      role: 'Mockup',   desc: 'Concept site for a modern Cajun fine-dining restaurant. Full hero treatment, editorial typography, dark and rich.',  href: 'https://cocodrie.carrierpigeonai.dev', preview: '/cocodrie-preview.jpg' },
