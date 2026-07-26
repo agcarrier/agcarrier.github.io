@@ -2696,6 +2696,13 @@ function KnowledgePage() {
 // real files before the SPA rewrite, so their own styling stays intact.
 const FIELD_NOTES = [
   {
+    title: 'The Race Condition',
+    date: '2026-07-26',
+    tag: 'No. 004 · Explainer',
+    excerpt: 'AI 2027 forecasts, month by month, how superhuman AI could arrive by 2027 — and its default ending is human extinction, not by malice but by a race no one felt able to stop. A plain-English walkthrough: what alignment means, both endings, and why serious people say this isn’t science fiction.',
+    href: '/field-notes/the-race-condition.html',
+  },
+  {
     title: 'The Adjective Problem',
     date: '2026-07-09',
     tag: 'No. 003 · Essay',
